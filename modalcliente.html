@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+        <meta charset="utf-8" />
+        <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+        <title>Nuevo Artículo Modal</title>
+        <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+                rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap"
+                rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+                rel="stylesheet" />
+        <script id="tailwind-config">
+                tailwind.config = {
+                        darkMode: "class",
+                        theme: {
+                                extend: {
+                                        "colors": {
+                                                "on-secondary": "#ffffff",
+                                                "tertiary-fixed-dim": "#ffb596",
+                                                "surface-bright": "#f7f9fb",
+                                                "on-error": "#ffffff",
+                                                "surface-tint": "#0053db",
+                                                "surface-container": "#eceef0",
+                                                "error-container": "#ffdad6",
+                                                "outline-variant": "#c3c6d7",
+                                                "surface-container-highest": "#e0e3e5",
+                                                "surface-dim": "#d8dadc",
+                                                "tertiary": "#943700",
+                                                "on-error-container": "#93000a",
+                                                "on-tertiary-fixed": "#360f00",
+                                                "on-secondary-fixed-variant": "#38485d",
+                                                "surface-variant": "#e0e3e5",
+                                                "primary": "#004ac6",
+                                                "on-primary-fixed-variant": "#003ea8",
+                                                "background": "#f7f9fb",
+                                                "on-surface-variant": "#434655",
+                                                "surface-container-lowest": "#ffffff",
+                                                "tertiary-container": "#bc4800",
+                                                "on-tertiary-fixed-variant": "#7d2d00",
+                                                "outline": "#737686",
+                                                "on-secondary-container": "#54647a",
+                                                "surface": "#f7f9fb",
+                                                "surface-container-low": "#f2f4f6",
+                                                "on-surface": "#191c1e",
+                                                "on-background": "#191c1e",
+                                                "inverse-surface": "#2d3133",
+                                                "on-primary-container": "#eeefff",
+                                                "tertiary-fixed": "#ffdbcd",
+                                                "primary-fixed-dim": "#b4c5ff",
+                                                "error": "#ba1a1a",
+                                                "secondary-fixed": "#d3e4fe",
+                                                "primary-container": "#2563eb",
+                                                "inverse-primary": "#b4c5ff",
+                                                "surface-container-high": "#e6e8ea",
+                                                "on-tertiary-container": "#ffede6",
+                                                "secondary-fixed-dim": "#b7c8e1",
+                                                "secondary": "#505f76",
+                                                "on-tertiary": "#ffffff",
+                                                "on-primary-fixed": "#00174b",
+                                                "primary-fixed": "#dbe1ff",
+                                                "inverse-on-surface": "#eff1f3",
+                                                "secondary-container": "#d0e1fb",
+                                                "on-secondary-fixed": "#0b1c30",
+                                                "on-primary": "#ffffff"
+                                        },
+                                        "borderRadius": {
+                                                "DEFAULT": "0.125rem",
+                                                "lg": "0.25rem",
+                                                "xl": "0.5rem",
+                                                "full": "0.75rem"
+                                        },
+                                        "spacing": {
+                                                "container-max": "1440px",
+                                                "stack-sm": "8px",
+                                                "stack-lg": "24px",
+                                                "gutter": "24px",
+                                                "header-height": "64px",
+                                                "sidebar-width": "260px",
+                                                "stack-md": "16px"
+                                        },
+                                        "fontFamily": {
+                                                "body-sm": [
+                                                        "Inter"
+                                                ],
+                                                "body-md": [
+                                                        "Inter"
+                                                ],
+                                                "title-sm": [
+                                                        "Inter"
+                                                ],
+                                                "data-mono": [
+                                                        "Inter"
+                                                ],
+                                                "headline-md": [
+                                                        "Inter"
+                                                ],
+                                                "display-lg": [
+                                                        "Inter"
+                                                ],
+                                                "label-caps": [
+                                                        "Inter"
+                                                ]
+                                        },
+                                        "fontSize": {
+                                                "body-sm": [
+                                                        "14px",
+                                                        {
+                                                                "lineHeight": "20px",
+                                                                "fontWeight": "400"
+                                                        }
+                                                ],
+                                                "body-md": [
+                                                        "16px",
+                                                        {
+                                                                "lineHeight": "24px",
+                                                                "fontWeight": "400"
+                                                        }
+                                                ],
+                                                "title-sm": [
+                                                        "18px",
+                                                        {
+                                                                "lineHeight": "28px",
+                                                                "fontWeight": "600"
+                                                        }
+                                                ],
+                                                "data-mono": [
+                                                        "14px",
+                                                        {
+                                                                "lineHeight": "20px",
+                                                                "fontWeight": "500"
+                                                        }
+                                                ],
+                                                "headline-md": [
+                                                        "24px",
+                                                        {
+                                                                "lineHeight": "32px",
+                                                                "letterSpacing": "-0.01em",
+                                                                "fontWeight": "600"
+                                                        }
+                                                ],
+                                                "display-lg": [
+                                                        "32px",
+                                                        {
+                                                                "lineHeight": "40px",
+                                                                "letterSpacing": "-0.02em",
+                                                                "fontWeight": "700"
+                                                        }
+                                                ],
+                                                "label-caps": [
+                                                        "12px",
+                                                        {
+                                                                "lineHeight": "16px",
+                                                                "letterSpacing": "0.05em",
+                                                                "fontWeight": "600"
+                                                        }
+                                                ]
+                                        }
+                                },
+                        },
+                }
+        </script>
+        <style>
+                .material-symbols-outlined {
+                        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+                }
+
+                .material-symbols-outlined.fill {
+                        font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+                }
+
+                /* Custom scrollbar for modal content */
+                .modal-scroll::-webkit-scrollbar {
+                        width: 8px;
+                }
+
+                .modal-scroll::-webkit-scrollbar-track {
+                        background: transparent;
+                }
+
+                .modal-scroll::-webkit-scrollbar-thumb {
+                        background-color: #d8dadc;
+                        border-radius: 4px;
+                }
+        </style>
+</head>
+
+<body class="bg-surface text-on-surface font-body-md h-screen overflow-hidden relative">
+        <!-- Mock Background Content (Inventory Screen) -->
+        <div class="flex h-full blur-[2px]">
+                <!-- Sidebar Mock -->
+                <aside
+                        class="w-sidebar-width h-screen fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant flex flex-col gap-stack-sm py-gutter z-10 hidden md:flex">
+                        <div class="px-gutter mb-6">
+                                <span class="font-display-lg text-display-lg font-bold text-primary">StockPro
+                                        Manager</span>
+                        </div>
+                        <nav class="flex-1 flex flex-col gap-2 px-4">
+                                <div
+                                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-high transition-colors cursor-pointer">
+                                        <span class="material-symbols-outlined">dashboard</span>
+                                        <span class="font-body-md text-body-md">Dashboard</span>
+                                </div>
+                                <div
+                                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold bg-secondary-container/30 border-r-4 border-primary cursor-pointer active:scale-95 duration-150">
+                                        <span class="material-symbols-outlined">inventory_2</span>
+                                        <span class="font-body-md text-body-md">Inventario</span>
+                                </div>
+                                <div
+                                        class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-high transition-colors cursor-pointer">
+                                        <span class="material-symbols-outlined">receipt_long</span>
+                                        <span class="font-body-md text-body-md">Facturación</span>
+                                </div>
+                        </nav>
+                </aside>
+                <!-- Main Content Area Mock -->
+                <main class="ml-0 md:ml-sidebar-width flex-1 flex flex-col h-full bg-background relative">
+                        <header
+                                class="h-header-height sticky top-0 z-40 bg-surface border-b border-outline-variant shadow-sm flex justify-between items-center px-gutter w-full max-w-container-max mx-auto">
+                                <div class="flex items-center gap-4">
+                                        <span
+                                                class="material-symbols-outlined text-on-surface md:hidden cursor-pointer">menu</span>
+                                        <h1 class="font-headline-md text-headline-md text-primary">Inventario</h1>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                        <div
+                                                class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-title-sm text-title-sm">
+                                                UP
+                                        </div>
+                                </div>
+                        </header>
+                        <div class="p-gutter max-w-container-max mx-auto w-full">
+                                <!-- Mock Table Header -->
+                                <div class="flex justify-between items-center mb-6">
+                                        <div class="flex gap-4 items-center">
+                                                <div class="relative">
+                                                        <span
+                                                                class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+                                                        <input class="pl-10 pr-4 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest focus:border-primary focus:ring-2 focus:ring-primary/20 w-64 text-body-sm font-body-sm"
+                                                                placeholder="Buscar en inventario..." type="text" />
+                                                </div>
+                                                <button
+                                                        class="px-4 py-2 border border-outline-variant rounded-lg bg-surface-container-lowest flex items-center gap-2 hover:bg-surface-container transition-colors">
+                                                        <span
+                                                                class="material-symbols-outlined text-sm">filter_list</span>
+                                                        <span
+                                                                class="font-body-sm text-body-sm font-medium">Filtros</span>
+                                                </button>
+                                        </div>
+                                        <button
+                                                class="px-4 py-2 bg-primary text-on-primary rounded-lg font-body-sm text-body-sm font-medium flex items-center gap-2 hover:bg-on-primary-fixed-variant transition-colors">
+                                                <span class="material-symbols-outlined text-sm">add</span>
+                                                Nuevo Artículo
+                                        </button>
+                                </div>
+                                <!-- Mock Table -->
+                                <div
+                                        class="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-[0_1px_3px_0_rgba(0,0,0,0.1)] overflow-hidden">
+                                        <table class="w-full text-left border-collapse">
+                                                <thead
+                                                        class="bg-surface-container-low border-b border-outline-variant font-label-caps text-label-caps text-on-surface-variant">
+                                                        <tr>
+                                                                <th class="px-6 py-4">Código</th>
+                                                                <th class="px-6 py-4">Producto</th>
+                                                                <th class="px-6 py-4">Categoría</th>
+                                                                <th class="px-6 py-4 text-right">Stock</th>
+                                                                <th class="px-6 py-4 text-right">Precio</th>
+                                                                <th class="px-6 py-4">Estado</th>
+                                                                <th class="px-6 py-4"></th>
+                                                        </tr>
+                                                </thead>
+                                                <tbody
+                                                        class="font-body-sm text-body-sm divide-y divide-outline-variant/50">
+                                                        <tr class="hover:bg-surface-container transition-colors">
+                                                                <td class="px-6 py-4 text-secondary font-data-mono">
+                                                                        PRD-001</td>
+                                                                <td class="px-6 py-4 font-medium text-on-surface">Laptop
+                                                                        ThinkPad T14</td>
+                                                                <td class="px-6 py-4 text-secondary">Computación</td>
+                                                                <td class="px-6 py-4 text-right font-data-mono">45</td>
+                                                                <td class="px-6 py-4 text-right font-data-mono">
+                                                                        $1,200.00</td>
+                                                                <td class="px-6 py-4">
+                                                                        <span
+                                                                                class="inline-flex items-center px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">Disponible</span>
+                                                                </td>
+                                                                <td class="px-6 py-4 text-right">
+                                                                        <span
+                                                                                class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors">more_vert</span>
+                                                                </td>
+                                                        </tr>
+                                                        <tr class="hover:bg-surface-container transition-colors">
+                                                                <td class="px-6 py-4 text-secondary font-data-mono">
+                                                                        PRD-002</td>
+                                                                <td class="px-6 py-4 font-medium text-on-surface">
+                                                                        Monitor Dell 27"</td>
+                                                                <td class="px-6 py-4 text-secondary">Electrónica</td>
+                                                                <td
+                                                                        class="px-6 py-4 text-right font-data-mono text-error">
+                                                                        5</td>
+                                                                <td class="px-6 py-4 text-right font-data-mono">$350.00
+                                                                </td>
+                                                                <td class="px-6 py-4">
+                                                                        <span
+                                                                                class="inline-flex items-center px-2 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">Disponible</span>
+                                                                </td>
+                                                                <td class="px-6 py-4 text-right">
+                                                                        <span
+                                                                                class="material-symbols-outlined text-secondary cursor-pointer hover:text-primary transition-colors">more_vert</span>
+                                                                </td>
+                                                        </tr>
+                                                </tbody>
+                                        </table>
+                                </div>
+                        </div>
+                </main>
+        </div>
+        <!-- Modal Backdrop Overlay -->
+        <div
+                class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 sm:p-gutter transition-opacity duration-300">
+                <!-- Modal Container (Level 3 Elevation) -->
+                <div
+                        class="bg-surface-container-lowest w-full max-w-3xl rounded-xl shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1),0_10px_10px_-5px_rgba(0,0,0,0.04)] flex flex-col max-h-full overflow-hidden transform transition-transform duration-300 scale-100 border border-outline-variant">
+                        <!-- Modal Header -->
+                        <div class="flex justify-between items-start p-6 border-b border-outline-variant/60 bg-surface">
+                                <div>
+                                        <h2 class="font-headline-md text-headline-md text-on-surface mb-1">Nuevo
+                                                artículo</h2>
+                                        <p class="font-body-sm text-body-sm text-secondary">Registra un nuevo producto
+                                                en el inventario.</p>
+                                </div>
+                                <button aria-label="Close modal"
+                                        class="text-secondary hover:text-on-surface transition-colors p-2 -mr-2 rounded-full hover:bg-surface-container">
+                                        <span class="material-symbols-outlined">close</span>
+                                </button>
+                        </div>
+                        <!-- Modal Content (Scrollable) -->
+                        <div class="p-6 overflow-y-auto modal-scroll bg-surface-container-lowest flex-1">
+                                <form class="space-y-8">
+                                        <!-- Section 1: Código y código de barras -->
+                                        <div class="space-y-4">
+                                                <h3
+                                                        class="font-title-sm text-title-sm text-on-surface flex items-center gap-2 border-b border-outline-variant/30 pb-2">
+                                                        <span
+                                                                class="material-symbols-outlined text-primary text-xl">qr_code</span>
+                                                        Código y código de barras
+                                                </h3>
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                        <!-- Código del producto -->
+                                                        <div>
+                                                                <label class="block font-body-sm text-body-sm font-medium text-on-surface-variant mb-1"
+                                                                        for="product_code">
+                                                                        Código del producto<span
+                                                                                class="text-error ml-1">*</span>
+                                                                </label>
+                                                                <input class="w-full px-4 py-2.5 border border-outline-variant rounded-lg bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md placeholder:text-outline"
+                                                                        id="product_code" name="product_code"
+                                                                        placeholder="ej: PRD-001" required=""
+                                                                        type="text" />
+                                                        </div>
+                                                        <!-- Código de barras -->
+                                                        <div>
+                                                                <label class="block font-body-sm text-body-sm font-medium text-on-surface-variant mb-1"
+                                                                        for="barcode">
+                                                                        Código de barras
+                                                                </label>
+                                                                <div class="relative">
+                                                                        <input class="w-full pl-4 pr-12 py-2.5 border border-outline-variant rounded-lg bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md placeholder:text-outline"
+                                                                                id="barcode" name="barcode"
+                                                                                placeholder="Escanear o ingresar"
+                                                                                type="text" />
+                                                                        <button aria-label="Scan barcode"
+                                                                                class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 text-secondary hover:text-primary transition-colors bg-surface-container-low hover:bg-surface-container rounded-md"
+                                                                                type="button">
+                                                                                <span
+                                                                                        class="material-symbols-outlined text-lg">barcode_scanner</span>
+                                                                        </button>
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                        <!-- Section 2: Información básica -->
+                                        <div class="space-y-4">
+                                                <h3
+                                                        class="font-title-sm text-title-sm text-on-surface flex items-center gap-2 border-b border-outline-variant/30 pb-2">
+                                                        <span
+                                                                class="material-symbols-outlined text-primary text-xl">info</span>
+                                                        Información básica
+                                                </h3>
+                                                <!-- Nombre del producto -->
+                                                <div>
+                                                        <label class="block font-body-sm text-body-sm font-medium text-on-surface-variant mb-1"
+                                                                for="product_name">
+                                                                Nombre del producto<span
+                                                                        class="text-error ml-1">*</span>
+                                                        </label>
+                                                        <input class="w-full px-4 py-2.5 border border-outline-variant rounded-lg bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md placeholder:text-outline"
+                                                                id="product_name" name="product_name"
+                                                                placeholder="ej: Laptop ThinkPad T14" required=""
+                                                                type="text" />
+                                                </div>
+                                                <!-- Descripción -->
+                                                <div>
+                                                        <label class="block font-body-sm text-body-sm font-medium text-on-surface-variant mb-1"
+                                                                for="description">
+                                                                Descripción
+                                                        </label>
+                                                        <textarea
+                                                                class="w-full px-4 py-2.5 border border-outline-variant rounded-lg bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md placeholder:text-outline resize-y"
+                                                                id="description" name="description"
+                                                                placeholder="Detalles adicionales del producto..."
+                                                                rows="3"></textarea>
+                                                </div>
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                        <!-- Categoría -->
+                                                        <div>
+                                                                <label class="block font-body-sm text-body-sm font-medium text-on-surface-variant mb-1"
+                                                                        for="category">
+                                                                        Categoría<span class="text-error ml-1">*</span>
+                                                                </label>
+                                                                <div class="relative">
+                                                                        <select class="w-full pl-4 pr-10 py-2.5 border border-outline-variant rounded-lg bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md appearance-none cursor-pointer text-on-surface"
+                                                                                id="category" name="category"
+                                                                                required="">
+                                                                                <option class="text-outline" disabled=""
+                                                                                        selected="" value="">Seleccionar
+                                                                                        categoría</option>
+                                                                                <option value="electronica">Electrónica
+                                                                                </option>
+                                                                                <option value="mobiliario">Mobiliario
+                                                                                </option>
+                                                                                <option value="accesorios">Accesorios
+                                                                                </option>
+                                                                                <option value="computacion">Computación
+                                                                                </option>
+                                                                                <option value="oficina">Oficina</option>
+                                                                                <option value="otra">Otra</option>
+                                                                        </select>
+                                                                        <span
+                                                                                class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-secondary">expand_more</span>
+                                                                </div>
+                                                        </div>
+                                                        <!-- Proveedor -->
+                                                        <div>
+                                                                <label class="block font-body-sm text-body-sm font-medium text-on-surface-variant mb-1"
+                                                                        for="supplier">
+                                                                        Proveedor<span class="text-error ml-1">*</span>
+                                                                </label>
+                                                                <div class="relative">
+                                                                        <select class="w-full pl-4 pr-10 py-2.5 border border-outline-variant rounded-lg bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md appearance-none cursor-pointer text-on-surface"
+                                                                                id="supplier" name="supplier"
+                                                                                required="">
+                                                                                <option class="text-outline" disabled=""
+                                                                                        selected="" value="">Seleccionar
+                                                                                        proveedor</option>
+                                                                                <option value="prov1">TechData Ltda.
+                                                                                </option>
+                                                                                <option value="prov2">Global Supplies
+                                                                                        S.A.</option>
+                                                                                <option value="prov3">Distribuidora del
+                                                                                        Norte</option>
+                                                                                <option value="new">+ Agregar nuevo
+                                                                                        proveedor</option>
+                                                                        </select>
+                                                                        <span
+                                                                                class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-secondary">expand_more</span>
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                        <!-- Section 3: Precios -->
+                                        <div class="space-y-4">
+                                                <h3
+                                                        class="font-title-sm text-title-sm text-on-surface flex items-center gap-2 border-b border-outline-variant/30 pb-2">
+                                                        <span
+                                                                class="material-symbols-outlined text-primary text-xl">payments</span>
+                                                        Precios
+                                                </h3>
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                        <!-- Precio de costo -->
+                                                        <div>
+                                                                <label class="block font-body-sm text-body-sm font-medium text-on-surface-variant mb-1"
+                                                                        for="cost_price">
+                                                                        Precio de costo<span
+                                                                                class="text-error ml-1">*</span>
+                                                                </label>
+                                                                <div class="relative">
+                                                                        <span
+                                                                                class="absolute left-3 top-1/2 -translate-y-1/2 text-secondary font-medium font-body-md">RD$</span>
+                                                                        <input class="w-full pl-12 pr-4 py-2.5 border border-outline-variant rounded-lg bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-data-mono text-body-md"
+                                                                                id="cost_price" min="0"
+                                                                                name="cost_price" placeholder="0.00"
+                                                                                required="" step="0.01" type="number" />
+                                                                </div>
+                                                        </div>
+                                                        <!-- Precio de venta -->
+                                                        <div>
+                                                                <label class="block font-body-sm text-body-sm font-medium text-on-surface-variant mb-1"
+                                                                        for="sale_price">
+                                                                        Precio de venta<span
+                                                                                class="text-error ml-1">*</span>
+                                                                </label>
+                                                                <div class="relative">
+                                                                        <span
+                                                                                class="absolute left-3 top-1/2 -translate-y-1/2 text-secondary font-medium font-body-md">RD$</span>
+                                                                        <input class="w-full pl-12 pr-4 py-2.5 border border-outline-variant rounded-lg bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-data-mono text-body-md"
+                                                                                id="sale_price" min="0"
+                                                                                name="sale_price" placeholder="0.00"
+                                                                                required="" step="0.01" type="number" />
+                                                                </div>
+                                                                <p
+                                                                        class="mt-1.5 font-body-sm text-xs text-secondary italic">
+                                                                        Margen estimado: <span
+                                                                                class="font-data-mono text-success-700">RD$10,000.00
+                                                                                (20%)</span>
+                                                                </p>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                        <!-- Section 4: Inventario -->
+                                        <div class="space-y-4">
+                                                <h3
+                                                        class="font-title-sm text-title-sm text-on-surface flex items-center gap-2 border-b border-outline-variant/30 pb-2">
+                                                        <span
+                                                                class="material-symbols-outlined text-primary text-xl">inventory_2</span>
+                                                        Inventario
+                                                </h3>
+                                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                                        <!-- Stock inicial -->
+                                                        <div>
+                                                                <label class="block font-body-sm text-body-sm font-medium text-on-surface-variant mb-1"
+                                                                        for="initial_stock">
+                                                                        Stock inicial<span
+                                                                                class="text-error ml-1">*</span>
+                                                                </label>
+                                                                <input class="w-full px-4 py-2.5 border border-outline-variant rounded-lg bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-data-mono text-body-md"
+                                                                        id="initial_stock" min="0" name="initial_stock"
+                                                                        placeholder="0" required="" type="number" />
+                                                        </div>
+                                                        <!-- Stock mínimo -->
+                                                        <div>
+                                                                <label class="block font-body-sm text-body-sm font-medium text-on-surface-variant mb-1"
+                                                                        for="min_stock">
+                                                                        Stock mínimo<span
+                                                                                class="text-error ml-1">*</span>
+                                                                </label>
+                                                                <input class="w-full px-4 py-2.5 border border-outline-variant rounded-lg bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-data-mono text-body-md"
+                                                                        id="min_stock" min="0" name="min_stock"
+                                                                        placeholder="0" required="" type="number" />
+                                                        </div>
+                                                        <!-- Ubicación / Bodega -->
+                                                        <div>
+                                                                <label class="block font-body-sm text-body-sm font-medium text-on-surface-variant mb-1"
+                                                                        for="location">
+                                                                        Ubicación / Bodega
+                                                                </label>
+                                                                <div class="relative">
+                                                                        <select class="w-full pl-4 pr-10 py-2.5 border border-outline-variant rounded-lg bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md appearance-none cursor-pointer text-on-surface"
+                                                                                id="location" name="location">
+                                                                                <option selected=""
+                                                                                        value="almacen_principal">
+                                                                                        Almacén principal</option>
+                                                                                <option value="bodega_2">Bodega 2
+                                                                                </option>
+                                                                                <option value="tienda">Tienda</option>
+                                                                                <option value="otra">Otra</option>
+                                                                        </select>
+                                                                        <span
+                                                                                class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-secondary">expand_more</span>
+                                                                </div>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                        <!-- Section 5: Estado -->
+                                        <div class="space-y-4">
+                                                <h3
+                                                        class="font-title-sm text-title-sm text-on-surface flex items-center gap-2 border-b border-outline-variant/30 pb-2">
+                                                        <span
+                                                                class="material-symbols-outlined text-primary text-xl">toggle_on</span>
+                                                        Estado
+                                                </h3>
+                                                <div class="w-full md:w-1/3">
+                                                        <label class="block font-body-sm text-body-sm font-medium text-on-surface-variant mb-1"
+                                                                for="status">
+                                                                Estado
+                                                        </label>
+                                                        <div class="relative">
+                                                                <select class="w-full pl-4 pr-10 py-2.5 border border-outline-variant rounded-lg bg-surface focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all font-body-md text-body-md appearance-none cursor-pointer text-on-surface"
+                                                                        id="status" name="status">
+                                                                        <option selected="" value="disponible">
+                                                                                Disponible</option>
+                                                                        <option value="inactivo">Inactivo</option>
+                                                                </select>
+                                                                <span
+                                                                        class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-secondary">expand_more</span>
+                                                        </div>
+                                                </div>
+                                        </div>
+                                        <!-- Section 6: Imagen del producto -->
+                                        <div class="space-y-4">
+                                                <h3
+                                                        class="font-title-sm text-title-sm text-on-surface flex items-center gap-2 border-b border-outline-variant/30 pb-2">
+                                                        <span
+                                                                class="material-symbols-outlined text-primary text-xl">image</span>
+                                                        Imagen del producto
+                                                </h3>
+                                                <div
+                                                        class="border-2 border-dashed border-outline-variant/60 rounded-xl p-8 text-center hover:bg-surface-container-low transition-colors cursor-pointer group bg-surface">
+                                                        <div
+                                                                class="w-16 h-16 mx-auto bg-secondary-container/30 rounded-full flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
+                                                                <span
+                                                                        class="material-symbols-outlined text-3xl text-primary">cloud_upload</span>
+                                                        </div>
+                                                        <p
+                                                                class="font-body-md text-body-md font-medium text-on-surface mb-1">
+                                                                Arrastra una imagen aquí o haz clic para seleccionar.
+                                                        </p>
+                                                        <p class="font-body-sm text-body-sm text-secondary">
+                                                                Formatos permitidos: JPG, PNG, WEBP (Max. 5MB)
+                                                        </p>
+                                                        <!-- Hidden File Input -->
+                                                        <input accept="image/jpeg, image/png, image/webp"
+                                                                aria-label="Upload product image" class="hidden"
+                                                                type="file" />
+                                                </div>
+                                        </div>
+                                </form>
+                        </div>
+                        <!-- Modal Footer (Sticky Actions) -->
+                        <div class="p-6 border-t border-outline-variant/60 bg-surface flex justify-end gap-4 mt-auto">
+                                <button class="px-6 py-2.5 rounded-lg border border-outline-variant text-secondary font-body-md font-medium hover:bg-surface-container transition-colors focus:ring-2 focus:ring-outline-variant/50 focus:outline-none"
+                                        type="button">
+                                        Cancelar
+                                </button>
+                                <!-- Guardar button initially disabled to show styling as requested -->
+                                <button class="px-6 py-2.5 rounded-lg bg-surface-dim text-outline font-body-md font-medium cursor-not-allowed flex items-center gap-2 border border-transparent"
+                                        disabled="" type="submit">
+                                        <span class="material-symbols-outlined text-[20px]">save</span>
+                                        Guardar artículo
+                                </button>
+                        </div>
+                </div>
+        </div>
+</body>
+
+</html>

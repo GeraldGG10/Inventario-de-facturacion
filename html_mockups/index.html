@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-background dark:bg-inverse-surface" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>StockPro Manager - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#ffede6",
+                        "surface-variant": "#e0e3e5",
+                        "surface": "#f7f9fb",
+                        "on-error": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "secondary": "#505f76",
+                        "tertiary-fixed": "#ffdbcd",
+                        "on-primary-fixed": "#00174b",
+                        "on-tertiary-fixed": "#360f00",
+                        "tertiary-container": "#bc4800",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#54647a",
+                        "inverse-on-surface": "#eff1f3",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#0b1c30",
+                        "tertiary": "#943700",
+                        "surface-container-high": "#e6e8ea",
+                        "inverse-primary": "#b4c5ff",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#e0e3e5",
+                        "primary-container": "#2563eb",
+                        "on-surface": "#191c1e",
+                        "surface-container-low": "#f2f4f6",
+                        "primary-fixed": "#dbe1ff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "inverse-surface": "#2d3133",
+                        "on-primary-container": "#eeefff",
+                        "on-surface-variant": "#434655",
+                        "primary": "#004ac6",
+                        "surface-dim": "#d8dadc",
+                        "outline": "#737686",
+                        "surface-container": "#eceef0",
+                        "surface-tint": "#0053db",
+                        "background": "#f7f9fb",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-background": "#191c1e",
+                        "outline-variant": "#c3c6d7",
+                        "secondary-container": "#d0e1fb",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#003ea8",
+                        "surface-bright": "#f7f9fb",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-tertiary-fixed-variant": "#7d2d00"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "header-height": "64px",
+                        "stack-sm": "8px",
+                        "sidebar-width": "260px",
+                        "container-max": "1440px",
+                        "stack-lg": "24px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "title-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "data-mono": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                        "title-sm": ["18px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-body-md text-on-background dark:text-inverse-on-surface antialiased flex h-full">
+<!-- NavigationDrawer -->
+<aside class="bg-surface-container-lowest dark:bg-inverse-surface w-sidebar-width h-screen fixed left-0 top-0 border-r border-outline-variant dark:border-outline z-50 flex flex-col transition-all duration-300 md:translate-x-0 -translate-x-full" id="sidebar">
+<div class="px-gutter h-header-height flex items-center shrink-0 border-b border-outline-variant dark:border-outline/30">
+<h1 class="font-display-lg text-display-lg font-bold text-primary dark:text-primary-fixed truncate">StockPro Manager</h1>
+<button class="md:hidden ml-auto text-on-surface-variant p-2 rounded-lg hover:bg-surface-container-high transition-colors" onclick="toggleSidebar()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<nav class="flex flex-col gap-stack-sm py-gutter px-4 flex-1 overflow-y-auto">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-primary dark:text-primary-fixed font-bold border-r-4 border-primary dark:border-primary-fixed bg-secondary-container/30 cursor-pointer active:scale-95 duration-150 group transition-all" href="#">
+<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-secondary dark:text-secondary-fixed-dim hover:bg-surface-container-high dark:hover:bg-on-secondary-fixed-variant transition-colors cursor-pointer active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary dark:group-hover:text-primary-fixed transition-colors">inventory_2</span>
+<span>Inventario</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-secondary dark:text-secondary-fixed-dim hover:bg-surface-container-high dark:hover:bg-on-secondary-fixed-variant transition-colors cursor-pointer active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary dark:group-hover:text-primary-fixed transition-colors">receipt_long</span>
+<span>Facturación</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-secondary dark:text-secondary-fixed-dim hover:bg-surface-container-high dark:hover:bg-on-secondary-fixed-variant transition-colors cursor-pointer active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary dark:group-hover:text-primary-fixed transition-colors">group</span>
+<span>Clientes</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-secondary dark:text-secondary-fixed-dim hover:bg-surface-container-high dark:hover:bg-on-secondary-fixed-variant transition-colors cursor-pointer active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary dark:group-hover:text-primary-fixed transition-colors">local_shipping</span>
+<span>Proveedores</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-secondary dark:text-secondary-fixed-dim hover:bg-surface-container-high dark:hover:bg-on-secondary-fixed-variant transition-colors cursor-pointer active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary dark:group-hover:text-primary-fixed transition-colors">analytics</span>
+<span>Reportes</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-secondary dark:text-secondary-fixed-dim hover:bg-surface-container-high dark:hover:bg-on-secondary-fixed-variant transition-colors cursor-pointer active:scale-95 duration-150 group mt-auto" href="#">
+<span class="material-symbols-outlined group-hover:text-primary dark:group-hover:text-primary-fixed transition-colors">settings</span>
+<span>Configuración</span>
+</a>
+</nav>
+</aside>
+<!-- Overlay for mobile sidebar -->
+<div class="fixed inset-0 bg-surface-container-lowest/80 dark:bg-inverse-surface/80 backdrop-blur-sm z-40 hidden md:hidden transition-opacity" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col md:ml-[260px] min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-background h-header-height sticky top-0 z-30 shadow-sm border-b border-outline-variant dark:border-outline flex justify-between items-center px-gutter w-full transition-all duration-200 ease-in-out">
+<div class="flex items-center gap-4">
+<button class="md:hidden p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors" onclick="toggleSidebar()">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h2 class="font-title-sm text-title-sm font-semibold text-on-surface dark:text-inverse-on-surface">Panel de Control</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group cursor-pointer">
+<span class="material-symbols-outlined text-secondary hover:bg-surface-container dark:hover:bg-surface-container-highest p-2 rounded-full transition-colors">notifications</span>
+<span class="absolute top-1 right-1 w-2.5 h-2.5 bg-error rounded-full border-2 border-surface dark:border-background"></span>
+</div>
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-primary font-bold cursor-pointer hover:bg-secondary-fixed-dim transition-colors border border-outline-variant">
+                    UP
+                </div>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 p-gutter max-w-container-max mx-auto w-full overflow-y-auto bg-background dark:bg-inverse-surface">
+<!-- Bento Grid Header / Summary Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-stack-lg mb-stack-lg">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant dark:border-outline/30 rounded-xl p-stack-lg shadow-[0_1px_3px_0_rgba(0,0,0,0.1)] flex flex-col justify-between hover:shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] transition-shadow">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-label-caps text-secondary dark:text-secondary-fixed-dim uppercase tracking-wider">Ventas del Día</span>
+<div class="p-2 bg-primary-container/20 rounded-lg text-primary dark:text-primary-fixed">
+<span class="material-symbols-outlined text-[20px]">point_of_sale</span>
+</div>
+</div>
+<div>
+<div class="font-display-lg text-display-lg text-on-surface dark:text-inverse-on-surface font-bold tracking-tight mb-1">$4,250.00</div>
+<div class="flex items-center text-sm">
+<span class="text-[#008a00] dark:text-[#a4f4a4] font-medium flex items-center bg-[#008a00]/10 px-1.5 py-0.5 rounded-full mr-2">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +12.5%
+                            </span>
+<span class="text-on-surface-variant text-xs">vs ayer</span>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant dark:border-outline/30 rounded-xl p-stack-lg shadow-[0_1px_3px_0_rgba(0,0,0,0.1)] flex flex-col justify-between hover:shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] transition-shadow">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-label-caps text-secondary dark:text-secondary-fixed-dim uppercase tracking-wider">Ventas Semanales</span>
+<div class="p-2 bg-secondary-container/30 rounded-lg text-primary dark:text-primary-fixed">
+<span class="material-symbols-outlined text-[20px]">calendar_today</span>
+</div>
+</div>
+<div>
+<div class="font-display-lg text-display-lg text-on-surface dark:text-inverse-on-surface font-bold tracking-tight mb-1">$28,940.00</div>
+<div class="flex items-center text-sm">
+<span class="text-[#008a00] dark:text-[#a4f4a4] font-medium flex items-center bg-[#008a00]/10 px-1.5 py-0.5 rounded-full mr-2">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +5.2%
+                            </span>
+<span class="text-on-surface-variant text-xs">vs sem. anterior</span>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant dark:border-outline/30 rounded-xl p-stack-lg shadow-[0_1px_3px_0_rgba(0,0,0,0.1)] flex flex-col justify-between hover:shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] transition-shadow">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-label-caps text-secondary dark:text-secondary-fixed-dim uppercase tracking-wider">Ganancias Neta (Mes)</span>
+<div class="p-2 bg-tertiary-container/10 rounded-lg text-tertiary">
+<span class="material-symbols-outlined text-[20px]">attach_money</span>
+</div>
+</div>
+<div>
+<div class="font-display-lg text-display-lg text-on-surface dark:text-inverse-on-surface font-bold tracking-tight mb-1">$15,420.00</div>
+<div class="flex items-center text-sm">
+<span class="text-error dark:text-error-container font-medium flex items-center bg-error-container/30 px-1.5 py-0.5 rounded-full mr-2">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_down</span> -2.1%
+                            </span>
+<span class="text-on-surface-variant text-xs">vs mes anterior</span>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant dark:border-outline/30 rounded-xl p-stack-lg shadow-[0_1px_3px_0_rgba(0,0,0,0.1)] flex flex-col justify-between hover:shadow-[0_4px_6px_-1px_rgba(0,0,0,0.1)] transition-shadow">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-label-caps text-secondary dark:text-secondary-fixed-dim uppercase tracking-wider">Alertas Stock</span>
+<div class="p-2 bg-error-container/30 rounded-lg text-error">
+<span class="material-symbols-outlined text-[20px]">warning</span>
+</div>
+</div>
+<div>
+<div class="font-display-lg text-display-lg text-on-surface dark:text-inverse-on-surface font-bold tracking-tight mb-1">12</div>
+<div class="flex items-center text-sm">
+<span class="text-error font-medium">Productos críticos</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Layout Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-stack-lg mb-stack-lg">
+<!-- Chart Section (Spans 2 columns) -->
+<div class="lg:col-span-2 bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant dark:border-outline/30 rounded-xl p-stack-lg shadow-[0_1px_3px_0_rgba(0,0,0,0.1)] flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-title-sm text-title-sm text-on-surface font-semibold">Rendimiento de Ventas y Ganancias</h3>
+<div class="flex gap-2">
+<button class="px-3 py-1 text-xs font-medium rounded-md bg-primary text-on-primary shadow-sm hover:bg-primary-container hover:text-on-primary-container transition-colors">Hoy</button>
+<button class="px-3 py-1 text-xs font-medium rounded-md bg-surface border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors">Semana</button>
+<button class="px-3 py-1 text-xs font-medium rounded-md bg-surface border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors">Mes</button>
+</div>
+</div>
+<div class="relative flex-1 w-full h-[300px]">
+<canvas id="salesChart"></canvas>
+</div>
+</div>
+<!-- Top Products / Alertas -->
+<div class="flex flex-col gap-stack-lg">
+<!-- Top Products -->
+<div class="bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant dark:border-outline/30 rounded-xl p-stack-lg shadow-[0_1px_3px_0_rgba(0,0,0,0.1)] flex-1 overflow-hidden flex flex-col">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-title-sm text-title-sm text-on-surface font-semibold">Top Productos (Mes)</h3>
+<button class="text-primary hover:text-primary-container text-sm font-medium">Ver todos</button>
+</div>
+<div class="overflow-x-auto flex-1">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant">
+<th class="pb-2 font-label-caps text-label-caps text-secondary font-medium">Producto</th>
+<th class="pb-2 font-label-caps text-label-caps text-secondary font-medium text-right">Cant.</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm text-on-surface">
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-lowest transition-colors">
+<td class="py-3">
+<div class="font-medium">Laptop Pro X15</div>
+<div class="text-xs text-on-surface-variant">Electrónica</div>
+</td>
+<td class="py-3 text-right font-data-mono text-data-mono">145</td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-lowest transition-colors">
+<td class="py-3">
+<div class="font-medium">Monitor UltraWide</div>
+<div class="text-xs text-on-surface-variant">Periféricos</div>
+</td>
+<td class="py-3 text-right font-data-mono text-data-mono">98</td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface-container-lowest transition-colors">
+<td class="py-3">
+<div class="font-medium">Teclado Mecánico</div>
+<div class="text-xs text-on-surface-variant">Accesorios</div>
+</td>
+<td class="py-3 text-right font-data-mono text-data-mono">85</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="py-3">
+<div class="font-medium">Mouse Inalámbrico</div>
+<div class="text-xs text-on-surface-variant">Accesorios</div>
+</td>
+<td class="py-3 text-right font-data-mono text-data-mono">72</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Alertas y Últimas Ventas -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-stack-lg">
+<!-- Alertas de Inventario -->
+<div class="lg:col-span-1 bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant dark:border-outline/30 rounded-xl p-stack-lg shadow-[0_1px_3px_0_rgba(0,0,0,0.1)] flex flex-col">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-error">warning</span>
+<h3 class="font-title-sm text-title-sm text-on-surface font-semibold">Alertas de Inventario</h3>
+</div>
+<div class="flex flex-col gap-3">
+<div class="p-3 border border-error/20 bg-error/5 rounded-lg flex items-start gap-3">
+<div class="mt-0.5">
+<span class="w-2 h-2 rounded-full bg-error inline-block animate-pulse"></span>
+</div>
+<div class="flex-1">
+<div class="font-medium text-sm text-on-surface">Cartuchos Tinta Negra HP</div>
+<div class="text-xs text-error font-medium mt-1">Agotado (0 ud. / Min: 10)</div>
+</div>
+</div>
+<div class="p-3 border border-tertiary-container/20 bg-tertiary-container/5 rounded-lg flex items-start gap-3">
+<div class="mt-0.5">
+<span class="w-2 h-2 rounded-full bg-tertiary-container inline-block"></span>
+</div>
+<div class="flex-1">
+<div class="font-medium text-sm text-on-surface">Papel Bond A4 Resma</div>
+<div class="text-xs text-tertiary-container font-medium mt-1">Stock bajo (15 ud. / Min: 20)</div>
+</div>
+</div>
+<div class="p-3 border border-tertiary-container/20 bg-tertiary-container/5 rounded-lg flex items-start gap-3">
+<div class="mt-0.5">
+<span class="w-2 h-2 rounded-full bg-tertiary-container inline-block"></span>
+</div>
+<div class="flex-1">
+<div class="font-medium text-sm text-on-surface">Cable HDMI 2m</div>
+<div class="text-xs text-tertiary-container font-medium mt-1">Stock bajo (5 ud. / Min: 15)</div>
+</div>
+</div>
+</div>
+<button class="mt-4 w-full py-2 bg-surface border border-outline-variant rounded-lg text-sm font-medium text-on-surface-variant hover:bg-surface-container transition-colors">Revisar Reabastecimiento</button>
+</div>
+<!-- Últimas Ventas Table -->
+<div class="lg:col-span-2 bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant dark:border-outline/30 rounded-xl p-stack-lg shadow-[0_1px_3px_0_rgba(0,0,0,0.1)] flex flex-col overflow-hidden">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-title-sm text-title-sm text-on-surface font-semibold">Últimas Transacciones</h3>
+<button class="px-3 py-1.5 border border-outline-variant rounded-lg text-sm font-medium text-secondary hover:bg-surface-container transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">filter_list</span> Filtrar
+                        </button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse min-w-[600px]">
+<thead>
+<tr class="border-b border-outline-variant bg-surface">
+<th class="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium">Factura</th>
+<th class="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium">Cliente</th>
+<th class="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium">Fecha</th>
+<th class="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium text-right">Total</th>
+<th class="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium text-center">Estado</th>
+<th class="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium text-center">Acción</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm text-on-surface">
+<tr class="border-b border-outline-variant/30 hover:bg-surface transition-colors cursor-pointer group">
+<td class="py-3 px-4 font-data-mono text-data-mono text-primary">#FAC-2023-0891</td>
+<td class="py-3 px-4 font-medium">Acme Corp.</td>
+<td class="py-3 px-4 text-on-surface-variant">Hoy, 14:30</td>
+<td class="py-3 px-4 text-right font-data-mono text-data-mono font-medium">$1,250.00</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#008a00]/10 text-[#008a00]">Pagado</span>
+</td>
+<td class="py-3 px-4 text-center text-on-surface-variant">
+<span class="material-symbols-outlined hover:text-primary transition-colors text-[20px]">more_vert</span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface transition-colors cursor-pointer group">
+<td class="py-3 px-4 font-data-mono text-data-mono text-primary">#FAC-2023-0890</td>
+<td class="py-3 px-4 font-medium">Tech Solutions SAC</td>
+<td class="py-3 px-4 text-on-surface-variant">Hoy, 11:15</td>
+<td class="py-3 px-4 text-right font-data-mono text-data-mono font-medium">$340.50</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-tertiary-container/10 text-tertiary-container">Pendiente</span>
+</td>
+<td class="py-3 px-4 text-center text-on-surface-variant">
+<span class="material-symbols-outlined hover:text-primary transition-colors text-[20px]">more_vert</span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface transition-colors cursor-pointer group">
+<td class="py-3 px-4 font-data-mono text-data-mono text-primary">#FAC-2023-0889</td>
+<td class="py-3 px-4 font-medium">Global Imports</td>
+<td class="py-3 px-4 text-on-surface-variant">Ayer, 16:45</td>
+<td class="py-3 px-4 text-right font-data-mono text-data-mono font-medium">$5,100.00</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#008a00]/10 text-[#008a00]">Pagado</span>
+</td>
+<td class="py-3 px-4 text-center text-on-surface-variant">
+<span class="material-symbols-outlined hover:text-primary transition-colors text-[20px]">more_vert</span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant/30 hover:bg-surface transition-colors cursor-pointer group">
+<td class="py-3 px-4 font-data-mono text-data-mono text-primary">#FAC-2023-0888</td>
+<td class="py-3 px-4 font-medium">Juan Pérez</td>
+<td class="py-3 px-4 text-on-surface-variant">Ayer, 09:20</td>
+<td class="py-3 px-4 text-right font-data-mono text-data-mono font-medium">$85.00</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#008a00]/10 text-[#008a00]">Pagado</span>
+</td>
+<td class="py-3 px-4 text-center text-on-surface-variant">
+<span class="material-symbols-outlined hover:text-primary transition-colors text-[20px]">more_vert</span>
+</td>
+</tr>
+<tr class="hover:bg-surface transition-colors cursor-pointer group">
+<td class="py-3 px-4 font-data-mono text-data-mono text-primary">#FAC-2023-0887</td>
+<td class="py-3 px-4 font-medium">Design Studio SA</td>
+<td class="py-3 px-4 text-on-surface-variant">22/10/2023</td>
+<td class="py-3 px-4 text-right font-data-mono text-data-mono font-medium">$890.00</td>
+<td class="py-3 px-4 text-center">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-error-container/20 text-error-container">Vencido</span>
+</td>
+<td class="py-3 px-4 text-center text-on-surface-variant">
+<span class="material-symbols-outlined hover:text-primary transition-colors text-[20px]">more_vert</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-4 text-center">
+<button class="text-primary hover:text-primary-container text-sm font-medium">Ver Historial Completo</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<script>
+        // Sidebar Toggle Logic for Mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.add('opacity-100'), 10); // small delay for transition
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.remove('opacity-100');
+                setTimeout(() => overlay.classList.add('hidden'), 300); // wait for transition
+            }
+        }
+
+        // Chart.js Initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            
+            // Tailwind colors matching
+            const primaryColor = '#004ac6'; // primary
+            const secondaryColor = '#b7c8e1'; // secondary-fixed-dim
+            
+            const data = {
+                labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+                datasets: [
+                    {
+                        label: 'Ventas',
+                        data: [1200, 1900, 1500, 2200, 1800, 2800, 2400],
+                        borderColor: primaryColor,
+                        backgroundColor: 'rgba(0, 74, 198, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: primaryColor,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: 'Ganancias',
+                        data: [400, 600, 500, 800, 650, 950, 850],
+                        borderColor: secondaryColor,
+                        backgroundColor: 'transparent',
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        tension: 0.4,
+                        pointBackgroundColor: secondaryColor,
+                        pointBorderColor: '#ffffff',
+                        pointRadius: 3
+                    }
+                ]
+            };
+
+            const config = {
+                type: 'line',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            align: 'end',
+                            labels: {
+                                usePointStyle: true,
+                                boxWidth: 8,
+                                font: {
+                                    family: 'Inter',
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(25, 28, 30, 0.9)',
+                            titleFont: { family: 'Inter', size: 13 },
+                            bodyFont: { family: 'Inter', size: 13 },
+                            padding: 10,
+                            cornerRadius: 4,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('es-US', { style: 'currency', currency: 'USD' }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                font: { family: 'Inter', size: 12 },
+                                color: '#737686'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: '#e0e3e5',
+                                drawBorder: false,
+                                borderDash: [5, 5]
+                            },
+                            ticks: {
+                                font: { family: 'Inter', size: 12 },
+                                color: '#737686',
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            new Chart(ctx, config);
+        });
+    </script>
+</body></html>

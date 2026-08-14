@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Gestión de Proveedores - StockPro Manager</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-variant": "#e0e3e5",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-dim": "#d8dadc",
+                      "outline-variant": "#c3c6d7",
+                      "on-primary-container": "#eeefff",
+                      "secondary-fixed": "#d3e4fe",
+                      "on-secondary-fixed": "#0b1c30",
+                      "error-container": "#ffdad6",
+                      "on-error-container": "#93000a",
+                      "surface-bright": "#f7f9fb",
+                      "tertiary-fixed-dim": "#ffb596",
+                      "secondary-fixed-dim": "#b7c8e1",
+                      "on-primary": "#ffffff",
+                      "tertiary": "#943700",
+                      "surface-container-low": "#f2f4f6",
+                      "secondary-container": "#d0e1fb",
+                      "secondary": "#505f76",
+                      "on-tertiary-fixed-variant": "#7d2d00",
+                      "background": "#f7f9fb",
+                      "tertiary-container": "#bc4800",
+                      "on-secondary-container": "#54647a",
+                      "outline": "#737686",
+                      "on-secondary": "#ffffff",
+                      "surface-container-highest": "#e0e3e5",
+                      "primary-container": "#2563eb",
+                      "error": "#ba1a1a",
+                      "surface": "#f7f9fb",
+                      "on-surface": "#191c1e",
+                      "on-error": "#ffffff",
+                      "on-surface-variant": "#434655",
+                      "on-primary-fixed": "#00174b",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "inverse-primary": "#b4c5ff",
+                      "surface-container": "#eceef0",
+                      "surface-tint": "#0053db",
+                      "inverse-on-surface": "#eff1f3",
+                      "on-background": "#191c1e",
+                      "on-tertiary-fixed": "#360f00",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "tertiary-fixed": "#ffdbcd",
+                      "on-tertiary-container": "#ffede6",
+                      "on-tertiary": "#ffffff",
+                      "primary-fixed": "#dbe1ff",
+                      "surface-container-high": "#e6e8ea",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "primary": "#004ac6",
+                      "inverse-surface": "#2d3133"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "header-height": "64px",
+                      "container-max": "1440px",
+                      "sidebar-width": "260px",
+                      "gutter": "24px",
+                      "stack-lg": "24px",
+                      "stack-md": "16px",
+                      "stack-sm": "8px"
+              },
+              "fontFamily": {
+                      "data-mono": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "headline-md": ["Inter"],
+                      "label-caps": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "title-sm": ["Inter"]
+              },
+              "fontSize": {
+                      "data-mono": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "title-sm": ["18px", {"lineHeight": "28px", "fontWeight": "600"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Table Scrollbar styling for modern look */
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .table-container::-webkit-scrollbar-track {
+            background: theme('colors.surface-container-lowest');
+            border-radius: theme('borderRadius.DEFAULT');
+        }
+        .table-container::-webkit-scrollbar-thumb {
+            background-color: theme('colors.outline-variant');
+            border-radius: theme('borderRadius.DEFAULT');
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md antialiased overflow-x-hidden min-h-screen">
+<!-- NavigationDrawer -->
+<aside class="w-sidebar-width h-screen fixed left-0 top-0 border-r border-outline-variant bg-surface-container-lowest flex flex-col gap-stack-sm py-gutter z-50 transition-transform duration-300 -translate-x-full md:translate-x-0" id="sidebar">
+<!-- Brand -->
+<div class="px-gutter mb-6 flex items-center justify-between">
+<h1 class="font-display-lg text-display-lg font-bold text-primary">StockPro Manager</h1>
+<button class="md:hidden text-on-surface p-2 rounded-full hover:bg-surface-container" onclick="document.getElementById('sidebar').classList.add('-translate-x-full')">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 px-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-secondary hover:bg-surface-container-high transition-colors cursor-pointer active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="dashboard">dashboard</span>
+<span class="font-body-md text-body-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-secondary hover:bg-surface-container-high transition-colors cursor-pointer active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="inventory_2">inventory_2</span>
+<span class="font-body-md text-body-md">Inventario</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-secondary hover:bg-surface-container-high transition-colors cursor-pointer active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="receipt_long">receipt_long</span>
+<span class="font-body-md text-body-md">Facturación</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-secondary hover:bg-surface-container-high transition-colors cursor-pointer active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="group">group</span>
+<span class="font-body-md text-body-md">Clientes</span>
+</a>
+<!-- ACTIVE TAB -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-primary font-bold border-r-4 border-primary bg-secondary-container/30 transition-colors cursor-pointer active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined icon-fill" data-icon="local_shipping" data-weight="fill">local_shipping</span>
+<span class="font-body-md text-body-md">Proveedores</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-secondary hover:bg-surface-container-high transition-colors cursor-pointer active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="analytics">analytics</span>
+<span class="font-body-md text-body-md">Reportes</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-secondary hover:bg-surface-container-high transition-colors cursor-pointer active:scale-95 duration-150 group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors" data-icon="settings">settings</span>
+<span class="font-body-md text-body-md">Configuración</span>
+</a>
+</nav>
+<!-- User Profile snippet in sidebar for mobile -->
+<div class="px-gutter mt-auto pt-6 border-t border-outline-variant md:hidden">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold">
+                    AD
+                </div>
+<div>
+<p class="font-title-sm text-title-sm font-semibold">Admin User</p>
+<p class="font-body-sm text-body-sm text-secondary">admin@stockpro.com</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="md:ml-sidebar-width min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="h-header-height sticky top-0 z-40 bg-surface border-b border-outline-variant shadow-sm flex justify-between items-center px-gutter w-full transition-all duration-200 ease-in-out">
+<div class="flex items-center gap-4">
+<button class="md:hidden text-on-surface p-2 -ml-2 rounded-full hover:bg-surface-container" onclick="document.getElementById('sidebar').classList.remove('-translate-x-full')">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h2 class="font-headline-md text-headline-md text-primary">Proveedores</h2>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm pointer-events-none" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent w-64 transition-all" placeholder="Buscar general..." type="text"/>
+</div>
+<button class="relative p-2 rounded-full text-on-surface hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold cursor-pointer hover:opacity-90 transition-opacity ml-2">
+<img class="w-full h-full object-cover rounded-full" data-alt="A professional corporate headshot of a young business woman with dark hair, wearing a navy blazer, smiling slightly against a soft, bright minimalist office background with cool white lighting. The image style is clean, modern, and suitable for a business dashboard profile picture." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCH31BZX9QOKAUKCrtkD7U25BQPHuENi0zbPoXfFlyYmLCdFnmxcoFOhfDdZUAcbut64QV5hOPl9hxAVUfatGF8JXz1QyOM2ZBb95Jcl4wf1WLuK0qHUH1JkOrA0ixqF2jdvPtnp7cRb96H8sAJBKgj2RBLINgqmblcQ-CGcNkPTuZWuLUMNQhR2X3YP-mMS2zECyG01xGf8LeBvUu-_dd6ix6w9UFiEBN_G6xVrtN4CxkBCnFCwlM9og"/>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 p-gutter max-w-container-max mx-auto w-full flex flex-col gap-stack-lg">
+<!-- Action Bar & Stats -->
+<div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+<!-- Quick Stats -->
+<div class="flex gap-4 flex-wrap">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-4 shadow-sm min-w-[200px]">
+<div class="p-3 bg-secondary-container/50 rounded-lg text-primary">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Total Proveedores</p>
+<p class="font-display-lg text-display-lg text-on-surface">142</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-4 shadow-sm min-w-[200px]">
+<div class="p-3 bg-green-100 dark:bg-green-900/20 rounded-lg text-green-700 dark:text-green-400">
+<span class="material-symbols-outlined" data-icon="check_circle">check_circle</span>
+</div>
+<div>
+<p class="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Proveedores Activos</p>
+<div class="flex items-baseline gap-2">
+<p class="font-display-lg text-display-lg text-on-surface">128</p>
+<span class="text-sm font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">+3 este mes</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Primary Action -->
+<button class="bg-primary hover:bg-primary-fixed-variant text-on-primary px-6 py-3 rounded-lg font-body-md text-body-md font-medium shadow-sm transition-all flex items-center gap-2 w-full lg:w-auto justify-center active:scale-95">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                    Nuevo Proveedor
+                </button>
+</div>
+<!-- Data Table Section -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm flex flex-col flex-1 overflow-hidden">
+<!-- Table Toolbar -->
+<div class="p-4 border-b border-outline-variant flex flex-col sm:flex-row justify-between items-center gap-4 bg-surface-bright">
+<div class="relative w-full sm:w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-2.5 bg-surface border border-outline-variant rounded-lg font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" placeholder="Buscar por nombre, RNC o contacto..." type="text"/>
+</div>
+<div class="flex items-center gap-2 w-full sm:w-auto">
+<button class="px-4 py-2 border border-outline-variant rounded-lg text-on-surface font-body-sm text-body-sm flex items-center gap-2 hover:bg-surface-container transition-colors bg-surface-container-lowest flex-1 sm:flex-none justify-center">
+<span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
+                            Filtros
+                        </button>
+<button class="px-4 py-2 border border-outline-variant rounded-lg text-on-surface font-body-sm text-body-sm flex items-center gap-2 hover:bg-surface-container transition-colors bg-surface-container-lowest flex-1 sm:flex-none justify-center">
+<span class="material-symbols-outlined text-sm" data-icon="download">download</span>
+                            Exportar
+                        </button>
+</div>
+</div>
+<!-- Table Container -->
+<div class="overflow-x-auto table-container flex-1">
+<table class="w-full text-left border-collapse min-w-[800px]">
+<thead class="bg-surface-container-lowest sticky top-0 z-10 shadow-sm">
+<tr>
+<th class="py-3 px-6 font-label-caps text-label-caps text-secondary uppercase border-b border-outline-variant whitespace-nowrap">Nombre / Empresa</th>
+<th class="py-3 px-6 font-label-caps text-label-caps text-secondary uppercase border-b border-outline-variant whitespace-nowrap">RNC / Documento</th>
+<th class="py-3 px-6 font-label-caps text-label-caps text-secondary uppercase border-b border-outline-variant whitespace-nowrap">Contacto Principal</th>
+<th class="py-3 px-6 font-label-caps text-label-caps text-secondary uppercase border-b border-outline-variant whitespace-nowrap">Teléfono</th>
+<th class="py-3 px-6 font-label-caps text-label-caps text-secondary uppercase border-b border-outline-variant whitespace-nowrap text-center">Estado</th>
+<th class="py-3 px-6 font-label-caps text-label-caps text-secondary uppercase border-b border-outline-variant whitespace-nowrap text-right">Acciones</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant font-body-sm text-body-sm">
+<!-- Row 1 -->
+<tr class="hover:bg-slate-50 transition-colors group cursor-pointer">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container flex items-center justify-center text-primary font-bold text-xs">
+                                            DL
+                                        </div>
+<div>
+<p class="font-medium text-on-surface">Distribuidora Los Andes S.A.</p>
+<p class="text-xs text-secondary">Suministros de Oficina</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-6 font-data-mono text-data-mono text-on-surface-variant">101-45678-9</td>
+<td class="py-4 px-6">
+<p class="text-on-surface">Carlos Mendoza</p>
+<p class="text-xs text-secondary">Gerente de Ventas</p>
+</td>
+<td class="py-4 px-6 font-data-mono text-data-mono text-on-surface-variant">+1 (809) 555-0123</td>
+<td class="py-4 px-6 text-center">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                        Activo
+                                    </span>
+</td>
+<td class="py-4 px-6 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-secondary hover:text-primary hover:bg-secondary-container rounded-md transition-colors" title="Editar">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+<button class="p-1.5 text-secondary hover:text-error hover:bg-error-container rounded-md transition-colors" title="Eliminar">
+<span class="material-symbols-outlined text-sm" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-slate-50 transition-colors group cursor-pointer">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container flex items-center justify-center text-primary font-bold text-xs">
+                                            TP
+                                        </div>
+<div>
+<p class="font-medium text-on-surface">Tecnología y Partes EIRL</p>
+<p class="text-xs text-secondary">Equipos Informáticos</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-6 font-data-mono text-data-mono text-on-surface-variant">130-98765-2</td>
+<td class="py-4 px-6">
+<p class="text-on-surface">Ana Ramírez</p>
+<p class="text-xs text-secondary">Soporte Corporativo</p>
+</td>
+<td class="py-4 px-6 font-data-mono text-data-mono text-on-surface-variant">+1 (829) 555-4567</td>
+<td class="py-4 px-6 text-center">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                        Activo
+                                    </span>
+</td>
+<td class="py-4 px-6 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-secondary hover:text-primary hover:bg-secondary-container rounded-md transition-colors" title="Editar">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+<button class="p-1.5 text-secondary hover:text-error hover:bg-error-container rounded-md transition-colors" title="Eliminar">
+<span class="material-symbols-outlined text-sm" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-slate-50 transition-colors group cursor-pointer">
+<td class="py-4 px-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container flex items-center justify-center text-primary font-bold text-xs">
+                                            IM
+                                        </div>
+<div>
+<p class="font-medium text-on-surface">Importadora Mundial</p>
+<p class="text-xs text-secondary">Materiales de Construcción</p>
+</div>
+</div>
+</td>
+<td class="py-4 px-6 font-data-mono text-data-mono text-on-surface-variant">102-11223-4</td>
+<td class="py-4 px-6">
+<p class="text-on-surface">Roberto Gómez</p>
+<p class="text-xs text-secondary">Logística</p>
+</td>
+<td class="py-4 px-6 font-data-mono text-data-mono text-on-surface-variant">+1 (809) 555-7890</td>
+<td class="py-4 px-6 text-center">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
+                                        Inactivo
+                                    </span>
+</td>
+<td class="py-4 px-6 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1.5 text-secondary hover:text-primary hover:bg-secondary-container rounded-md transition-colors" title="Editar">
+<span class="material-symbols-outlined text-sm" data-icon="edit">edit</span>
+</button>
+<button class="p-1.5 text-secondary hover:text-error hover:bg-error-container rounded-md transition-colors" title="Eliminar">
+<span class="material-symbols-outlined text-sm" data-icon="delete">delete</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="p-4 border-t border-outline-variant flex items-center justify-between bg-surface-container-lowest">
+<p class="font-body-sm text-body-sm text-secondary">Mostrando 1 a 10 de 142 proveedores</p>
+<div class="flex items-center gap-1">
+<button class="p-1 text-secondary hover:bg-surface-container rounded disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-8 h-8 flex items-center justify-center rounded bg-primary-container text-on-primary-container font-medium text-sm">1</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container text-on-surface font-medium text-sm transition-colors">2</button>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container text-on-surface font-medium text-sm transition-colors">3</button>
+<span class="text-secondary px-1">...</span>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-container text-on-surface font-medium text-sm transition-colors">15</button>
+<button class="p-1 text-secondary hover:bg-surface-container rounded">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

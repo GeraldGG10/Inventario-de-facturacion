@@ -1,0 +1,634 @@
+el stack sugerido es node.js, TS, express, postgre y prisma y el front con react y typescript.
+
+
+
+
+Diseña una interfaz web completa, moderna, profesional y limpia para un **Sistema de Gestión de Inventario y Facturación**.
+
+El sistema será utilizado principalmente desde computadoras en un negocio, por administradores, cajeros y encargados de inventario. La interfaz debe priorizar la claridad, rapidez de uso y facilidad para gestionar grandes cantidades de información.
+
+## ESTILO GENERAL
+
+* Diseño moderno, profesional y minimalista.
+* Interfaz limpia y organizada.
+* Utilizar un sidebar lateral fijo para la navegación principal.
+* Usar tarjetas, tablas, gráficos, badges de estado, modales y formularios bien estructurados.
+* Mantener una jerarquía visual clara.
+* Evitar saturar las pantallas con demasiados elementos.
+* Usar espacios adecuados entre componentes.
+* Diseño responsive para computadora, tablet y móvil.
+* Utilizar iconos claros y consistentes.
+* Mantener el mismo sistema visual en todas las páginas.
+* Los colores deben utilizarse principalmente para comunicar estados:
+
+  * Verde: disponible / correcto.
+  * Amarillo o naranja: stock bajo / advertencia.
+  * Rojo: agotado / error.
+  * Azul: información / acciones principales.
+* Utilizar tipografía moderna y fácil de leer.
+
+# ESTRUCTURA PRINCIPAL
+
+El sistema debe tener un sidebar con las siguientes secciones:
+
+1. Dashboard
+2. Inventario
+3. Facturación
+4. Clientes
+5. Proveedores
+6. Reportes
+7. Configuración
+
+En la parte superior del sidebar mostrar el nombre y logo de la empresa.
+
+En la parte superior de cada página mostrar:
+
+* Título de la sección.
+* Descripción breve.
+* Breadcrumb cuando sea necesario.
+* Usuario actualmente conectado.
+* Notificaciones.
+* Menú de perfil.
+
+---
+
+# 1. DASHBOARD
+
+Crear un dashboard administrativo completo que permita conocer rápidamente el estado del negocio.
+
+### Tarjetas principales
+
+Mostrar:
+
+* Ventas del día.
+* Ventas de la semana.
+* Ventas del mes.
+* Ganancias.
+* Facturas realizadas.
+* Productos disponibles.
+* Productos con stock bajo.
+* Productos agotados.
+
+Cada tarjeta debe mostrar:
+
+* Icono.
+* Valor principal.
+* Descripción.
+* Comparación con el período anterior cuando corresponda.
+
+### Gráfica de ventas
+
+Crear una gráfica para visualizar la evolución de las ventas.
+
+Permitir cambiar el período:
+
+* Hoy.
+* Esta semana.
+* Este mes.
+* Este año.
+* Rango personalizado.
+
+La gráfica debe permitir visualizar:
+
+* Ventas.
+* Costos.
+* Ganancias.
+
+### Productos más vendidos
+
+Mostrar una tabla o ranking con:
+
+* Producto.
+* Categoría.
+* Unidades vendidas.
+* Total generado.
+
+### Alertas de inventario
+
+Crear una sección visible de alertas:
+
+* Productos agotados.
+* Productos próximos a agotarse.
+* Productos que ya cruzaron su stock mínimo.
+
+Cada alerta debe mostrar:
+
+* Producto.
+* Stock actual.
+* Stock mínimo.
+* Estado.
+* Acción para consultar el producto.
+
+### Últimas ventas
+
+Mostrar las ventas recientes con:
+
+* Número de factura.
+* Cliente.
+* Fecha y hora.
+* Total.
+* Método de pago.
+* Estado.
+
+---
+
+# 2. INVENTARIO
+
+Esta será una de las secciones principales del sistema.
+
+Crear una página de inventario profesional con una tabla completa de productos.
+
+### Tabla de productos
+
+Columnas:
+
+* Código.
+* Imagen opcional.
+* Nombre.
+* Categoría.
+* Proveedor.
+* Precio de costo.
+* Precio de venta.
+* Stock actual.
+* Stock mínimo.
+* Estado.
+* Acciones.
+
+Estados:
+
+* Disponible.
+* Stock bajo.
+* Agotado.
+* Inactivo.
+
+### Búsqueda y filtros
+
+Agregar:
+
+* Búsqueda rápida por nombre.
+* Código.
+* Código de barras.
+* Categoría.
+* Proveedor.
+* Rango de precio.
+* Estado del inventario.
+
+Agregar paginación para grandes cantidades de productos.
+
+### Acciones
+
+Cada producto debe permitir:
+
+* Ver detalles.
+* Editar.
+* Desactivar.
+* Ver movimientos.
+* Ajustar inventario.
+
+Agregar botón principal:
+
+**+ Nuevo artículo**
+
+### Formulario de artículo
+
+Campos:
+
+* Código.
+* Código de barras.
+* Nombre.
+* Descripción.
+* Categoría.
+* Proveedor.
+* Precio de costo.
+* Precio de venta.
+* Stock actual.
+* Stock mínimo.
+* Ubicación / bodega.
+* Estado.
+
+No utilizar eliminación física como acción principal. Utilizar desactivación para conservar el historial.
+
+---
+
+## Subsecciones de Inventario
+
+Crear navegación secundaria dentro del módulo:
+
+### Productos
+
+Catálogo completo de artículos.
+
+### Movimientos
+
+Mostrar:
+
+* Entradas.
+* Salidas.
+* Ajustes manuales.
+* Devoluciones.
+
+Cada movimiento debe mostrar:
+
+* Producto.
+* Tipo de movimiento.
+* Cantidad.
+* Usuario.
+* Fecha y hora.
+* Motivo.
+* Referencia relacionada.
+
+### Alertas
+
+Mostrar productos que necesitan reposición.
+
+Cada producto debe mostrar:
+
+* Stock actual.
+* Stock mínimo.
+* Cantidad sugerida para reposición.
+* Estado de la alerta.
+* Fecha en que se generó.
+* Si fue atendida o pendiente.
+
+Evitar generar repetidamente la misma alerta mientras permanezca sin atender.
+
+### Categorías
+
+Permitir administrar las categorías de productos.
+
+---
+
+# 3. FACTURACIÓN
+
+Crear una interfaz de facturación rápida y cómoda para un cajero.
+
+La pantalla de nueva venta debe estar optimizada para realizar una venta en pocos pasos.
+
+## Nueva venta
+
+### Información del cliente
+
+Permitir:
+
+* Buscar cliente existente.
+* Seleccionar cliente.
+* Crear nuevo cliente.
+
+### Selección de productos
+
+Permitir buscar productos por:
+
+* Nombre.
+* Código.
+* Código de barras.
+
+Mostrar:
+
+* Producto.
+* Stock disponible.
+* Precio.
+* Cantidad.
+
+La factura debe permitir agregar múltiples productos.
+
+### Detalle de factura
+
+Mostrar:
+
+* Producto.
+* Cantidad.
+* Precio unitario.
+* Subtotal.
+* Descuento opcional.
+* Eliminar producto.
+
+### Resumen
+
+Mostrar:
+
+* Subtotal.
+* Descuento.
+* ITBIS/impuestos cuando corresponda.
+* Total.
+
+### Método de pago
+
+Opciones:
+
+* Efectivo.
+* Tarjeta.
+* Transferencia.
+* Mixto.
+
+Agregar botón destacado:
+
+**Confirmar venta**
+
+Al confirmar la venta, conceptualmente debe actualizarse el inventario automáticamente.
+
+---
+
+## Historial de facturas
+
+Crear una tabla con:
+
+* Número de factura.
+* Cliente.
+* Fecha.
+* Hora.
+* Total.
+* Método de pago.
+* Usuario.
+* Estado.
+
+Filtros:
+
+* Fecha.
+* Cliente.
+* Número de factura.
+* Método de pago.
+* Estado.
+
+Acciones:
+
+* Ver factura.
+* Imprimir.
+* Descargar PDF.
+* Anular.
+
+Las facturas anuladas no deben eliminarse. Deben conservarse y mostrar claramente el estado **Anulada**.
+
+---
+
+## Devoluciones
+
+Permitir localizar una factura y realizar una devolución.
+
+Mostrar:
+
+* Factura original.
+* Cliente.
+* Productos.
+* Cantidad comprada.
+* Cantidad a devolver.
+* Motivo.
+
+La devolución debe reflejarse visualmente como un movimiento de inventario.
+
+---
+
+# 4. CLIENTES
+
+Crear una sección para administrar clientes.
+
+### Tabla
+
+Mostrar:
+
+* Nombre.
+* Documento.
+* Teléfono.
+* Correo.
+* Cantidad de compras.
+* Total comprado.
+* Última compra.
+* Estado.
+
+### Perfil del cliente
+
+Al seleccionar un cliente mostrar:
+
+* Información personal.
+* Resumen de compras.
+* Total gastado.
+* Número de compras.
+* Última compra.
+* Historial de facturas.
+
+### Acciones
+
+* Nuevo cliente.
+* Editar.
+* Ver perfil.
+* Ver historial.
+* Desactivar.
+
+---
+
+# 5. PROVEEDORES
+
+Crear un módulo para administrar proveedores y controlar entradas de mercancía.
+
+### Tabla de proveedores
+
+Mostrar:
+
+* Nombre.
+* RNC/documento.
+* Contacto.
+* Teléfono.
+* Correo.
+* Cantidad de productos suministrados.
+* Estado.
+
+### Perfil del proveedor
+
+Mostrar:
+
+* Información del proveedor.
+* Productos asociados.
+* Historial de entradas.
+* Total de mercancía adquirida.
+
+### Entradas de mercancía
+
+Crear una interfaz para registrar:
+
+* Proveedor.
+* Fecha.
+* Producto.
+* Cantidad.
+* Costo unitario.
+* Total.
+* Usuario responsable.
+* Observaciones.
+
+Al registrar una entrada, representar visualmente que el stock del producto aumenta.
+
+---
+
+# 6. REPORTES
+
+Crear un módulo de reportes con una interfaz orientada al análisis.
+
+## Reportes de ventas
+
+Permitir consultar:
+
+* Ventas diarias.
+* Ventas semanales.
+* Ventas mensuales.
+* Ventas anuales.
+* Ventas por producto.
+* Ventas por categoría.
+* Ventas por vendedor.
+* Ventas por método de pago.
+
+## Reportes de inventario
+
+Mostrar:
+
+* Inventario actual.
+* Productos agotados.
+* Productos con stock bajo.
+* Productos más vendidos.
+* Productos menos vendidos.
+* Productos sin movimiento.
+
+## Reportes financieros
+
+Mostrar:
+
+* Ingresos.
+* Costos.
+* Ganancias.
+* Margen.
+* Descuentos.
+
+Agregar filtros por:
+
+* Hoy.
+* Semana.
+* Mes.
+* Año.
+* Rango personalizado.
+
+Agregar botones:
+
+**Exportar PDF**
+**Exportar Excel**
+
+---
+
+# 7. CONFIGURACIÓN
+
+Crear una sección administrativa.
+
+## Usuarios
+
+Mostrar:
+
+* Nombre.
+* Usuario.
+* Correo.
+* Rol.
+* Estado.
+* Último acceso.
+
+Roles principales:
+
+### Administrador
+
+Acceso completo al sistema.
+
+### Cajero
+
+Puede realizar ventas, consultar productos y gestionar clientes.
+
+### Encargado de inventario
+
+Puede gestionar productos, stock, movimientos y proveedores.
+
+## Empresa
+
+Permitir configurar:
+
+* Nombre de empresa.
+* Logo.
+* RNC/documento.
+* Teléfono.
+* Correo.
+* Dirección.
+* Información que aparecerá en las facturas.
+
+## Configuración de facturación
+
+* Impuestos.
+* Métodos de pago.
+* Numeración de facturas.
+* Configuración de impresión.
+* Información de la factura.
+
+## Configuración de inventario
+
+* Stock mínimo predeterminado.
+* Ubicaciones/bodegas.
+* Configuración de alertas.
+
+## Auditoría
+
+Crear un historial de acciones:
+
+* Usuario.
+* Acción realizada.
+* Módulo.
+* Fecha.
+* Hora.
+* Registro afectado.
+
+Ejemplos:
+
+"Administrador creó un producto."
+
+"Cajero realizó una venta."
+
+"Administrador anuló una factura."
+
+"Encargado modificó el stock."
+
+La auditoría debe ser clara y fácil de filtrar.
+
+---
+
+# COMPONENTES IMPORTANTES
+
+Utilizar de forma consistente:
+
+* Tablas.
+* Cards.
+* Gráficas.
+* Modales.
+* Formularios.
+* Dropdowns.
+* Selectores.
+* Date pickers.
+* Badges de estado.
+* Toast notifications.
+* Confirmaciones para acciones importantes.
+* Estados de carga.
+* Estados vacíos.
+* Estados de error.
+* Paginación.
+
+Las tablas deben tener acciones claras y no estar visualmente saturadas.
+
+---
+
+# EXPERIENCIA DE USUARIO
+
+Priorizar especialmente:
+
+1. Rapidez para realizar una venta.
+2. Facilidad para encontrar productos.
+3. Visibilidad del estado del inventario.
+4. Alertas claras de stock.
+5. Información importante visible desde el Dashboard.
+6. Navegación sencilla.
+7. Confirmaciones antes de acciones irreversibles.
+8. Historial y auditoría para operaciones importantes.
+
+El sistema debe sentirse como un **software empresarial real**, no como una colección de páginas CRUD.
+
+Mantener una arquitectura visual consistente entre todas las secciones.
+
+Crear primero la experiencia visual completa del sistema, incluyendo Dashboard, Inventario, Facturación, Clientes, Proveedores, Reportes y Configuración, manteniendo el mismo diseño, componentes y lenguaje visual en todas las pantallas.
