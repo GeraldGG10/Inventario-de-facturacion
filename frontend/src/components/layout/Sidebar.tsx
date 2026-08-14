@@ -27,13 +27,13 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
         <div className="font-body-md text-body-md text-on-surface dark:text-inverse-on-surface antialiased flex h-full min-h-screen">
             {/* NavigationDrawer */}
             <aside 
-                className={`bg-surface dark:bg-background w-[260px] h-screen fixed left-0 top-0 border-r border-outline-variant dark:border-outline z-50 flex flex-col transition-all duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`} 
+                className={`bg-surface dark:bg-background w-[260px] h-screen fixed left-0 top-0 border-r border-outline-variant dark:border-outline z-50 flex flex-col transition-all duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} xl:translate-x-0`} 
                 id="sidebar"
             >
                 <div className="px-6 h-[64px] flex items-center shrink-0 border-b border-outline-variant dark:border-outline/30">
                     <h1 className="font-display-lg text-display-lg font-bold text-primary dark:text-primary-fixed truncate">StockPro Manager</h1>
                     <button 
-                        className="md:hidden ml-auto text-on-surface-variant p-2 rounded-lg hover:bg-surface-container-high transition-colors" 
+                        className="xl:hidden ml-auto text-on-surface-variant p-2 rounded-lg hover:bg-surface-container-high transition-colors" 
                         onClick={toggleSidebar}
                     >
                         <span className="material-symbols-outlined">close</span>
@@ -41,7 +41,7 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
                 </div>
                 
                 <nav className="flex flex-col gap-2 py-6 px-4 flex-1 overflow-y-auto">
-                    <NavLink to="/" className={getNavLinkClass} onClick={() => window.innerWidth < 768 && setIsOpen(false)}>
+                    <NavLink to="/" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
                         {(props) => (
                             <>
                                 <span className={getIconClass(props)} style={props.isActive ? {fontVariationSettings: "'FILL' 1"} : {}}>dashboard</span>
@@ -50,7 +50,7 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
                         )}
                     </NavLink>
                     
-                    <NavLink to="/inventario" className={getNavLinkClass} onClick={() => window.innerWidth < 768 && setIsOpen(false)}>
+                    <NavLink to="/inventario" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
                         {(props) => (
                             <>
                                 <span className={getIconClass(props)} style={props.isActive ? {fontVariationSettings: "'FILL' 1"} : {}}>inventory_2</span>
@@ -59,7 +59,7 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
                         )}
                     </NavLink>
                     
-                    <NavLink to="/facturacion" className={getNavLinkClass} onClick={() => window.innerWidth < 768 && setIsOpen(false)}>
+                    <NavLink to="/facturacion" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
                         {(props) => (
                             <>
                                 <span className={getIconClass(props)} style={props.isActive ? {fontVariationSettings: "'FILL' 1"} : {}}>receipt_long</span>
@@ -68,7 +68,7 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
                         )}
                     </NavLink>
                     
-                    <NavLink to="/clientes" className={getNavLinkClass} onClick={() => window.innerWidth < 768 && setIsOpen(false)}>
+                    <NavLink to="/clientes" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
                         {(props) => (
                             <>
                                 <span className={getIconClass(props)} style={props.isActive ? {fontVariationSettings: "'FILL' 1"} : {}}>group</span>
@@ -77,7 +77,7 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
                         )}
                     </NavLink>
                     
-                    <NavLink to="/proveedores" className={getNavLinkClass} onClick={() => window.innerWidth < 768 && setIsOpen(false)}>
+                    <NavLink to="/proveedores" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
                         {(props) => (
                             <>
                                 <span className={getIconClass(props)} style={props.isActive ? {fontVariationSettings: "'FILL' 1"} : {}}>local_shipping</span>
@@ -86,7 +86,7 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
                         )}
                     </NavLink>
                     
-                    <NavLink to="/reportes" className={getNavLinkClass} onClick={() => window.innerWidth < 768 && setIsOpen(false)}>
+                    <NavLink to="/reportes" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
                         {(props) => (
                             <>
                                 <span className={getIconClass(props)} style={props.isActive ? {fontVariationSettings: "'FILL' 1"} : {}}>analytics</span>
@@ -95,7 +95,7 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
                         )}
                     </NavLink>
                     
-                    <NavLink to="/configuracion" className={getNavLinkClass} onClick={() => window.innerWidth < 768 && setIsOpen(false)}>
+                    <NavLink to="/configuracion" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
                         {(props) => (
                             <>
                                 <span className={getIconClass(props)} style={props.isActive ? {fontVariationSettings: "'FILL' 1"} : {}}>settings</span>
@@ -109,18 +109,18 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
             {/* Overlay for mobile sidebar */}
             {isOpen && (
                 <div 
-                    className="fixed inset-0 bg-surface-container-lowest/80 dark:bg-inverse-surface/80 backdrop-blur-sm z-40 md:hidden transition-opacity opacity-100" 
+                    className="fixed inset-0 bg-surface-container-lowest/80 dark:bg-inverse-surface/80 backdrop-blur-sm z-40 xl:hidden transition-opacity opacity-100" 
                     onClick={toggleSidebar}
                 ></div>
             )}
 
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col md:ml-[260px] min-h-screen min-w-0">
+            <div className="flex-1 flex flex-col xl:ml-[260px] min-h-screen min-w-0">
                 {/* TopAppBar */}
                 <header className="bg-surface dark:bg-background h-[64px] sticky top-0 z-30 shadow-sm border-b border-outline-variant dark:border-outline flex justify-between items-center px-6 w-full transition-all duration-200 ease-in-out">
                     <div className="flex items-center gap-4">
                         <button 
-                            className="md:hidden p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors" 
+                            className="xl:hidden p-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors" 
                             onClick={toggleSidebar}
                         >
                             <span className="material-symbols-outlined">menu</span>
