@@ -160,6 +160,7 @@ export const Dashboard = () => {
                             <span className="text-[#008a00] dark:text-[#a4f4a4] font-medium flex items-center bg-[#008a00]/10 px-1.5 py-0.5 rounded-full mr-2">
                                 <span className="material-symbols-outlined text-[14px] mr-1">trending_up</span> +12.5%
                             </span>
+                            <span className="text-on-surface-variant text-xs">vs ayer</span>
                         </div>
                     </div>
                 </div>
@@ -178,6 +179,7 @@ export const Dashboard = () => {
                             <span className="text-[#008a00] dark:text-[#a4f4a4] font-medium flex items-center bg-[#008a00]/10 px-1.5 py-0.5 rounded-full mr-2">
                                 <span className="material-symbols-outlined text-[14px] mr-1">trending_up</span> +5.2%
                             </span>
+                            <span className="text-on-surface-variant text-xs">vs sem. anterior</span>
                         </div>
                     </div>
                 </div>
@@ -196,6 +198,7 @@ export const Dashboard = () => {
                             <span className="text-error dark:text-error-container font-medium flex items-center bg-error-container/30 px-1.5 py-0.5 rounded-full mr-2">
                                 <span className="material-symbols-outlined text-[14px] mr-1">trending_down</span> -2.1%
                             </span>
+                            <span className="text-on-surface-variant text-xs">vs mes anterior</span>
                         </div>
                     </div>
                 </div>

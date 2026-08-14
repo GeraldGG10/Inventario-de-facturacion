@@ -54,7 +54,7 @@ export const Reportes = () => {
                         <h3 className="text-3xl font-bold text-on-surface">$124,500.00</h3>
                         <div className="flex items-center gap-1 mt-1 text-sm font-data-mono text-[#006841] bg-[#006841]/10 px-2 py-0.5 rounded-full w-max">
                             <span className="material-symbols-outlined text-[14px]">trending_up</span>
-                            <span>+14.5%</span>
+                            <span>+14.5% vs mes anterior</span>
                         </div>
                     </div>
                 </div>
@@ -70,7 +70,7 @@ export const Reportes = () => {
                         <h3 className="text-3xl font-bold text-on-surface">$82,340.50</h3>
                         <div className="flex items-center gap-1 mt-1 text-sm font-data-mono text-error bg-error/10 px-2 py-0.5 rounded-full w-max">
                             <span className="material-symbols-outlined text-[14px]">trending_down</span>
-                            <span>-2.1%</span>
+                            <span>-2.1% vs mes anterior</span>
                         </div>
                     </div>
                 </div>
@@ -86,7 +86,7 @@ export const Reportes = () => {
                         <h3 className="text-3xl font-bold text-on-surface">33.8%</h3>
                         <div className="flex items-center gap-1 mt-1 text-sm font-data-mono text-[#006841] bg-[#006841]/10 px-2 py-0.5 rounded-full w-max">
                             <span className="material-symbols-outlined text-[14px]">trending_up</span>
-                            <span>+4.2%</span>
+                            <span>+4.2% objetivo superado</span>
                         </div>
                     </div>
                 </div>

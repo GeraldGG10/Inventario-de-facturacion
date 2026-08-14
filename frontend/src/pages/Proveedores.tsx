@@ -31,6 +31,7 @@ export const Proveedores = () => {
                             <p className="font-label-caps text-label-caps text-secondary uppercase tracking-wider text-justify text-balance">Proveedores Activos</p>
                             <div className="flex items-baseline gap-2">
                                 <p className="text-3xl font-bold text-on-surface">128</p>
+                                <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">+3 este mes</span>
                             </div>
                         </div>
                     </div>
