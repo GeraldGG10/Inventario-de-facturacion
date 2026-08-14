@@ -95,7 +95,7 @@ export const Reportes = () => {
             {/* Complex Reports Area (Bento Layout) */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-full">
                 {/* Sales Report (Spans 2 columns) */}
-                <div className="lg:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col h-[400px]">
+                <div className="lg:col-span-2 bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col min-h-[400px]">
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="font-title-sm text-title-sm text-on-surface">Reporte de Ventas por Categoría</h3>
                         <button className="p-1 rounded hover:bg-surface-container transition-colors text-secondary">
@@ -138,7 +138,7 @@ export const Reportes = () => {
                 </div>
 
                 {/* Inventory Report (Vertical Layout) */}
-                <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col h-[400px]">
+                <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-6 shadow-sm flex flex-col min-h-[400px]">
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="font-title-sm text-title-sm text-on-surface">Estado de Inventario</h3>
                         <span className="material-symbols-outlined text-secondary">inventory</span>

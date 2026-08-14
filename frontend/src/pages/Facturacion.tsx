@@ -3,12 +3,14 @@ import { AnularFacturaModal } from '../components/modals/AnularFacturaModal';
 import { ConfirmacionModal } from '../components/modals/ConfirmacionModal';
 import { NuevoClienteModal } from '../components/modals/NuevoClienteModal';
 import { AgregarProductoFacturaModal } from '../components/modals/AgregarProductoFacturaModal';
+import { ExportarFacturaModal } from '../components/modals/ExportarFacturaModal';
 
 export const Facturacion = () => {
     const [isAnularModalOpen, setIsAnularModalOpen] = useState(false);
     const [isConfirmacionOpen, setIsConfirmacionOpen] = useState(false);
     const [isNuevoClienteOpen, setIsNuevoClienteOpen] = useState(false);
     const [isAgregarProductoOpen, setIsAgregarProductoOpen] = useState(false);
+    const [isExportarOpen, setIsExportarOpen] = useState(false);
     
     // Simulate payment method selection
     const [paymentMethod, setPaymentMethod] = useState('tarjeta');
@@ -54,7 +56,7 @@ export const Facturacion = () => {
                                 type="text" 
                                 defaultValue="Construmart Dominicana S.A."
                             />
-                            <button className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-error transition-colors">
+                            <button onClick={() => setIsNuevoClienteOpen(true)} className="absolute right-3 top-1/2 -translate-y-1/2 text-outline hover:text-error transition-colors" title="Cambiar cliente">
                                 <span className="material-symbols-outlined text-[18px]">close</span>
                             </button>
                         </div>
@@ -126,7 +128,7 @@ export const Facturacion = () => {
 <td className="p-3 text-right">$450.00</td>
 <td className="p-3 text-right font-medium">$45,000.00</td>
 <td className="p-3 text-center">
-<button className="text-outline hover:text-error transition-colors opacity-0 group-hover:opacity-100">
+<button onClick={() => setIsConfirmacionOpen(true)} className="text-outline hover:text-error transition-colors opacity-0 group-hover:opacity-100">
 <span className="material-symbols-outlined text-[20px]">delete</span>
 </button>
 </td>
@@ -147,7 +149,7 @@ export const Facturacion = () => {
 <td className="p-3 text-right">$2,800.00</td>
 <td className="p-3 text-right font-medium">$140,000.00</td>
 <td className="p-3 text-center">
-<button className="text-outline hover:text-error transition-colors opacity-0 group-hover:opacity-100">
+<button onClick={() => setIsConfirmacionOpen(true)} className="text-outline hover:text-error transition-colors opacity-0 group-hover:opacity-100">
 <span className="material-symbols-outlined text-[20px]">delete</span>
 </button>
 </td>
@@ -168,7 +170,7 @@ export const Facturacion = () => {
 <td className="p-3 text-right">$38.00</td>
 <td className="p-3 text-right font-medium">$3,800.00</td>
 <td className="p-3 text-center">
-<button className="text-outline hover:text-error transition-colors opacity-0 group-hover:opacity-100">
+<button onClick={() => setIsConfirmacionOpen(true)} className="text-outline hover:text-error transition-colors opacity-0 group-hover:opacity-100">
 <span className="material-symbols-outlined text-[20px]">delete</span>
 </button>
 </td>
@@ -277,7 +279,7 @@ export const Facturacion = () => {
 </thead>
 <tbody className="divide-y divide-outline-variant font-data-mono text-data-mono">
 <tr className="hover:bg-surface transition-colors">
-<td className="p-3 pl-6 text-primary font-medium cursor-pointer hover:underline">INV-2023-4050</td>
+<td className="p-3 pl-6 text-primary font-medium cursor-pointer hover:underline" onClick={() => setIsExportarOpen(true)}>INV-2023-4050</td>
 <td className="p-3 text-on-surface font-body-sm text-body-sm">Ferretería El Progreso</td>
 <td className="p-3 text-secondary font-body-sm text-body-sm">Hoy, 10:23 AM</td>
 <td className="p-3 text-right">$45,890.00</td>
@@ -286,7 +288,7 @@ export const Facturacion = () => {
 </td>
 </tr>
 <tr className="hover:bg-surface transition-colors">
-<td className="p-3 pl-6 text-primary font-medium cursor-pointer hover:underline">INV-2023-4049</td>
+<td className="p-3 pl-6 text-primary font-medium cursor-pointer hover:underline" onClick={() => setIsAnularModalOpen(true)}>INV-2023-4049</td>
 <td className="p-3 text-on-surface font-body-sm text-body-sm">Ingeniería del Norte SRL</td>
 <td className="p-3 text-secondary font-body-sm text-body-sm">Ayer, 04:45 PM</td>
 <td className="p-3 text-right">$124,500.00</td>
@@ -305,6 +307,7 @@ export const Facturacion = () => {
             {isConfirmacionOpen && <ConfirmacionModal onClose={() => setIsConfirmacionOpen(false)} />}
             {isNuevoClienteOpen && <NuevoClienteModal onClose={() => setIsNuevoClienteOpen(false)} />}
             {isAgregarProductoOpen && <AgregarProductoFacturaModal onClose={() => setIsAgregarProductoOpen(false)} />}
+            {isExportarOpen && <ExportarFacturaModal onClose={() => setIsExportarOpen(false)} />}
         </div>
     );
 };

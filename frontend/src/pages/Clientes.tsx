@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
 import { NuevoClienteModal } from '../components/modals/NuevoClienteModal';
+import { NuevoProveedorModal } from '../components/modals/NuevoProveedorModal';
 import { HistorialTransaccionesModal } from '../components/modals/HistorialTransaccionesModal';
+import { ClienteModal } from '../components/modals/ClienteModal';
 
 export const Clientes = () => {
     const [isNuevoClienteModalOpen, setIsNuevoClienteModalOpen] = useState(false);
     const [isHistorialOpen, setIsHistorialOpen] = useState(false);
+    const [isNuevoProveedorOpen, setIsNuevoProveedorOpen] = useState(false);
+    const [isClienteModalOpen, setIsClienteModalOpen] = useState(false);
+    const [clienteSeleccionado, setClienteSeleccionado] = useState('');
 
     return (
         <div className="max-w-[1440px] mx-auto space-y-6 pb-20">
@@ -22,7 +27,9 @@ export const Clientes = () => {
                         <span className="material-symbols-outlined text-[18px]">add</span>
                         Nuevo Cliente
                     </button>
-                    <button className="bg-surface hover:bg-surface-container text-on-surface border border-outline-variant font-body-sm text-body-sm py-2 px-4 rounded transition-colors flex items-center gap-2 shadow-sm">
+                    <button
+                        onClick={() => setIsNuevoProveedorOpen(true)}
+                        className="bg-surface hover:bg-surface-container text-on-surface border border-outline-variant font-body-sm text-body-sm py-2 px-4 rounded transition-colors flex items-center gap-2 shadow-sm">
                         <span className="material-symbols-outlined text-[18px]">add</span>
                         Nuevo Proveedor
                     </button>
@@ -55,7 +62,7 @@ export const Clientes = () => {
 </tr>
 </thead>
 <tbody className="font-body-sm text-body-sm text-on-surface">
-<tr className="hover:bg-surface-container-low transition-colors cursor-pointer border-b border-outline-variant/50">
+<tr className="hover:bg-surface-container-low transition-colors cursor-pointer border-b border-outline-variant/50" onClick={() => { setClienteSeleccionado('Acme Corp'); setIsClienteModalOpen(true); }}>
 <td className="px-6 py-4 font-medium">Acme Corp</td>
 <td className="px-6 py-4 font-data-mono text-on-surface-variant">DOC-8472</td>
 <td className="px-6 py-4 font-data-mono text-on-surface-variant">+1 555-0198</td>
@@ -64,8 +71,7 @@ export const Clientes = () => {
 <span className="inline-flex items-center px-2 py-1 rounded-full bg-secondary-container/50 text-on-secondary-container font-label-caps text-[10px]">Activo</span>
 </td>
 </tr>
-<tr className="hover:bg-surface-container-low transition-colors cursor-pointer border-b border-outline-variant/50">
-<td className="px-6 py-4 font-medium">Globex Inc</td>
+<tr className="hover:bg-surface-container-low transition-colors cursor-pointer border-b border-outline-variant/50" onClick={() => { setClienteSeleccionado('Globex Inc'); setIsClienteModalOpen(true); }}>
 <td className="px-6 py-4 font-data-mono text-on-surface-variant">DOC-9921</td>
 <td className="px-6 py-4 font-data-mono text-on-surface-variant">+1 555-0123</td>
 <td className="px-6 py-4 font-data-mono text-right">$8,230.50</td>
@@ -73,8 +79,7 @@ export const Clientes = () => {
 <span className="inline-flex items-center px-2 py-1 rounded-full bg-secondary-container/50 text-on-secondary-container font-label-caps text-[10px]">Activo</span>
 </td>
 </tr>
-<tr className="hover:bg-surface-container-low transition-colors cursor-pointer border-b border-outline-variant/50">
-<td className="px-6 py-4 font-medium">Initech</td>
+<tr className="hover:bg-surface-container-low transition-colors cursor-pointer border-b border-outline-variant/50" onClick={() => { setClienteSeleccionado('Initech'); setIsClienteModalOpen(true); }}>
 <td className="px-6 py-4 font-data-mono text-on-surface-variant">DOC-1104</td>
 <td className="px-6 py-4 font-data-mono text-on-surface-variant">+1 555-0177</td>
 <td className="px-6 py-4 font-data-mono text-right">$450.00</td>
@@ -125,6 +130,8 @@ export const Clientes = () => {
             {/* Modals */}
             {isNuevoClienteModalOpen && <NuevoClienteModal onClose={() => setIsNuevoClienteModalOpen(false)} />}
             {isHistorialOpen && <HistorialTransaccionesModal onClose={() => setIsHistorialOpen(false)} />}
+            {isNuevoProveedorOpen && <NuevoProveedorModal onClose={() => setIsNuevoProveedorOpen(false)} />}
+            {isClienteModalOpen && <ClienteModal clienteNombre={clienteSeleccionado} onClose={() => setIsClienteModalOpen(false)} />}
         </div>
     );
 };

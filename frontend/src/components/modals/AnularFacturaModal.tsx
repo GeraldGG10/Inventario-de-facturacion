@@ -11,14 +11,14 @@ export const AnularFacturaModal = ({ onClose }: Props) => {
         <>
             {/* Ambient Shadow Overlay for Modal Background */}
             <div className="fixed inset-0 bg-[#0f172a] bg-opacity-40 backdrop-blur-sm z-50 transition-opacity flex items-center justify-center p-4">
-                
+
                 <div className="bg-surface-container-lowest w-full max-w-2xl rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] flex flex-col overflow-hidden relative z-50 max-h-[90vh]"
                     role="dialog"
                 >
                     {/* Header */}
                     <div className="flex items-center justify-between px-6 py-4 border-b border-outline-variant">
                         <h2 className="font-title-sm text-title-sm text-on-surface" id="modal-title">Anular Factura</h2>
-                        <button 
+                        <button
                             aria-label="Cerrar modal"
                             onClick={onClose}
                             className="text-on-surface-variant hover:text-on-surface transition-colors p-1 rounded-full hover:bg-surface-container-high focus:outline-none"
@@ -70,7 +70,7 @@ export const AnularFacturaModal = ({ onClose }: Props) => {
                                             value={motivo}
                                             onChange={(e) => setMotivo(e.target.value)}
                                             className="w-full bg-surface-container-lowest border border-outline-variant rounded px-4 py-2 font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary appearance-none cursor-pointer"
-                                            id="motivo" 
+                                            id="motivo"
                                             name="motivo"
                                         >
                                             <option disabled value="">Seleccione un motivo...</option>
@@ -96,9 +96,9 @@ export const AnularFacturaModal = ({ onClose }: Props) => {
                                         </label>
                                         <textarea
                                             className="w-full bg-surface-container-lowest border border-outline-variant rounded px-4 py-2 font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-none"
-                                            id="especificacion" 
+                                            id="especificacion"
                                             name="especificacion"
-                                            placeholder="Detalle la razón de la anulación aquí..." 
+                                            placeholder="Detalle la razón de la anulación aquí..."
                                             rows={3}
                                         ></textarea>
                                     </div>

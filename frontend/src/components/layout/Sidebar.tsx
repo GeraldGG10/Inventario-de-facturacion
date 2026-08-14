@@ -8,11 +8,11 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
     const toggleSidebar = () => setIsOpen(!isOpen);
 
     const getNavLinkClass = ({ isActive }: { isActive: boolean }) => {
-        const baseClass = "flex items-center gap-4 px-4 py-3 rounded-lg font-bold cursor-pointer active:scale-95 duration-150 group transition-all ";
+        const baseClass = "flex items-center gap-4 px-4 py-3 rounded-lg cursor-pointer active:scale-95 duration-150 group transition-all ";
         if (isActive) {
-            return baseClass + "text-primary dark:text-primary-fixed border-r-4 border-primary dark:border-primary-fixed bg-secondary-container/30";
+            return baseClass + "text-primary dark:text-primary-fixed border-r-4 border-primary dark:border-primary-fixed bg-secondary-container/30 font-semibold";
         }
-        return baseClass + "text-secondary dark:text-secondary-fixed-dim hover:bg-surface-container-high dark:hover:bg-on-secondary-fixed-variant border-r-4 border-transparent";
+        return baseClass + "text-secondary dark:text-secondary-fixed-dim hover:bg-surface-container-high dark:hover:bg-on-secondary-fixed-variant border-r-4 border-transparent font-medium";
     };
 
     const getIconClass = ({ isActive }: { isActive: boolean }) => {
@@ -115,7 +115,7 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
             )}
 
             {/* Main Content Area */}
-            <div className="flex-1 flex flex-col md:ml-[260px] min-h-screen">
+            <div className="flex-1 flex flex-col md:ml-[260px] min-h-screen min-w-0">
                 {/* TopAppBar */}
                 <header className="bg-surface dark:bg-background h-[64px] sticky top-0 z-30 shadow-sm border-b border-outline-variant dark:border-outline flex justify-between items-center px-6 w-full transition-all duration-200 ease-in-out">
                     <div className="flex items-center gap-4">
@@ -150,8 +150,8 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
                                         <div className="max-h-[320px] overflow-y-auto custom-scrollbar flex flex-col">
                                             {/* Notificación 1 */}
                                             <div className="p-4 border-b border-outline-variant/30 hover:bg-surface-container-lowest transition-colors cursor-pointer flex gap-3">
-                                                <div className="mt-0.5 p-2 bg-error/10 text-error rounded-full shrink-0">
-                                                    <span className="material-symbols-outlined text-[18px]">warning</span>
+                                                <div className="mt-0.5 w-10 h-10 flex items-center justify-center bg-error/10 text-error rounded-full shrink-0">
+                                                    <span className="material-symbols-outlined text-[20px]">warning</span>
                                                 </div>
                                                 <div>
                                                     <p className="text-body-sm font-medium text-on-surface">Stock Agotado</p>
@@ -161,8 +161,8 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
                                             </div>
                                             {/* Notificación 2 */}
                                             <div className="p-4 border-b border-outline-variant/30 hover:bg-surface-container-lowest transition-colors cursor-pointer flex gap-3">
-                                                <div className="mt-0.5 p-2 bg-primary/10 text-primary rounded-full shrink-0">
-                                                    <span className="material-symbols-outlined text-[18px]">receipt_long</span>
+                                                <div className="mt-0.5 w-10 h-10 flex items-center justify-center bg-primary/10 text-primary rounded-full shrink-0">
+                                                    <span className="material-symbols-outlined text-[20px]">receipt_long</span>
                                                 </div>
                                                 <div>
                                                     <p className="text-body-sm font-medium text-on-surface">Nueva Venta Registrada</p>
@@ -172,8 +172,8 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
                                             </div>
                                             {/* Notificación 3 */}
                                             <div className="p-4 hover:bg-surface-container-lowest transition-colors cursor-pointer flex gap-3">
-                                                <div className="mt-0.5 p-2 bg-tertiary-container/10 text-tertiary-container rounded-full shrink-0">
-                                                    <span className="material-symbols-outlined text-[18px]">inventory_2</span>
+                                                <div className="mt-0.5 w-10 h-10 flex items-center justify-center bg-tertiary-container/10 text-tertiary-container rounded-full shrink-0">
+                                                    <span className="material-symbols-outlined text-[20px]">inventory_2</span>
                                                 </div>
                                                 <div>
                                                     <p className="text-body-sm font-medium text-on-surface">Reabastecimiento Pendiente</p>

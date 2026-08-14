@@ -370,7 +370,9 @@ export const Dashboard = () => {
 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#008a00]/10 text-[#008a00]">Pagado</span>
 </td>
 <td className="py-3 px-4 text-center text-on-surface-variant">
-<span className="material-symbols-outlined hover:text-primary transition-colors text-[20px]">more_vert</span>
+<button onClick={() => setIsHistorialOpen(true)} className="p-1 rounded hover:bg-surface-container hover:text-primary transition-colors">
+<span className="material-symbols-outlined text-[20px]">open_in_new</span>
+</button>
 </td>
 </tr>
 <tr className="border-b border-outline-variant/30 hover:bg-surface transition-colors cursor-pointer group">
@@ -382,7 +384,9 @@ export const Dashboard = () => {
 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-tertiary-container/10 text-tertiary-container">Pendiente</span>
 </td>
 <td className="py-3 px-4 text-center text-on-surface-variant">
-<span className="material-symbols-outlined hover:text-primary transition-colors text-[20px]">more_vert</span>
+<button onClick={() => setIsHistorialOpen(true)} className="p-1 rounded hover:bg-surface-container hover:text-primary transition-colors">
+<span className="material-symbols-outlined text-[20px]">open_in_new</span>
+</button>
 </td>
 </tr>
 <tr className="border-b border-outline-variant/30 hover:bg-surface transition-colors cursor-pointer group">
@@ -394,7 +398,9 @@ export const Dashboard = () => {
 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#008a00]/10 text-[#008a00]">Pagado</span>
 </td>
 <td className="py-3 px-4 text-center text-on-surface-variant">
-<span className="material-symbols-outlined hover:text-primary transition-colors text-[20px]">more_vert</span>
+<button onClick={() => setIsHistorialOpen(true)} className="p-1 rounded hover:bg-surface-container hover:text-primary transition-colors">
+<span className="material-symbols-outlined text-[20px]">open_in_new</span>
+</button>
 </td>
 </tr>
 <tr className="border-b border-outline-variant/30 hover:bg-surface transition-colors cursor-pointer group">
@@ -406,7 +412,9 @@ export const Dashboard = () => {
 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#008a00]/10 text-[#008a00]">Pagado</span>
 </td>
 <td className="py-3 px-4 text-center text-on-surface-variant">
-<span className="material-symbols-outlined hover:text-primary transition-colors text-[20px]">more_vert</span>
+<button onClick={() => setIsHistorialOpen(true)} className="p-1 rounded hover:bg-surface-container hover:text-primary transition-colors">
+<span className="material-symbols-outlined text-[20px]">open_in_new</span>
+</button>
 </td>
 </tr>
 <tr className="hover:bg-surface transition-colors cursor-pointer group">
@@ -418,7 +426,9 @@ export const Dashboard = () => {
 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-error-container/20 text-error-container">Vencido</span>
 </td>
 <td className="py-3 px-4 text-center text-on-surface-variant">
-<span className="material-symbols-outlined hover:text-primary transition-colors text-[20px]">more_vert</span>
+<button onClick={() => setIsHistorialOpen(true)} className="p-1 rounded hover:bg-surface-container hover:text-primary transition-colors">
+<span className="material-symbols-outlined text-[20px]">open_in_new</span>
+</button>
 </td>
 </tr>
 </tbody>

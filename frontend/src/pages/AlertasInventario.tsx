@@ -165,7 +165,7 @@ export const AlertasInventario = () => {
                                             <button onClick={() => setIsDetalleOpen(true)} className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded transition-colors" title="Ver detalle">
                                                 <span className="material-symbols-outlined text-sm">visibility</span>
                                             </button>
-                                            <button className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded transition-colors" title="Editar stock">
+                                            <button onClick={() => setIsDetalleOpen(true)} className="p-1.5 text-on-surface-variant hover:text-primary hover:bg-primary/10 rounded transition-colors" title="Editar stock">
                                                 <span className="material-symbols-outlined text-sm">edit</span>
                                             </button>
                                             <button onClick={() => { setIsDetalleOpen(false); setIsConfirmacionOpen(true); }} className="p-1.5 text-on-surface-variant hover:text-success hover:bg-success/10 rounded transition-colors" title="Registrar entrada">

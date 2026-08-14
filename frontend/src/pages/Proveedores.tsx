@@ -13,8 +13,8 @@ export const Proveedores = () => {
             {/* Action Bar & Stats */}
             <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                 {/* Quick Stats */}
-                <div className="flex gap-4 flex-wrap">
-                    <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-4 shadow-sm min-w-[200px]">
+                <div className="flex gap-4 flex-wrap w-full lg:w-auto">
+                    <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-4 shadow-sm flex-1 min-w-[200px]">
                         <div className="p-3 bg-secondary-container/50 rounded-lg text-primary">
                             <span className="material-symbols-outlined">storefront</span>
                         </div>
@@ -23,7 +23,7 @@ export const Proveedores = () => {
                             <p className="font-display-lg text-display-lg text-on-surface">142</p>
                         </div>
                     </div>
-                    <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-4 shadow-sm min-w-[200px]">
+                    <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-4 shadow-sm flex-1 min-w-[200px]">
                         <div className="p-3 bg-green-100 dark:bg-green-900/20 rounded-lg text-green-700 dark:text-green-400">
                             <span className="material-symbols-outlined">check_circle</span>
                         </div>
@@ -108,10 +108,10 @@ export const Proveedores = () => {
 </td>
 <td className="py-4 px-6 text-right">
 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-<button className="p-1.5 text-secondary hover:text-primary hover:bg-secondary-container rounded-md transition-colors" title="Editar">
+<button onClick={() => setIsNuevoProveedorModalOpen(true)} className="p-1.5 text-secondary hover:text-primary hover:bg-secondary-container rounded-md transition-colors" title="Editar">
 <span className="material-symbols-outlined text-sm" data-icon="edit">edit</span>
 </button>
-<button className="p-1.5 text-secondary hover:text-error hover:bg-error-container rounded-md transition-colors" title="Eliminar">
+<button onClick={() => setIsConfirmacionOpen(true)} className="p-1.5 text-secondary hover:text-error hover:bg-error-container rounded-md transition-colors" title="Eliminar">
 <span className="material-symbols-outlined text-sm" data-icon="delete">delete</span>
 </button>
 </div>
@@ -143,10 +143,10 @@ export const Proveedores = () => {
 </td>
 <td className="py-4 px-6 text-right">
 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-<button className="p-1.5 text-secondary hover:text-primary hover:bg-secondary-container rounded-md transition-colors" title="Editar">
+<button onClick={() => setIsNuevoProveedorModalOpen(true)} className="p-1.5 text-secondary hover:text-primary hover:bg-secondary-container rounded-md transition-colors" title="Editar">
 <span className="material-symbols-outlined text-sm" data-icon="edit">edit</span>
 </button>
-<button className="p-1.5 text-secondary hover:text-error hover:bg-error-container rounded-md transition-colors" title="Eliminar">
+<button onClick={() => setIsConfirmacionOpen(true)} className="p-1.5 text-secondary hover:text-error hover:bg-error-container rounded-md transition-colors" title="Eliminar">
 <span className="material-symbols-outlined text-sm" data-icon="delete">delete</span>
 </button>
 </div>
@@ -178,10 +178,10 @@ export const Proveedores = () => {
 </td>
 <td className="py-4 px-6 text-right">
 <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-<button className="p-1.5 text-secondary hover:text-primary hover:bg-secondary-container rounded-md transition-colors" title="Editar">
+<button onClick={() => setIsNuevoProveedorModalOpen(true)} className="p-1.5 text-secondary hover:text-primary hover:bg-secondary-container rounded-md transition-colors" title="Editar">
 <span className="material-symbols-outlined text-sm" data-icon="edit">edit</span>
 </button>
-<button className="p-1.5 text-secondary hover:text-error hover:bg-error-container rounded-md transition-colors" title="Eliminar">
+<button onClick={() => setIsConfirmacionOpen(true)} className="p-1.5 text-secondary hover:text-error hover:bg-error-container rounded-md transition-colors" title="Eliminar">
 <span className="material-symbols-outlined text-sm" data-icon="delete">delete</span>
 </button>
 </div>
@@ -218,3 +218,4 @@ export const Proveedores = () => {
         </div>
     );
 };
+

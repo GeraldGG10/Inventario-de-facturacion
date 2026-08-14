@@ -2,10 +2,15 @@ import React, { useState } from 'react';
 import { NuevoArticuloModal } from '../components/modals/NuevoArticuloModal';
 import { InventarioNav } from '../components/layout/InventarioNav';
 import { FiltrosAvanzadosModal } from '../components/modals/FiltrosAvanzadosModal';
+import { DetalleProductoModal } from '../components/modals/DetalleProductoModal';
+import { EliminarConfirmModal } from '../components/modals/EliminarConfirmModal';
 
 export const Inventario = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isFiltrosOpen, setIsFiltrosOpen] = useState(false);
+    const [isDetalleOpen, setIsDetalleOpen] = useState(false);
+    const [isEliminarOpen, setIsEliminarOpen] = useState(false);
+    const [isEditarOpen, setIsEditarOpen] = useState(false);
 
     return (
         <div className="max-w-[1440px] mx-auto space-y-6 pb-20">
@@ -26,14 +31,16 @@ export const Inventario = () => {
             </div>
 
             {/* Toolbar (Filters & Search) */}
-            <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-[0_1px_3px_0_rgba(0,0,0,0.1)] flex flex-col md:flex-row gap-4 items-center justify-between">
-                <div className="flex-1 w-full relative">
+            <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 shadow-[0_1px_3px_0_rgba(0,0,0,0.1)] flex flex-col gap-3">
+                {/* Search bar - full width */}
+                <div className="relative w-full">
                     <span className="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-outline">search</span>
                     <input className="w-full pl-10 pr-4 py-2 border border-outline-variant rounded-lg bg-surface focus:border-primary focus:ring-2 focus:ring-primary-fixed-dim font-body-sm text-body-sm text-on-surface transition-all" placeholder="Buscar por código, nombre o categoría..." type="text" />
                 </div>
-                <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                    <div className="relative">
-                        <select className="appearance-none pl-4 pr-10 py-2 border border-outline-variant rounded-lg bg-surface text-on-surface font-body-sm text-body-sm focus:border-primary focus:ring-2 focus:ring-primary-fixed-dim outline-none cursor-pointer w-full md:w-auto">
+                {/* Filters row - responsive */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                    <div className="relative flex-1">
+                        <select className="appearance-none pl-4 pr-10 py-2 border border-outline-variant rounded-lg bg-surface text-on-surface font-body-sm text-body-sm focus:border-primary focus:ring-2 focus:ring-primary-fixed-dim outline-none cursor-pointer w-full">
                             <option>Todas las Categorías</option>
                             <option>Electrónica</option>
                             <option>Mobiliario</option>
@@ -41,8 +48,8 @@ export const Inventario = () => {
                         </select>
                         <span className="material-symbols-outlined absolute right-3 top-1/2 transform -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
                     </div>
-                    <div className="relative">
-                        <select className="appearance-none pl-4 pr-10 py-2 border border-outline-variant rounded-lg bg-surface text-on-surface font-body-sm text-body-sm focus:border-primary focus:ring-2 focus:ring-primary-fixed-dim outline-none cursor-pointer w-full md:w-auto">
+                    <div className="relative flex-1">
+                        <select className="appearance-none pl-4 pr-10 py-2 border border-outline-variant rounded-lg bg-surface text-on-surface font-body-sm text-body-sm focus:border-primary focus:ring-2 focus:ring-primary-fixed-dim outline-none cursor-pointer w-full">
                             <option>Todos los Estados</option>
                             <option>Disponible</option>
                             <option>Stock Bajo</option>
@@ -50,8 +57,9 @@ export const Inventario = () => {
                         </select>
                         <span className="material-symbols-outlined absolute right-3 top-1/2 transform -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
                     </div>
-                    <button onClick={() => setIsFiltrosOpen(true)} className="p-2 border border-outline-variant rounded-lg text-secondary hover:bg-surface-container transition-colors flex items-center justify-center bg-surface w-full md:w-auto" title="Filtros Avanzados">
+                    <button onClick={() => setIsFiltrosOpen(true)} className="p-2 border border-outline-variant rounded-lg text-secondary hover:bg-surface-container transition-colors flex items-center justify-center gap-2 bg-surface sm:w-auto" title="Filtros Avanzados">
                         <span className="material-symbols-outlined">tune</span>
+                        <span className="sm:hidden font-body-sm text-body-sm">Filtros Avanzados</span>
                     </button>
                 </div>
             </div>
@@ -105,14 +113,14 @@ export const Inventario = () => {
 </td>
 <td className="px-4 py-3 sticky right-0 bg-inherit text-right">
 <div className="flex items-center justify-end gap-1">
-<button className="p-1.5 text-secondary hover:text-primary hover:bg-surface-container rounded transition-colors" title="Ver Detalles">
+<button onClick={() => setIsDetalleOpen(true)} className="p-1.5 text-secondary hover:text-primary hover:bg-surface-container rounded transition-colors" title="Ver Detalles">
 <span className="material-symbols-outlined text-[20px]">visibility</span>
 </button>
-<button className="p-1.5 text-secondary hover:text-primary hover:bg-surface-container rounded transition-colors" title="Editar">
+<button onClick={() => setIsEditarOpen(true)} className="p-1.5 text-secondary hover:text-primary hover:bg-surface-container rounded transition-colors" title="Editar">
 <span className="material-symbols-outlined text-[20px]">edit</span>
 </button>
 <button className="p-1.5 text-secondary hover:text-primary hover:bg-surface-container rounded transition-colors" title="Más acciones">
-<span className="material-symbols-outlined text-[20px]">more_vert</span>
+<span className="material-symbols-outlined text-[20px]">delete</span>
 </button>
 </div>
 </td>
@@ -140,14 +148,14 @@ export const Inventario = () => {
 </td>
 <td className="px-4 py-3 sticky right-0 bg-inherit text-right">
 <div className="flex items-center justify-end gap-1">
-<button className="p-1.5 text-secondary hover:text-primary hover:bg-surface-container rounded transition-colors" title="Ver Detalles">
+<button onClick={() => setIsDetalleOpen(true)} className="p-1.5 text-secondary hover:text-primary hover:bg-surface-container rounded transition-colors" title="Ver Detalles">
 <span className="material-symbols-outlined text-[20px]">visibility</span>
 </button>
-<button className="p-1.5 text-secondary hover:text-primary hover:bg-surface-container rounded transition-colors" title="Editar">
+<button onClick={() => setIsEditarOpen(true)} className="p-1.5 text-secondary hover:text-primary hover:bg-surface-container rounded transition-colors" title="Editar">
 <span className="material-symbols-outlined text-[20px]">edit</span>
 </button>
 <button className="p-1.5 text-secondary hover:text-primary hover:bg-surface-container rounded transition-colors" title="Más acciones">
-<span className="material-symbols-outlined text-[20px]">more_vert</span>
+<span className="material-symbols-outlined text-[20px]">delete</span>
 </button>
 </div>
 </td>
@@ -175,14 +183,14 @@ export const Inventario = () => {
 </td>
 <td className="px-4 py-3 sticky right-0 bg-inherit text-right">
 <div className="flex items-center justify-end gap-1">
-<button className="p-1.5 text-secondary hover:text-primary hover:bg-surface-container rounded transition-colors" title="Ver Detalles">
+<button onClick={() => setIsDetalleOpen(true)} className="p-1.5 text-secondary hover:text-primary hover:bg-surface-container rounded transition-colors" title="Ver Detalles">
 <span className="material-symbols-outlined text-[20px]">visibility</span>
 </button>
-<button className="p-1.5 text-secondary hover:text-primary hover:bg-surface-container rounded transition-colors" title="Editar">
+<button onClick={() => setIsEditarOpen(true)} className="p-1.5 text-secondary hover:text-primary hover:bg-surface-container rounded transition-colors" title="Editar">
 <span className="material-symbols-outlined text-[20px]">edit</span>
 </button>
 <button className="p-1.5 text-secondary hover:text-primary hover:bg-surface-container rounded transition-colors" title="Más acciones">
-<span className="material-symbols-outlined text-[20px]">more_vert</span>
+<span className="material-symbols-outlined text-[20px]">delete</span>
 </button>
 </div>
 </td>
@@ -224,6 +232,15 @@ export const Inventario = () => {
             
             {/* Modal de Filtros Avanzados */}
             {isFiltrosOpen && <FiltrosAvanzadosModal onClose={() => setIsFiltrosOpen(false)} />}
+
+            {/* Modal de Detalle de Producto */}
+            {isDetalleOpen && <DetalleProductoModal onClose={() => setIsDetalleOpen(false)} />}
+
+            {/* Modal para Editar Artículo */}
+            {isEditarOpen && <NuevoArticuloModal onClose={() => setIsEditarOpen(false)} />}
+
+            {/* Modal de Confirmación de Eliminación */}
+            {isEliminarOpen && <EliminarConfirmModal onClose={() => setIsEliminarOpen(false)} onConfirmar={() => setIsEliminarOpen(false)} />}
         </div>
     );
 };
