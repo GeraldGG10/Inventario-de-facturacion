@@ -51,10 +51,10 @@ export const Reportes = () => {
                         <span className="material-symbols-outlined text-primary bg-primary-container text-on-primary-container p-2 rounded-lg">payments</span>
                     </div>
                     <div className="z-10 mt-2">
-                        <h3 className="font-display-lg text-display-lg text-on-surface">$124,500.00</h3>
+                        <h3 className="text-3xl font-bold text-on-surface">$124,500.00</h3>
                         <div className="flex items-center gap-1 mt-1 text-sm font-data-mono text-[#006841] bg-[#006841]/10 px-2 py-0.5 rounded-full w-max">
                             <span className="material-symbols-outlined text-[14px]">trending_up</span>
-                            <span>+14.5% vs mes anterior</span>
+                            <span>+14.5%</span>
                         </div>
                     </div>
                 </div>
@@ -67,10 +67,10 @@ export const Reportes = () => {
                         <span className="material-symbols-outlined text-error bg-error-container text-on-error-container p-2 rounded-lg">account_balance_wallet</span>
                     </div>
                     <div className="z-10 mt-2">
-                        <h3 className="font-display-lg text-display-lg text-on-surface">$82,340.50</h3>
+                        <h3 className="text-3xl font-bold text-on-surface">$82,340.50</h3>
                         <div className="flex items-center gap-1 mt-1 text-sm font-data-mono text-error bg-error/10 px-2 py-0.5 rounded-full w-max">
                             <span className="material-symbols-outlined text-[14px]">trending_down</span>
-                            <span>-2.1% vs mes anterior</span>
+                            <span>-2.1%</span>
                         </div>
                     </div>
                 </div>
@@ -83,10 +83,10 @@ export const Reportes = () => {
                         <span className="material-symbols-outlined text-[#006841] bg-[#006841]/10 p-2 rounded-lg">show_chart</span>
                     </div>
                     <div className="z-10 mt-2">
-                        <h3 className="font-display-lg text-display-lg text-on-surface">33.8%</h3>
+                        <h3 className="text-3xl font-bold text-on-surface">33.8%</h3>
                         <div className="flex items-center gap-1 mt-1 text-sm font-data-mono text-[#006841] bg-[#006841]/10 px-2 py-0.5 rounded-full w-max">
                             <span className="material-symbols-outlined text-[14px]">trending_up</span>
-                            <span>+4.2% objetivo superado</span>
+                            <span>+4.2%</span>
                         </div>
                     </div>
                 </div>

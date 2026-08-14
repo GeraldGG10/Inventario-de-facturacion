@@ -155,12 +155,11 @@ export const Dashboard = () => {
                         </div>
                     </div>
                     <div>
-                        <div className="font-display-lg text-display-lg text-on-surface dark:text-inverse-on-surface font-bold tracking-tight mb-1">$4,250.00</div>
+                        <div className="text-3xl font-bold text-on-surface dark:text-inverse-on-surface tracking-tight mb-1">$4,250.00</div>
                         <div className="flex items-center text-sm">
                             <span className="text-[#008a00] dark:text-[#a4f4a4] font-medium flex items-center bg-[#008a00]/10 px-1.5 py-0.5 rounded-full mr-2">
                                 <span className="material-symbols-outlined text-[14px] mr-1">trending_up</span> +12.5%
                             </span>
-                            <span className="text-on-surface-variant text-xs">vs ayer</span>
                         </div>
                     </div>
                 </div>
@@ -174,12 +173,11 @@ export const Dashboard = () => {
                         </div>
                     </div>
                     <div>
-                        <div className="font-display-lg text-display-lg text-on-surface dark:text-inverse-on-surface font-bold tracking-tight mb-1">$28,940.00</div>
+                        <div className="text-3xl font-bold text-on-surface dark:text-inverse-on-surface tracking-tight mb-1">$28,940.00</div>
                         <div className="flex items-center text-sm">
                             <span className="text-[#008a00] dark:text-[#a4f4a4] font-medium flex items-center bg-[#008a00]/10 px-1.5 py-0.5 rounded-full mr-2">
                                 <span className="material-symbols-outlined text-[14px] mr-1">trending_up</span> +5.2%
                             </span>
-                            <span className="text-on-surface-variant text-xs">vs sem. anterior</span>
                         </div>
                     </div>
                 </div>
@@ -193,12 +191,11 @@ export const Dashboard = () => {
                         </div>
                     </div>
                     <div>
-                        <div className="font-display-lg text-display-lg text-on-surface dark:text-inverse-on-surface font-bold tracking-tight mb-1">$15,420.00</div>
+                        <div className="text-3xl font-bold text-on-surface dark:text-inverse-on-surface tracking-tight mb-1">$15,420.00</div>
                         <div className="flex items-center text-sm">
                             <span className="text-error dark:text-error-container font-medium flex items-center bg-error-container/30 px-1.5 py-0.5 rounded-full mr-2">
                                 <span className="material-symbols-outlined text-[14px] mr-1">trending_down</span> -2.1%
                             </span>
-                            <span className="text-on-surface-variant text-xs">vs mes anterior</span>
                         </div>
                     </div>
                 </div>
@@ -212,7 +209,7 @@ export const Dashboard = () => {
                         </div>
                     </div>
                     <div>
-                        <div className="font-display-lg text-display-lg text-on-surface dark:text-inverse-on-surface font-bold tracking-tight mb-1">12</div>
+                        <div className="text-3xl font-bold text-on-surface dark:text-inverse-on-surface tracking-tight mb-1">12</div>
                         <div className="flex items-center text-sm">
                             <span className="text-error font-medium">Productos críticos</span>
                         </div>
@@ -227,15 +224,15 @@ export const Dashboard = () => {
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="font-title-sm text-title-sm text-on-surface font-semibold">Rendimiento de Ventas y Ganancias</h3>
                         <div className="flex gap-2">
-                            <button 
+                            <button
                                 onClick={() => setTimeRange('Hoy')}
                                 className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${timeRange === 'Hoy' ? 'bg-primary text-on-primary shadow-sm' : 'bg-surface border border-outline-variant text-on-surface-variant hover:bg-surface-container'}`}
                             >Hoy</button>
-                            <button 
+                            <button
                                 onClick={() => setTimeRange('Semana')}
                                 className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${timeRange === 'Semana' ? 'bg-primary text-on-primary shadow-sm' : 'bg-surface border border-outline-variant text-on-surface-variant hover:bg-surface-container'}`}
                             >Semana</button>
-                            <button 
+                            <button
                                 onClick={() => setTimeRange('Mes')}
                                 className={`px-3 py-1 text-xs font-medium rounded-md transition-colors ${timeRange === 'Mes' ? 'bg-primary text-on-primary shadow-sm' : 'bg-surface border border-outline-variant text-on-surface-variant hover:bg-surface-container'}`}
                             >Mes</button>
@@ -255,45 +252,45 @@ export const Dashboard = () => {
                         </div>
                         <div className="overflow-x-auto flex-1">
                             <div className="overflow-x-auto w-full pb-2">
-<table className="w-full text-left border-collapse">
-<thead>
-<tr className="border-b border-outline-variant">
-<th className="pb-2 font-label-caps text-label-caps text-secondary font-medium">Producto</th>
-<th className="pb-2 font-label-caps text-label-caps text-secondary font-medium text-right">Cant.</th>
-</tr>
-</thead>
-<tbody className="font-body-sm text-body-sm text-on-surface">
-<tr className="border-b border-outline-variant/30 hover:bg-surface-container-lowest transition-colors">
-<td className="py-3">
-<div className="font-medium">Laptop Pro X15</div>
-<div className="text-xs text-on-surface-variant">Electrónica</div>
-</td>
-<td className="py-3 text-right font-data-mono text-data-mono">145</td>
-</tr>
-<tr className="border-b border-outline-variant/30 hover:bg-surface-container-lowest transition-colors">
-<td className="py-3">
-<div className="font-medium">Monitor UltraWide</div>
-<div className="text-xs text-on-surface-variant">Periféricos</div>
-</td>
-<td className="py-3 text-right font-data-mono text-data-mono">98</td>
-</tr>
-<tr className="border-b border-outline-variant/30 hover:bg-surface-container-lowest transition-colors">
-<td className="py-3">
-<div className="font-medium">Teclado Mecánico</div>
-<div className="text-xs text-on-surface-variant">Accesorios</div>
-</td>
-<td className="py-3 text-right font-data-mono text-data-mono">85</td>
-</tr>
-<tr className="hover:bg-surface-container-lowest transition-colors">
-<td className="py-3">
-<div className="font-medium">Mouse Inalámbrico</div>
-<div className="text-xs text-on-surface-variant">Accesorios</div>
-</td>
-<td className="py-3 text-right font-data-mono text-data-mono">72</td>
-</tr>
-</tbody>
-</table>
-</div>
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="border-b border-outline-variant">
+                                            <th className="pb-2 font-label-caps text-label-caps text-secondary font-medium">Producto</th>
+                                            <th className="pb-2 font-label-caps text-label-caps text-secondary font-medium text-right">Cant.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="font-body-sm text-body-sm text-on-surface">
+                                        <tr className="border-b border-outline-variant/30 hover:bg-surface-container-lowest transition-colors">
+                                            <td className="py-3">
+                                                <div className="font-medium">Laptop Pro X15</div>
+                                                <div className="text-xs text-on-surface-variant">Electrónica</div>
+                                            </td>
+                                            <td className="py-3 text-right font-data-mono text-data-mono">145</td>
+                                        </tr>
+                                        <tr className="border-b border-outline-variant/30 hover:bg-surface-container-lowest transition-colors">
+                                            <td className="py-3">
+                                                <div className="font-medium">Monitor UltraWide</div>
+                                                <div className="text-xs text-on-surface-variant">Periféricos</div>
+                                            </td>
+                                            <td className="py-3 text-right font-data-mono text-data-mono">98</td>
+                                        </tr>
+                                        <tr className="border-b border-outline-variant/30 hover:bg-surface-container-lowest transition-colors">
+                                            <td className="py-3">
+                                                <div className="font-medium">Teclado Mecánico</div>
+                                                <div className="text-xs text-on-surface-variant">Accesorios</div>
+                                            </td>
+                                            <td className="py-3 text-right font-data-mono text-data-mono">85</td>
+                                        </tr>
+                                        <tr className="hover:bg-surface-container-lowest transition-colors">
+                                            <td className="py-3">
+                                                <div className="font-medium">Mouse Inalámbrico</div>
+                                                <div className="text-xs text-on-surface-variant">Accesorios</div>
+                                            </td>
+                                            <td className="py-3 text-right font-data-mono text-data-mono">72</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -349,91 +346,91 @@ export const Dashboard = () => {
                     </div>
                     <div className="overflow-x-auto">
                         <div className="overflow-x-auto w-full pb-2">
-<table className="w-full text-left border-collapse min-w-[600px]">
-<thead>
-<tr className="border-b border-outline-variant bg-surface">
-<th className="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium">Factura</th>
-<th className="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium">Cliente</th>
-<th className="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium">Fecha</th>
-<th className="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium text-right">Total</th>
-<th className="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium text-center">Estado</th>
-<th className="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium text-center">Acción</th>
-</tr>
-</thead>
-<tbody className="font-body-sm text-body-sm text-on-surface">
-<tr className="border-b border-outline-variant/30 hover:bg-surface transition-colors cursor-pointer group">
-<td className="py-3 px-4 font-data-mono text-data-mono text-primary">#FAC-2023-0891</td>
-<td className="py-3 px-4 font-medium">Acme Corp.</td>
-<td className="py-3 px-4 text-on-surface-variant">Hoy, 14:30</td>
-<td className="py-3 px-4 text-right font-data-mono text-data-mono font-medium">$1,250.00</td>
-<td className="py-3 px-4 text-center">
-<span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#008a00]/10 text-[#008a00]">Pagado</span>
-</td>
-<td className="py-3 px-4 text-center text-on-surface-variant">
-<button onClick={() => setIsHistorialOpen(true)} className="p-1 rounded hover:bg-surface-container hover:text-primary transition-colors">
-<span className="material-symbols-outlined text-[20px]">open_in_new</span>
-</button>
-</td>
-</tr>
-<tr className="border-b border-outline-variant/30 hover:bg-surface transition-colors cursor-pointer group">
-<td className="py-3 px-4 font-data-mono text-data-mono text-primary">#FAC-2023-0890</td>
-<td className="py-3 px-4 font-medium">Tech Solutions SAC</td>
-<td className="py-3 px-4 text-on-surface-variant">Hoy, 11:15</td>
-<td className="py-3 px-4 text-right font-data-mono text-data-mono font-medium">$340.50</td>
-<td className="py-3 px-4 text-center">
-<span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-tertiary-container/10 text-tertiary-container">Pendiente</span>
-</td>
-<td className="py-3 px-4 text-center text-on-surface-variant">
-<button onClick={() => setIsHistorialOpen(true)} className="p-1 rounded hover:bg-surface-container hover:text-primary transition-colors">
-<span className="material-symbols-outlined text-[20px]">open_in_new</span>
-</button>
-</td>
-</tr>
-<tr className="border-b border-outline-variant/30 hover:bg-surface transition-colors cursor-pointer group">
-<td className="py-3 px-4 font-data-mono text-data-mono text-primary">#FAC-2023-0889</td>
-<td className="py-3 px-4 font-medium">Global Imports</td>
-<td className="py-3 px-4 text-on-surface-variant">Ayer, 16:45</td>
-<td className="py-3 px-4 text-right font-data-mono text-data-mono font-medium">$5,100.00</td>
-<td className="py-3 px-4 text-center">
-<span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#008a00]/10 text-[#008a00]">Pagado</span>
-</td>
-<td className="py-3 px-4 text-center text-on-surface-variant">
-<button onClick={() => setIsHistorialOpen(true)} className="p-1 rounded hover:bg-surface-container hover:text-primary transition-colors">
-<span className="material-symbols-outlined text-[20px]">open_in_new</span>
-</button>
-</td>
-</tr>
-<tr className="border-b border-outline-variant/30 hover:bg-surface transition-colors cursor-pointer group">
-<td className="py-3 px-4 font-data-mono text-data-mono text-primary">#FAC-2023-0888</td>
-<td className="py-3 px-4 font-medium">Juan Pérez</td>
-<td className="py-3 px-4 text-on-surface-variant">Ayer, 09:20</td>
-<td className="py-3 px-4 text-right font-data-mono text-data-mono font-medium">$85.00</td>
-<td className="py-3 px-4 text-center">
-<span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#008a00]/10 text-[#008a00]">Pagado</span>
-</td>
-<td className="py-3 px-4 text-center text-on-surface-variant">
-<button onClick={() => setIsHistorialOpen(true)} className="p-1 rounded hover:bg-surface-container hover:text-primary transition-colors">
-<span className="material-symbols-outlined text-[20px]">open_in_new</span>
-</button>
-</td>
-</tr>
-<tr className="hover:bg-surface transition-colors cursor-pointer group">
-<td className="py-3 px-4 font-data-mono text-data-mono text-primary">#FAC-2023-0887</td>
-<td className="py-3 px-4 font-medium">Design Studio SA</td>
-<td className="py-3 px-4 text-on-surface-variant">22/10/2023</td>
-<td className="py-3 px-4 text-right font-data-mono text-data-mono font-medium">$890.00</td>
-<td className="py-3 px-4 text-center">
-<span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-error-container/20 text-error-container">Vencido</span>
-</td>
-<td className="py-3 px-4 text-center text-on-surface-variant">
-<button onClick={() => setIsHistorialOpen(true)} className="p-1 rounded hover:bg-surface-container hover:text-primary transition-colors">
-<span className="material-symbols-outlined text-[20px]">open_in_new</span>
-</button>
-</td>
-</tr>
-</tbody>
-</table>
-</div>
+                            <table className="w-full text-left border-collapse min-w-[600px]">
+                                <thead>
+                                    <tr className="border-b border-outline-variant bg-surface">
+                                        <th className="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium">Factura</th>
+                                        <th className="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium">Cliente</th>
+                                        <th className="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium">Fecha</th>
+                                        <th className="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium text-right">Total</th>
+                                        <th className="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium text-center">Estado</th>
+                                        <th className="py-3 px-4 font-label-caps text-label-caps text-secondary font-medium text-center">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="font-body-sm text-body-sm text-on-surface">
+                                    <tr className="border-b border-outline-variant/30 hover:bg-surface transition-colors cursor-pointer group">
+                                        <td className="py-3 px-4 font-data-mono text-data-mono text-primary">#FAC-2023-0891</td>
+                                        <td className="py-3 px-4 font-medium">Acme Corp.</td>
+                                        <td className="py-3 px-4 text-on-surface-variant">Hoy, 14:30</td>
+                                        <td className="py-3 px-4 text-right font-data-mono text-data-mono font-medium">$1,250.00</td>
+                                        <td className="py-3 px-4 text-center">
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#008a00]/10 text-[#008a00]">Pagado</span>
+                                        </td>
+                                        <td className="py-3 px-4 text-center text-on-surface-variant">
+                                            <button onClick={() => setIsHistorialOpen(true)} className="p-1 rounded hover:bg-surface-container hover:text-primary transition-colors">
+                                                <span className="material-symbols-outlined text-[20px]">open_in_new</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-outline-variant/30 hover:bg-surface transition-colors cursor-pointer group">
+                                        <td className="py-3 px-4 font-data-mono text-data-mono text-primary">#FAC-2023-0890</td>
+                                        <td className="py-3 px-4 font-medium">Tech Solutions SAC</td>
+                                        <td className="py-3 px-4 text-on-surface-variant">Hoy, 11:15</td>
+                                        <td className="py-3 px-4 text-right font-data-mono text-data-mono font-medium">$340.50</td>
+                                        <td className="py-3 px-4 text-center">
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-tertiary-container/10 text-tertiary-container">Pendiente</span>
+                                        </td>
+                                        <td className="py-3 px-4 text-center text-on-surface-variant">
+                                            <button onClick={() => setIsHistorialOpen(true)} className="p-1 rounded hover:bg-surface-container hover:text-primary transition-colors">
+                                                <span className="material-symbols-outlined text-[20px]">open_in_new</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-outline-variant/30 hover:bg-surface transition-colors cursor-pointer group">
+                                        <td className="py-3 px-4 font-data-mono text-data-mono text-primary">#FAC-2023-0889</td>
+                                        <td className="py-3 px-4 font-medium">Global Imports</td>
+                                        <td className="py-3 px-4 text-on-surface-variant">Ayer, 16:45</td>
+                                        <td className="py-3 px-4 text-right font-data-mono text-data-mono font-medium">$5,100.00</td>
+                                        <td className="py-3 px-4 text-center">
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#008a00]/10 text-[#008a00]">Pagado</span>
+                                        </td>
+                                        <td className="py-3 px-4 text-center text-on-surface-variant">
+                                            <button onClick={() => setIsHistorialOpen(true)} className="p-1 rounded hover:bg-surface-container hover:text-primary transition-colors">
+                                                <span className="material-symbols-outlined text-[20px]">open_in_new</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr className="border-b border-outline-variant/30 hover:bg-surface transition-colors cursor-pointer group">
+                                        <td className="py-3 px-4 font-data-mono text-data-mono text-primary">#FAC-2023-0888</td>
+                                        <td className="py-3 px-4 font-medium">Juan Pérez</td>
+                                        <td className="py-3 px-4 text-on-surface-variant">Ayer, 09:20</td>
+                                        <td className="py-3 px-4 text-right font-data-mono text-data-mono font-medium">$85.00</td>
+                                        <td className="py-3 px-4 text-center">
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#008a00]/10 text-[#008a00]">Pagado</span>
+                                        </td>
+                                        <td className="py-3 px-4 text-center text-on-surface-variant">
+                                            <button onClick={() => setIsHistorialOpen(true)} className="p-1 rounded hover:bg-surface-container hover:text-primary transition-colors">
+                                                <span className="material-symbols-outlined text-[20px]">open_in_new</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr className="hover:bg-surface transition-colors cursor-pointer group">
+                                        <td className="py-3 px-4 font-data-mono text-data-mono text-primary">#FAC-2023-0887</td>
+                                        <td className="py-3 px-4 font-medium">Design Studio SA</td>
+                                        <td className="py-3 px-4 text-on-surface-variant">22/10/2023</td>
+                                        <td className="py-3 px-4 text-right font-data-mono text-data-mono font-medium">$890.00</td>
+                                        <td className="py-3 px-4 text-center">
+                                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-error-container/20 text-error-container">Vencido</span>
+                                        </td>
+                                        <td className="py-3 px-4 text-center text-on-surface-variant">
+                                            <button onClick={() => setIsHistorialOpen(true)} className="p-1 rounded hover:bg-surface-container hover:text-primary transition-colors">
+                                                <span className="material-symbols-outlined text-[20px]">open_in_new</span>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     <div className="mt-4 text-center">
                         <button onClick={() => setIsHistorialOpen(true)} className="text-primary hover:text-primary-container text-sm font-medium">Ver Historial Completo</button>

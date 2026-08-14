@@ -19,19 +19,18 @@ export const Proveedores = () => {
                             <span className="material-symbols-outlined">storefront</span>
                         </div>
                         <div>
-                            <p className="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Total Proveedores</p>
-                            <p className="font-display-lg text-display-lg text-on-surface">142</p>
+                            <p className="font-label-caps text-label-caps text-secondary uppercase tracking-wider text-justify text-balance">Total Proveedores</p>
+                            <p className="text-3xl font-bold text-on-surface">142</p>
                         </div>
                     </div>
                     <div className="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 flex items-center gap-4 shadow-sm flex-1 min-w-[200px]">
                         <div className="p-3 bg-green-100 dark:bg-green-900/20 rounded-lg text-green-700 dark:text-green-400">
                             <span className="material-symbols-outlined">check_circle</span>
                         </div>
-                        <div>
-                            <p className="font-label-caps text-label-caps text-secondary uppercase tracking-wider">Proveedores Activos</p>
+                        <div className="w-full">
+                            <p className="font-label-caps text-label-caps text-secondary uppercase tracking-wider text-justify text-balance">Proveedores Activos</p>
                             <div className="flex items-baseline gap-2">
-                                <p className="font-display-lg text-display-lg text-on-surface">128</p>
-                                <span className="text-sm font-medium text-green-600 bg-green-50 px-2 py-0.5 rounded-full">+3 este mes</span>
+                                <p className="text-3xl font-bold text-on-surface">128</p>
                             </div>
                         </div>
                     </div>
