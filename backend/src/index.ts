@@ -5,6 +5,7 @@ import { authRouter } from './routes/auth';
 import { usuariosRouter } from './routes/usuarios';
 import { rolesRouter } from './routes/roles';
 import { auditoriaRouter } from './routes/auditoria';
+import { dashboardRouter } from './routes/dashboard';
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use('/auth', authRouter);
 app.use('/usuarios', usuariosRouter);
 app.use('/roles', rolesRouter);
 app.use('/auditoria', auditoriaRouter);
+app.use('/dashboard', dashboardRouter);
 
 app.listen(env.port, () => {
   console.log(`Backend escuchando en http://localhost:${env.port}`);
