@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id           String   @id @default(uuid())
+  nombre       String
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  rolId        String   @map("rol_id")
+  activo       Boolean  @default(true)
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  rol           Rol            @relation(fields: [rolId], references: [id])
+  refreshTokens RefreshToken[]
+  auditorias    Auditoria[]
+
+  @@map("usuarios")
+}
+
+model Rol {
+  id     String @id @default(uuid())
+  nombre String @unique
+
+  usuarios    Usuario[]
+  permisos    RolPermiso[]
+
+  @@map("roles")
+}
+
+model Permiso {
+  id          String @id @default(uuid())
+  nombre      String @unique
+  descripcion String?
+
+  roles RolPermiso[]
+
+  @@map("permisos")
+}
+
+model RolPermiso {
+  rolId     String @map("rol_id")
+  permisoId String @map("permiso_id")
+
+  rol     Rol     @relation(fields: [rolId], references: [id], onDelete: Cascade)
+  permiso Permiso @relation(fields: [permisoId], references: [id], onDelete: Cascade)
+
+  @@id([rolId, permisoId])
+  @@map("rol_permisos")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  usuarioId String   @map("usuario_id")
+  revocado  Boolean  @default(false)
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model Auditoria {
+  id            String   @id @default(uuid())
+  usuarioId     String?  @map("usuario_id")
+  accion        String
+  entidad       String
+  entidadId     String?  @map("entidad_id")
+  datosAntes    Json?    @map("datos_antes")
+  datosDespues  Json?    @map("datos_despues")
+  timestamp     DateTime @default(now())
+
+  usuario Usuario? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  @@map("auditoria")
+  @@index([entidad, entidadId])
+  @@index([usuarioId])
+}
