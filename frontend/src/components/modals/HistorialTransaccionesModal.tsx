@@ -1,27 +1,32 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
+
+interface Transaccion {
+    id: number;
+    numero: string;
+    cliente: string;
+    fecha: string;
+    total: number;
+    estado: string;
+}
 
 interface Props {
     onClose: () => void;
+    transacciones?: Transaccion[];
 }
 
-const allTransactions = [
-    { id: '#FAC-2023-0891', cliente: 'Acme Corp.', fecha: 'Hoy, 14:30', total: '$1,250.00', estado: 'Pagado' },
-    { id: '#FAC-2023-0890', cliente: 'Tech Solutions SAC', fecha: 'Hoy, 11:15', total: '$340.50', estado: 'Pendiente' },
-    { id: '#FAC-2023-0889', cliente: 'Global Imports', fecha: 'Ayer, 16:45', total: '$5,100.00', estado: 'Pagado' },
-    { id: '#FAC-2023-0888', cliente: 'Distribuidora Sur', fecha: 'Ayer, 09:30', total: '$820.00', estado: 'Pagado' },
-    { id: '#FAC-2023-0887', cliente: 'Servicios Norte', fecha: 'Hace 2 días, 15:10', total: '$2,450.00', estado: 'Anulada' },
-    { id: '#FAC-2023-0886', cliente: 'Acme Corp.', fecha: 'Hace 2 días, 08:00', total: '$680.00', estado: 'Pagado' },
-    { id: '#FAC-2023-0885', cliente: 'Digital Express', fecha: 'Hace 3 días, 13:20', total: '$1,900.00', estado: 'Pendiente' },
-    { id: '#FAC-2023-0884', cliente: 'Tech Solutions SAC', fecha: 'Hace 3 días, 10:05', total: '$3,200.00', estado: 'Pagado' },
-];
+const formatoMoneda = new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' });
 
 const estadoBadge = (estado: string) => {
-    if (estado === 'Pagado') return 'bg-[#008a00]/10 text-[#008a00]';
-    if (estado === 'Pendiente') return 'bg-yellow-500/10 text-yellow-700';
-    return 'bg-error/10 text-error';
+    if (estado === 'anulada') return 'bg-error/10 text-error';
+    return 'bg-[#008a00]/10 text-[#008a00]';
 };
 
-export const HistorialTransaccionesModal = ({ onClose }: Props) => {
+export const HistorialTransaccionesModal = ({ onClose, transacciones = [] }: Props) => {
+    const [busqueda, setBusqueda] = useState('');
+    const filtradas = useMemo(
+        () => transacciones.filter((t) => `${t.numero} ${t.cliente}`.toLowerCase().includes(busqueda.toLowerCase())),
+        [transacciones, busqueda],
+    );
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/50 backdrop-blur-sm p-4">
             <div className="bg-surface-container-lowest w-full max-w-3xl rounded-2xl shadow-2xl flex flex-col border border-outline-variant max-h-[90vh]">
@@ -40,7 +45,13 @@ export const HistorialTransaccionesModal = ({ onClose }: Props) => {
                 <div className="px-6 py-4 border-b border-outline-variant/30">
                     <div className="relative">
                         <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
-                        <input type="text" placeholder="Buscar por factura, cliente..." className="w-full pl-9 pr-4 py-2.5 bg-surface border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none" />
+                        <input
+                            type="text"
+                            value={busqueda}
+                            onChange={(e) => setBusqueda(e.target.value)}
+                            placeholder="Buscar por factura, cliente..."
+                            className="w-full pl-9 pr-4 py-2.5 bg-surface border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none"
+                        />
                     </div>
                 </div>
 
@@ -58,14 +69,17 @@ export const HistorialTransaccionesModal = ({ onClose }: Props) => {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-outline-variant/50">
-                                {allTransactions.map((tx, i) => (
-                                    <tr key={i} className="hover:bg-surface-container-low transition-colors cursor-pointer">
-                                        <td className="p-4 font-data-mono text-data-mono text-primary whitespace-nowrap">{tx.id}</td>
+                                {filtradas.length === 0 && (
+                                    <tr><td colSpan={5} className="p-6 text-center text-on-surface-variant">Sin transacciones.</td></tr>
+                                )}
+                                {filtradas.map((tx) => (
+                                    <tr key={tx.id} className="hover:bg-surface-container-low transition-colors cursor-pointer">
+                                        <td className="p-4 font-data-mono text-data-mono text-primary whitespace-nowrap">{tx.numero}</td>
                                         <td className="p-4 text-on-surface whitespace-nowrap">{tx.cliente}</td>
-                                        <td className="p-4 text-on-surface-variant whitespace-nowrap">{tx.fecha}</td>
-                                        <td className="p-4 text-right font-medium text-on-surface whitespace-nowrap">{tx.total}</td>
+                                        <td className="p-4 text-on-surface-variant whitespace-nowrap">{new Date(tx.fecha).toLocaleString('es-DO')}</td>
+                                        <td className="p-4 text-right font-medium text-on-surface whitespace-nowrap">{formatoMoneda.format(tx.total)}</td>
                                         <td className="p-4 text-center">
-                                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${estadoBadge(tx.estado)}`}>{tx.estado}</span>
+                                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${estadoBadge(tx.estado)}`}>{tx.estado === 'anulada' ? 'Anulada' : 'Emitida'}</span>
                                         </td>
                                     </tr>
                                 ))}
@@ -76,7 +90,7 @@ export const HistorialTransaccionesModal = ({ onClose }: Props) => {
 
                 {/* Footer */}
                 <div className="p-4 border-t border-outline-variant/50 flex justify-between items-center bg-surface-container/30 rounded-b-2xl">
-                    <span className="text-body-sm text-on-surface-variant">Mostrando {allTransactions.length} de 2,891 transacciones</span>
+                    <span className="text-body-sm text-on-surface-variant">Mostrando {filtradas.length} de {transacciones.length} transacciones recientes</span>
                     <button onClick={onClose} className="px-5 py-2 rounded-lg text-body-sm font-medium text-secondary hover:bg-surface-variant transition-colors">Cerrar</button>
                 </div>
             </div>

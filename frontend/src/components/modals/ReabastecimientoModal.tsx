@@ -1,10 +1,19 @@
 import React from 'react';
 
-interface Props {
-    onClose: () => void;
+interface AlertaReposicion {
+    id: string;
+    nombre: string;
+    stockActual: number;
+    stockMinimo: number;
+    estado: string;
 }
 
-export const ReabastecimientoModal = ({ onClose }: Props) => {
+interface Props {
+    onClose: () => void;
+    alertas?: AlertaReposicion[];
+}
+
+export const ReabastecimientoModal = ({ onClose, alertas = [] }: Props) => {
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/50 backdrop-blur-sm p-4">
             <div className="bg-surface-container-lowest w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col border border-outline-variant max-h-[90vh]">
@@ -26,36 +35,26 @@ export const ReabastecimientoModal = ({ onClose }: Props) => {
                             <thead>
                                 <tr className="border-b border-outline-variant">
                                     <th className="text-left pb-3 font-label-caps text-label-caps text-secondary uppercase tracking-wider">Producto</th>
-                                    <th className="text-left pb-3 font-label-caps text-label-caps text-secondary uppercase tracking-wider">SKU</th>
                                     <th className="text-center pb-3 font-label-caps text-label-caps text-secondary uppercase tracking-wider">Stock Actual</th>
                                     <th className="text-center pb-3 font-label-caps text-label-caps text-secondary uppercase tracking-wider">Stock Mínimo</th>
                                     <th className="text-center pb-3 font-label-caps text-label-caps text-secondary uppercase tracking-wider">Prioridad</th>
-                                    <th className="text-right pb-3 font-label-caps text-label-caps text-secondary uppercase tracking-wider">Acción</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-outline-variant/50">
-                                {[
-                                    { name: 'Laptop Pro X15', sku: 'LAP-001', stock: 0, min: 10, priority: 'Crítico' },
-                                    { name: 'Cable Red Cat6', sku: 'CBL-CAT6', stock: 3, min: 50, priority: 'Crítico' },
-                                    { name: 'Monitor 27" 4K', sku: 'MON-027', stock: 8, min: 15, priority: 'Bajo' },
-                                    { name: 'Teclado Mecánico', sku: 'TEC-MEC', stock: 12, min: 20, priority: 'Bajo' },
-                                ].map((item, i) => (
-                                    <tr key={i} className="hover:bg-surface-container-low transition-colors">
-                                        <td className="py-3 pr-4 font-medium text-on-surface whitespace-nowrap">{item.name}</td>
-                                        <td className="py-3 pr-4 font-data-mono text-data-mono text-secondary">{item.sku}</td>
+                                {alertas.length === 0 && (
+                                    <tr><td colSpan={4} className="py-6 text-center text-on-surface-variant">No hay productos por reabastecer.</td></tr>
+                                )}
+                                {alertas.map((item) => (
+                                    <tr key={item.id} className="hover:bg-surface-container-low transition-colors">
+                                        <td className="py-3 pr-4 font-medium text-on-surface whitespace-nowrap">{item.nombre}</td>
                                         <td className="py-3 pr-4 text-center">
-                                            <span className={`font-bold ${item.stock === 0 ? 'text-error' : 'text-tertiary'}`}>{item.stock}</span>
+                                            <span className={`font-bold ${item.stockActual === 0 ? 'text-error' : 'text-tertiary'}`}>{item.stockActual}</span>
                                         </td>
-                                        <td className="py-3 pr-4 text-center text-secondary">{item.min}</td>
+                                        <td className="py-3 pr-4 text-center text-secondary">{item.stockMinimo}</td>
                                         <td className="py-3 pr-4 text-center">
-                                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${item.priority === 'Crítico' ? 'bg-error-container text-on-error-container' : 'bg-tertiary-container/20 text-tertiary'}`}>
-                                                {item.priority}
+                                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${item.estado === 'agotado' ? 'bg-error-container text-on-error-container' : 'bg-tertiary-container/20 text-tertiary'}`}>
+                                                {item.estado === 'agotado' ? 'Crítico' : 'Bajo'}
                                             </span>
-                                        </td>
-                                        <td className="py-3 text-right">
-                                            <button className="text-xs px-3 py-1 rounded-lg bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container transition-colors">
-                                                Ordenar
-                                            </button>
                                         </td>
                                     </tr>
                                 ))}

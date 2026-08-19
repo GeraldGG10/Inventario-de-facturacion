@@ -1,0 +1,381 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// Módulo 4 — Administración y Seguridad
+// ============================================================================
+
+model Usuario {
+  id           String   @id @default(uuid())
+  nombre       String
+  nombreUsuario String  @unique @map("nombre_usuario")
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  rolId        String   @map("rol_id")
+  activo       Boolean  @default(true)
+  ultimoAcceso DateTime? @map("ultimo_acceso")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  rol           Rol            @relation(fields: [rolId], references: [id])
+  refreshTokens RefreshToken[]
+  auditorias    Auditoria[]
+  facturas      Factura[]
+  movimientos   MovimientoInventario[]
+  entradas      EntradaMercancia[]
+  devoluciones  Devolucion[]
+
+  @@map("usuarios")
+}
+
+model Rol {
+  id     String @id @default(uuid())
+  nombre String @unique
+
+  usuarios Usuario[]
+  permisos RolPermiso[]
+
+  @@map("roles")
+}
+
+model Permiso {
+  id          String  @id @default(uuid())
+  nombre      String  @unique
+  descripcion String?
+
+  roles RolPermiso[]
+
+  @@map("permisos")
+}
+
+model RolPermiso {
+  rolId     String @map("rol_id")
+  permisoId String @map("permiso_id")
+
+  rol     Rol     @relation(fields: [rolId], references: [id], onDelete: Cascade)
+  permiso Permiso @relation(fields: [permisoId], references: [id], onDelete: Cascade)
+
+  @@id([rolId, permisoId])
+  @@map("rol_permisos")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  usuarioId String   @map("usuario_id")
+  revocado  Boolean  @default(false)
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model Auditoria {
+  id           String   @id @default(uuid())
+  usuarioId    String?  @map("usuario_id")
+  accion       String
+  entidad      String
+  entidadId    String?  @map("entidad_id")
+  datosAntes   String?  @map("datos_antes")
+  datosDespues String?  @map("datos_despues")
+  timestamp    DateTime @default(now())
+
+  usuario Usuario? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  @@map("auditoria")
+  @@index([entidad, entidadId])
+  @@index([usuarioId])
+}
+
+model ConfiguracionEmpresa {
+  id           String  @id @default("default")
+  nombre       String  @default("Mi Empresa")
+  rnc          String?
+  telefono     String?
+  correo       String?
+  direccion    String?
+  logoPath     String? @map("logo_path")
+  notasFactura String? @map("notas_factura")
+
+  @@map("configuracion_empresa")
+}
+
+model ConfiguracionFacturacion {
+  id                         String  @id @default("default")
+  serieFactura               String  @default("FAC-") @map("serie_factura")
+  impuestoPorcentaje         Float   @default(18) @map("impuesto_porcentaje")
+  moneda                     String  @default("DOP")
+  metodosPagoHabilitados     String  @default("efectivo,tarjeta,transferencia,mixto") @map("metodos_pago_habilitados")
+  descuentoMaximoSinAprobar  Float   @default(10) @map("descuento_maximo_sin_aprobar")
+  permiteCredito             Boolean @default(false) @map("permite_credito")
+  mostrarDesgloseImpuesto    Boolean @default(true) @map("mostrar_desglose_impuesto")
+
+  @@map("configuracion_facturacion")
+}
+
+model ConfiguracionInventario {
+  id                            String  @id @default("default")
+  stockMinimoDefault             Int     @default(5) @map("stock_minimo_default")
+  umbralStockBajoPorcentaje       Int     @default(30) @map("umbral_stock_bajo_porcentaje")
+  umbralStockCriticoPorcentaje    Int     @default(10) @map("umbral_stock_critico_porcentaje")
+  notificarApp                   Boolean @default(true) @map("notificar_app")
+  notificarEmail                 Boolean @default(false) @map("notificar_email")
+  notificarSms                   Boolean @default(false) @map("notificar_sms")
+
+  @@map("configuracion_inventario")
+}
+
+model ConfiguracionSistema {
+  id                    String @id @default("default")
+  backupFrecuenciaHoras Int    @default(24) @map("backup_frecuencia_horas")
+  backupCarpeta         String @default("backups") @map("backup_carpeta")
+  backupMaxArchivos     Int    @default(14) @map("backup_max_archivos")
+
+  @@map("configuracion_sistema")
+}
+
+// ============================================================================
+// Módulo 1 — Inventario
+// ============================================================================
+
+model Categoria {
+  id          String   @id @default(uuid())
+  nombre      String   @unique
+  descripcion String?
+  activa      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  productos Producto[]
+
+  @@map("categorias")
+}
+
+model Ubicacion {
+  id     String  @id @default(uuid())
+  nombre String  @unique
+  activa Boolean @default(true)
+
+  productos Producto[]
+
+  @@map("ubicaciones")
+}
+
+model Proveedor {
+  id                String   @id @default(uuid())
+  nombre            String
+  rnc               String?
+  tipo              String   @default("empresa")
+  contactoNombre    String?  @map("contacto_nombre")
+  telefono          String?
+  correo            String?
+  direccion         String?
+  ciudad            String?
+  categoria         String?
+  condicionesPago   String   @default("contado") @map("condiciones_pago")
+  observaciones     String?
+  activo            Boolean  @default(true)
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  productos Producto[]
+  entradas  EntradaMercancia[]
+
+  @@map("proveedores")
+}
+
+model Producto {
+  id            String   @id @default(uuid())
+  codigo        String   @unique
+  codigoBarras  String?  @unique @map("codigo_barras")
+  nombre        String
+  descripcion   String?
+  categoriaId   String?  @map("categoria_id")
+  proveedorId   String?  @map("proveedor_id")
+  ubicacionId   String?  @map("ubicacion_id")
+  unidadMedida  String   @default("unidad") @map("unidad_medida")
+  precioCosto   Float    @map("precio_costo")
+  precioVenta   Float    @map("precio_venta")
+  stockActual   Int      @default(0) @map("stock_actual")
+  stockMinimo   Int      @default(5) @map("stock_minimo")
+  activo        Boolean  @default(true)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  categoria   Categoria? @relation(fields: [categoriaId], references: [id])
+  proveedor   Proveedor? @relation(fields: [proveedorId], references: [id])
+  ubicacion   Ubicacion? @relation(fields: [ubicacionId], references: [id])
+  movimientos MovimientoInventario[]
+  alertas     AlertaInventario[]
+  detalles    DetalleFactura[]
+  entradas    EntradaMercanciaDetalle[]
+  devoluciones DevolucionDetalle[]
+
+  @@map("productos")
+  @@index([categoriaId])
+  @@index([proveedorId])
+}
+
+model MovimientoInventario {
+  id            String   @id @default(uuid())
+  productoId    String   @map("producto_id")
+  tipo          String
+  cantidad      Int
+  stockAnterior Int      @map("stock_anterior")
+  stockNuevo    Int      @map("stock_nuevo")
+  motivo        String?
+  referencia    String?
+  usuarioId     String?  @map("usuario_id")
+  fecha         DateTime @default(now())
+
+  producto Producto @relation(fields: [productoId], references: [id])
+  usuario  Usuario? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  @@map("movimientos_inventario")
+  @@index([productoId])
+  @@index([fecha])
+}
+
+model AlertaInventario {
+  id                String    @id @default(uuid())
+  productoId        String    @map("producto_id")
+  stockActual       Int       @map("stock_actual")
+  stockMinimo       Int       @map("stock_minimo")
+  cantidadSugerida  Int       @map("cantidad_sugerida")
+  estado            String    @default("pendiente")
+  fechaGenerada     DateTime  @default(now()) @map("fecha_generada")
+  fechaAtendida     DateTime? @map("fecha_atendida")
+
+  producto Producto @relation(fields: [productoId], references: [id])
+
+  @@map("alertas_inventario")
+  @@index([productoId, estado])
+}
+
+model EntradaMercancia {
+  id            String   @id @default(uuid())
+  proveedorId   String   @map("proveedor_id")
+  usuarioId     String?  @map("usuario_id")
+  fecha         DateTime @default(now())
+  observaciones String?
+
+  proveedor Proveedor                @relation(fields: [proveedorId], references: [id])
+  usuario   Usuario?                 @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+  detalles  EntradaMercanciaDetalle[]
+
+  @@map("entradas_mercancia")
+}
+
+model EntradaMercanciaDetalle {
+  id             String @id @default(uuid())
+  entradaId      String @map("entrada_id")
+  productoId     String @map("producto_id")
+  cantidad       Int
+  costoUnitario  Float  @map("costo_unitario")
+  subtotal       Float
+
+  entrada  EntradaMercancia @relation(fields: [entradaId], references: [id], onDelete: Cascade)
+  producto Producto         @relation(fields: [productoId], references: [id])
+
+  @@map("entradas_mercancia_detalle")
+}
+
+// ============================================================================
+// Módulo 2 — Facturación
+// ============================================================================
+
+model Cliente {
+  id             String   @id @default(uuid())
+  nombre         String
+  documento      String?  @unique
+  telefono       String?
+  correo         String?
+  direccion      String?
+  limiteCredito  Float?   @map("limite_credito")
+  activo         Boolean  @default(true)
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  facturas Factura[]
+
+  @@map("clientes")
+}
+
+model Factura {
+  id                  Int       @id @default(autoincrement())
+  clienteId           String    @map("cliente_id")
+  usuarioId           String?   @map("usuario_id")
+  fecha               DateTime  @default(now())
+  subtotal            Float
+  descuentoPorcentaje Float     @default(0) @map("descuento_porcentaje")
+  descuentoMonto      Float     @default(0) @map("descuento_monto")
+  impuestoPorcentaje  Float     @default(18) @map("impuesto_porcentaje")
+  impuestoMonto       Float     @map("impuesto_monto")
+  total               Float
+  metodoPago          String    @map("metodo_pago")
+  referenciaTransferencia String? @map("referencia_transferencia")
+  montoEfectivo           Float?  @map("monto_efectivo")
+  montoTransferencia      Float?  @map("monto_transferencia")
+  estado              String    @default("emitida")
+  motivoAnulacion     String?   @map("motivo_anulacion")
+  anuladaEn           DateTime? @map("anulada_en")
+  anuladaPorId        String?   @map("anulada_por_id")
+
+  cliente     Cliente          @relation(fields: [clienteId], references: [id])
+  usuario     Usuario?         @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+  detalles    DetalleFactura[]
+  devoluciones Devolucion[]
+
+  @@map("facturas")
+  @@index([clienteId])
+  @@index([fecha])
+  @@index([estado])
+}
+
+model DetalleFactura {
+  id                  String @id @default(uuid())
+  facturaId           Int    @map("factura_id")
+  productoId          String @map("producto_id")
+  cantidad             Int
+  precioUnitario       Float  @map("precio_unitario")
+  costoUnitario        Float  @map("costo_unitario")
+  descuentoPorcentaje  Float  @default(0) @map("descuento_porcentaje")
+  subtotal             Float
+
+  factura  Factura  @relation(fields: [facturaId], references: [id], onDelete: Cascade)
+  producto Producto @relation(fields: [productoId], references: [id])
+
+  @@map("detalle_factura")
+  @@index([facturaId])
+  @@index([productoId])
+}
+
+model Devolucion {
+  id        String   @id @default(uuid())
+  facturaId Int      @map("factura_id")
+  usuarioId String?  @map("usuario_id")
+  fecha     DateTime @default(now())
+  motivo    String
+
+  factura  Factura              @relation(fields: [facturaId], references: [id])
+  usuario  Usuario?             @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+  detalles DevolucionDetalle[]
+
+  @@map("devoluciones")
+}
+
+model DevolucionDetalle {
+  id              String @id @default(uuid())
+  devolucionId    String @map("devolucion_id")
+  productoId      String @map("producto_id")
+  cantidadDevuelta Int   @map("cantidad_devuelta")
+
+  devolucion Devolucion @relation(fields: [devolucionId], references: [id], onDelete: Cascade)
+  producto   Producto   @relation(fields: [productoId], references: [id])
+
+  @@map("devoluciones_detalle")
+}

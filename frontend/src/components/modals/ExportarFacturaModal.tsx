@@ -1,11 +1,24 @@
-﻿import React from 'react';
+import React, { useState } from 'react';
+import { abrirArchivoConAuth } from '../../lib/api';
 
 interface Props {
     onClose: () => void;
-    facturaId?: string;
+    facturaId: number;
+    numero: string;
 }
 
-export const ExportarFacturaModal = ({ onClose, facturaId = 'INV-2023-4050' }: Props) => {
+export const ExportarFacturaModal = ({ onClose, facturaId, numero }: Props) => {
+    const [error, setError] = useState<string | null>(null);
+
+    async function handlePdf() {
+        try {
+            await abrirArchivoConAuth(`/facturas/${facturaId}/pdf`);
+            onClose();
+        } catch {
+            setError('No se pudo generar el PDF');
+        }
+    }
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/40 backdrop-blur-sm p-4">
             <div className="bg-surface-container-lowest w-full max-w-md rounded-2xl shadow-2xl flex flex-col border border-outline-variant">
@@ -16,30 +29,23 @@ export const ExportarFacturaModal = ({ onClose, facturaId = 'INV-2023-4050' }: P
                     </button>
                 </div>
                 <div className="p-6 space-y-4">
-                    <p className="font-body-sm text-body-sm text-on-surface-variant">Selecciona el formato de exportación para la factura <span className="font-data-mono text-primary">{facturaId}</span>.</p>
+                    <p className="font-body-sm text-body-sm text-on-surface-variant">Selecciona el formato de exportación para la factura <span className="font-data-mono text-primary">{numero}</span>.</p>
+                    {error && <p className="text-body-sm text-error">{error}</p>}
                     <div className="grid grid-cols-2 gap-3">
-                        {[
-                            { icon: 'picture_as_pdf', label: 'PDF', desc: 'Listo para imprimir', color: 'text-red-600' },
-                            { icon: 'table_view', label: 'Excel', desc: 'Hoja de cálculo', color: 'text-green-600' },
-                            { icon: 'code', label: 'XML/DGII', desc: 'Para declaración', color: 'text-blue-600' },
-                            { icon: 'print', label: 'Imprimir', desc: 'Imprimir ahora', color: 'text-on-surface' },
-                        ].map(opt => (
-                            <button
-                                key={opt.label}
-                                onClick={onClose}
-                                className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-outline-variant hover:border-primary bg-surface-container-lowest hover:bg-primary-container/10 transition-colors group"
-                            >
-                                <span className={`material-symbols-outlined text-[32px] ${opt.color} group-hover:text-primary`}>{opt.icon}</span>
-                                <span className="font-title-sm text-title-sm text-on-surface">{opt.label}</span>
-                                <span className="font-body-sm text-body-sm text-on-surface-variant text-center">{opt.desc}</span>
-                            </button>
-                        ))}
+                        <button onClick={handlePdf} className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-outline-variant hover:border-primary bg-surface-container-lowest hover:bg-primary-container/10 transition-colors group">
+                            <span className="material-symbols-outlined text-[32px] text-red-600 group-hover:text-primary">picture_as_pdf</span>
+                            <span className="font-title-sm text-title-sm text-on-surface">PDF</span>
+                            <span className="font-body-sm text-body-sm text-on-surface-variant text-center">Listo para imprimir</span>
+                        </button>
+                        <button onClick={handlePdf} className="flex flex-col items-center gap-2 p-4 rounded-xl border-2 border-outline-variant hover:border-primary bg-surface-container-lowest hover:bg-primary-container/10 transition-colors group">
+                            <span className="material-symbols-outlined text-[32px] text-on-surface group-hover:text-primary">print</span>
+                            <span className="font-title-sm text-title-sm text-on-surface">Imprimir</span>
+                            <span className="font-body-sm text-body-sm text-on-surface-variant text-center">Abre el PDF para imprimir</span>
+                        </button>
                     </div>
                 </div>
                 <div className="p-4 border-t border-outline-variant flex justify-end">
-                    <button onClick={onClose} className="px-5 py-2 rounded-lg text-body-sm font-medium text-secondary hover:bg-surface-variant transition-colors">
-                        Cancelar
-                    </button>
+                    <button onClick={onClose} className="px-5 py-2 rounded-lg text-body-sm font-medium text-secondary hover:bg-surface-variant transition-colors">Cerrar</button>
                 </div>
             </div>
         </div>
