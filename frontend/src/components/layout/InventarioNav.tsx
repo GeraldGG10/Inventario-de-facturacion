@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { api } from '../../lib/api';
 
 export const InventarioNav = () => {
+    const [alertasPendientes, setAlertasPendientes] = useState(0);
+
+    useEffect(() => {
+        api.get('/alertas').then((data) => setAlertasPendientes(data.length)).catch(() => {});
+    }, []);
+
     const navItemClass = ({ isActive }: { isActive: boolean }) => {
         const baseClass = "font-title-sm text-title-sm pb-2 whitespace-nowrap transition-colors flex items-center gap-2 ";
         if (isActive) {
@@ -20,7 +27,9 @@ export const InventarioNav = () => {
             </NavLink>
             <NavLink to="/inventario/alertas" className={navItemClass}>
                 Alertas
-                <span className="bg-error-container text-on-error-container text-[10px] px-2 py-0.5 rounded-full font-data-mono font-bold">3</span>
+                {alertasPendientes > 0 && (
+                    <span className="bg-error-container text-on-error-container text-[10px] px-2 py-0.5 rounded-full font-data-mono font-bold">{alertasPendientes}</span>
+                )}
             </NavLink>
             <NavLink to="/inventario/categorias" className={navItemClass}>
                 Categorías

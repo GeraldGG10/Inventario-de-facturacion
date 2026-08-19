@@ -5,6 +5,7 @@ import { prisma } from '../config/prisma';
 import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../utils/jwt';
 import { env } from '../config/env';
 import { registrarAuditoria } from '../services/auditoria';
+import { requireAuth } from '../middleware/requireAuth';
 
 export const authRouter = Router();
 
@@ -54,6 +55,8 @@ authRouter.post('/login', async (req, res) => {
     },
   });
 
+  await prisma.usuario.update({ where: { id: usuario.id }, data: { ultimoAcceso: new Date() } });
+
   await registrarAuditoria({
     usuarioId: usuario.id,
     accion: 'login',
@@ -64,8 +67,26 @@ authRouter.post('/login', async (req, res) => {
   res.json({
     accessToken,
     refreshToken,
-    usuario: { id: usuario.id, nombre: usuario.nombre, email: usuario.email, rol: usuario.rol.nombre },
+    usuario: {
+      id: usuario.id,
+      nombre: usuario.nombre,
+      nombreUsuario: usuario.nombreUsuario,
+      email: usuario.email,
+      rol: usuario.rol.nombre,
+      permisos,
+    },
   });
+});
+
+authRouter.get('/me', requireAuth, async (req, res) => {
+  const usuario = await prisma.usuario.findUnique({
+    where: { id: req.auth!.sub },
+    select: { id: true, nombre: true, nombreUsuario: true, email: true, activo: true, rol: { select: { nombre: true } } },
+  });
+  if (!usuario || !usuario.activo) {
+    return res.status(401).json({ error: 'Usuario inválido' });
+  }
+  res.json({ ...usuario, rol: usuario.rol.nombre, permisos: req.auth!.permisos });
 });
 
 const refreshSchema = z.object({
@@ -115,4 +136,15 @@ authRouter.post('/refresh', async (req, res) => {
   });
 
   res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
+});
+
+authRouter.post('/logout', async (req, res) => {
+  const parsed = refreshSchema.safeParse(req.body);
+  if (parsed.success) {
+    await prisma.refreshToken.updateMany({
+      where: { token: parsed.data.refreshToken },
+      data: { revocado: true },
+    });
+  }
+  res.status(204).send();
 });

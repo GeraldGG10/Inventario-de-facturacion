@@ -1,5 +1,16 @@
 node_modules/
 dist/
+dist-electron/
 .env
 .env.local
 *.log
+backend/*.db
+backend/*.db-journal
+backend/*.db-shm
+backend/*.db-wal
+backend/prisma/*.db
+backend/prisma/*.db-journal
+backend/prisma/*.db-shm
+backend/prisma/*.db-wal
+backend/backups/
+release/

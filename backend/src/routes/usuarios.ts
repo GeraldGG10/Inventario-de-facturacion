@@ -10,16 +10,20 @@ export const usuariosRouter = Router();
 
 usuariosRouter.use(requireAuth, requirePermission('usuarios.administrar'));
 
+const usuarioSelect = {
+  id: true,
+  nombre: true,
+  nombreUsuario: true,
+  email: true,
+  activo: true,
+  ultimoAcceso: true,
+  createdAt: true,
+  rol: { select: { id: true, nombre: true } },
+} as const;
+
 usuariosRouter.get('/', async (_req, res) => {
   const usuarios = await prisma.usuario.findMany({
-    select: {
-      id: true,
-      nombre: true,
-      email: true,
-      activo: true,
-      createdAt: true,
-      rol: { select: { id: true, nombre: true } },
-    },
+    select: usuarioSelect,
     orderBy: { createdAt: 'desc' },
   });
   res.json(usuarios);
@@ -27,6 +31,7 @@ usuariosRouter.get('/', async (_req, res) => {
 
 const crearUsuarioSchema = z.object({
   nombre: z.string().min(1),
+  nombreUsuario: z.string().min(3),
   email: z.string().email(),
   password: z.string().min(8),
   rolId: z.string().uuid(),
@@ -37,17 +42,17 @@ usuariosRouter.post('/', async (req, res) => {
   if (!parsed.success) {
     return res.status(400).json({ error: parsed.error.flatten() });
   }
-  const { nombre, email, password, rolId } = parsed.data;
+  const { nombre, nombreUsuario, email, password, rolId } = parsed.data;
 
-  const existente = await prisma.usuario.findUnique({ where: { email } });
+  const existente = await prisma.usuario.findFirst({ where: { OR: [{ email }, { nombreUsuario }] } });
   if (existente) {
-    return res.status(409).json({ error: 'Ya existe un usuario con ese email' });
+    return res.status(409).json({ error: 'Ya existe un usuario con ese email o nombre de usuario' });
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
   const usuario = await prisma.usuario.create({
-    data: { nombre, email, passwordHash, rolId },
-    select: { id: true, nombre: true, email: true, activo: true, rol: { select: { id: true, nombre: true } } },
+    data: { nombre, nombreUsuario, email, passwordHash, rolId },
+    select: usuarioSelect,
   });
 
   await registrarAuditoria({
@@ -88,7 +93,7 @@ usuariosRouter.patch('/:id', async (req, res) => {
   const usuario = await prisma.usuario.update({
     where: { id: req.params.id },
     data,
-    select: { id: true, nombre: true, email: true, activo: true, rol: { select: { id: true, nombre: true } } },
+    select: usuarioSelect,
   });
 
   await registrarAuditoria({

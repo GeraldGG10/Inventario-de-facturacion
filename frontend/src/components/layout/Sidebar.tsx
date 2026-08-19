@@ -1,9 +1,22 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
 export const Sidebar = ({ children }: { children: React.ReactNode }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const { usuario, logout } = useAuth();
+    const navigate = useNavigate();
+
+    const iniciales = usuario?.nombre
+        ? usuario.nombre.split(' ').slice(0, 2).map((p) => p[0]?.toUpperCase()).join('')
+        : '?';
+
+    function handleLogout() {
+        logout();
+        navigate('/login');
+    }
 
     const toggleSidebar = () => setIsOpen(!isOpen);
 
@@ -189,8 +202,31 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
                                 </>
                             )}
                         </div>
-                        <div className="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-primary font-bold cursor-pointer hover:bg-secondary-fixed-dim transition-colors border border-outline-variant">
-                            UP
+                        <div className="relative">
+                            <div
+                                className="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-primary font-bold cursor-pointer hover:bg-secondary-fixed-dim transition-colors border border-outline-variant"
+                                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                                title={usuario ? `${usuario.nombre} (${usuario.rol})` : ''}
+                            >
+                                {iniciales}
+                            </div>
+                            {isUserMenuOpen && (
+                                <>
+                                    <div className="fixed inset-0 z-40" onClick={() => setIsUserMenuOpen(false)}></div>
+                                    <div className="absolute right-0 mt-2 w-56 bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant dark:border-outline/30 rounded-xl shadow-lg z-50 overflow-hidden">
+                                        <div className="p-4 border-b border-outline-variant/50">
+                                            <p className="text-body-sm font-semibold text-on-surface">{usuario?.nombre}</p>
+                                            <p className="text-xs text-on-surface-variant capitalize">{usuario?.rol}</p>
+                                        </div>
+                                        <button
+                                            className="w-full text-left p-3 text-body-sm text-error hover:bg-error/10 transition-colors"
+                                            onClick={handleLogout}
+                                        >
+                                            Cerrar sesión
+                                        </button>
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </header>

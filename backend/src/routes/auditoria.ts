@@ -48,5 +48,14 @@ auditoriaRouter.get('/', async (req, res) => {
     }),
   ]);
 
-  res.json({ total, page, pageSize, registros });
+  res.json({
+    total,
+    page,
+    pageSize,
+    registros: registros.map((r) => ({
+      ...r,
+      datosAntes: r.datosAntes ? JSON.parse(r.datosAntes) : null,
+      datosDespues: r.datosDespues ? JSON.parse(r.datosDespues) : null,
+    })),
+  });
 });
