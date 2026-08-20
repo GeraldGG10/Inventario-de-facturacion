@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { prisma } from '../config/prisma';
 import { requireAuth } from '../middleware/requireAuth';
 import { requirePermission } from '../middleware/requirePermission';
+import { reconciliarAlertas } from '../services/inventario';
 
 export const alertasRouter = Router();
 
@@ -16,6 +17,8 @@ const listQuerySchema = z.object({
 alertasRouter.get('/', async (req, res) => {
   const parsed = listQuerySchema.safeParse(req.query);
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
+
+  await reconciliarAlertas();
 
   const alertas = await prisma.alertaInventario.findMany({
     where: {

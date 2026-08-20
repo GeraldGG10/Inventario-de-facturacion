@@ -22,6 +22,7 @@ export const EditarClienteModal = ({ cliente, onClose, onEditado }: Props) => {
     const [documento, setDocumento] = useState(cliente.documento || '');
     const [telefono, setTelefono] = useState(cliente.telefono || '');
     const [correo, setCorreo] = useState(cliente.correo || '');
+    const [direccion, setDireccion] = useState(cliente.direccion || '');
     const [limiteCredito, setLimiteCredito] = useState(cliente.limiteCredito !== null && cliente.limiteCredito !== undefined ? String(cliente.limiteCredito) : '');
     const [error, setError] = useState<string | null>(null);
     const [guardando, setGuardando] = useState(false);
@@ -36,6 +37,7 @@ export const EditarClienteModal = ({ cliente, onClose, onEditado }: Props) => {
                 documento: documento || null,
                 telefono: telefono || null,
                 correo: correo || null,
+                direccion: direccion || null,
                 limiteCredito: limiteCredito ? Number(limiteCredito) : null,
             });
             onEditado();
@@ -78,6 +80,10 @@ export const EditarClienteModal = ({ cliente, onClose, onEditado }: Props) => {
                             <label className="block text-body-sm font-semibold text-on-surface mb-2">Email</label>
                             <input value={correo} onChange={(e) => setCorreo(e.target.value)} type="email" placeholder="contacto@empresa.com" className="w-full px-4 py-2 bg-surface border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none" />
                         </div>
+                    </div>
+                    <div>
+                        <label className="block text-body-sm font-semibold text-on-surface mb-2">Dirección</label>
+                        <input value={direccion} onChange={(e) => setDireccion(e.target.value)} type="text" placeholder="Ej. Av. Winston Churchill #123, Santo Domingo" className="w-full px-4 py-2 bg-surface border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none" />
                     </div>
                     <div>
                         <label className="block text-body-sm font-semibold text-on-surface mb-2">Límite de Crédito</label>

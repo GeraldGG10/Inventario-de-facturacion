@@ -6,6 +6,7 @@ import { ExportarFacturaModal } from '../components/modals/ExportarFacturaModal'
 import { PagoDetallesModal } from '../components/modals/PagoDetallesModal';
 import { FacturaDetallesModal } from '../components/modals/FacturaDetallesModal';
 import { api, ApiError, abrirArchivoConAuth } from '../lib/api';
+import { useToast } from '../context/ToastContext';
 
 interface Cliente { id: string; nombre: string; documento: string | null; telefono: string | null; limiteCredito: number | null }
 interface LineaFactura { producto: ProductoFacturable; cantidad: number }
@@ -39,6 +40,7 @@ export const Facturacion = () => {
     const [facturaExportar, setFacturaExportar] = useState<FacturaReciente | null>(null);
     const [facturaDetalles, setFacturaDetalles] = useState<any | null>(null);
     const [isPagoDetallesOpen, setIsPagoDetallesOpen] = useState(false);
+    const { mostrarToast } = useToast();
 
     function cargarFacturasRecientes() {
         api.get('/facturas', { pageSize: 5 }).then((data) => setFacturasRecientes(data.facturas)).catch(() => {});
@@ -111,11 +113,13 @@ export const Facturacion = () => {
                 lineas: lineas.map((l) => ({ productoId: l.producto.id, cantidad: l.cantidad })),
             });
             setExito(`Venta registrada: factura ${factura.numero}`);
+            mostrarToast(`Venta registrada: factura ${factura.numero}`, 'success');
             setLineas([]);
             setClienteSeleccionado(null);
             setBusquedaCliente('');
             cargarFacturasRecientes();
         } catch (err) {
+            mostrarToast(err instanceof ApiError ? err.message : 'No se pudo registrar la venta', 'error');
             setError(err instanceof ApiError ? err.message : 'No se pudo registrar la venta');
         } finally {
             setEnviando(false);
@@ -330,7 +334,7 @@ export const Facturacion = () => {
                                         )}
                                     </td>
                                     <td className="p-3 text-center pr-6">
-                                        <button onClick={() => abrirArchivoConAuth(`/facturas/${f.id}/pdf`)} className="inline-flex items-center justify-center p-1.5 text-secondary hover:text-error transition-colors hover:bg-error-container/10 rounded-full" title="Descargar PDF">
+                                        <button onClick={() => abrirArchivoConAuth(`/facturas/${f.id}/pdf`).then(() => mostrarToast(`PDF de la factura ${f.numero} generado correctamente`, 'success')).catch(() => mostrarToast('No se pudo generar el PDF', 'error'))} className="inline-flex items-center justify-center p-1.5 text-secondary hover:text-error transition-colors hover:bg-error-container/10 rounded-full" title="Descargar PDF">
                                             <span className="material-symbols-outlined text-[20px]">picture_as_pdf</span>
                                         </button>
                                     </td>
@@ -361,7 +365,11 @@ export const Facturacion = () => {
                 <PagoDetallesModal metodoPago={metodoPago} totalFactura={total} onClose={() => setIsPagoDetallesOpen(false)} onConfirm={ejecutarVenta} />
             )}
             {facturaDetalles && (
-                <FacturaDetallesModal factura={facturaDetalles} onClose={() => setFacturaDetalles(null)} />
+                <FacturaDetallesModal
+                    factura={facturaDetalles}
+                    onClose={() => setFacturaDetalles(null)}
+                    onActualizada={() => { abrirDetallesFactura(facturaDetalles.id); cargarFacturasRecientes(); }}
+                />
             )}
         </div>
     );

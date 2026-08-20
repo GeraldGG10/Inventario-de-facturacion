@@ -5,6 +5,7 @@ import { FiltrosAvanzadosModal } from '../components/modals/FiltrosAvanzadosModa
 import { DetalleProductoModal, ProductoDetalle } from '../components/modals/DetalleProductoModal';
 import { EliminarConfirmModal } from '../components/modals/EliminarConfirmModal';
 import { api, ApiError } from '../lib/api';
+import { useToast } from '../context/ToastContext';
 
 interface Producto extends ProductoDetalle {
     descripcion: string | null;
@@ -41,6 +42,7 @@ export const Inventario = () => {
     const [productoDetalle, setProductoDetalle] = useState<Producto | null>(null);
     const [productoEditar, setProductoEditar] = useState<Producto | null>(null);
     const [productoEliminar, setProductoEliminar] = useState<Producto | null>(null);
+    const { mostrarToast } = useToast();
 
     useEffect(() => {
         api.get('/categorias').then(setCategorias).catch(() => {});
@@ -55,21 +57,25 @@ export const Inventario = () => {
             .finally(() => setCargando(false));
     }
 
-    useEffect(() => { cargar(); }, [page, categoriaId, estado]);
+    // Al cambiar cualquier filtro, volvemos a la página 1 antes de recargar.
+    useEffect(() => { setPage(1); }, [busqueda, categoriaId, estado]);
+
+    // Búsqueda en vivo: dispara con cada tecleo, igual que en Clientes/Proveedores.
+    useEffect(() => { cargar(); }, [page, categoriaId, estado, busqueda]);
 
     function buscar(e: React.FormEvent) {
         e.preventDefault();
-        setPage(1);
-        cargar();
     }
 
     async function desactivar() {
         if (!productoEliminar) return;
         try {
             await api.post(`/productos/${productoEliminar.id}/desactivar`);
+            mostrarToast('Producto desactivado correctamente', 'success');
             setProductoEliminar(null);
             cargar();
         } catch (err) {
+            mostrarToast(err instanceof ApiError ? err.message : 'No se pudo desactivar el producto', 'error');
             setError(err instanceof ApiError ? err.message : 'No se pudo desactivar el producto');
         }
     }
@@ -110,6 +116,7 @@ export const Inventario = () => {
                             <option value="">Todas las Categorías</option>
                             {categorias.map((c) => <option key={c.id} value={c.id}>{c.nombre}</option>)}
                         </select>
+                        <span className="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">expand_more</span>
                     </div>
                     <div className="relative flex-1">
                         <select
@@ -123,6 +130,7 @@ export const Inventario = () => {
                             <option value="agotado">Agotado</option>
                             <option value="inactivo">Inactivo</option>
                         </select>
+                        <span className="material-symbols-outlined pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">expand_more</span>
                     </div>
                     <button type="submit" className="px-4 py-2 bg-surface border border-outline-variant rounded-lg text-secondary hover:bg-surface-container transition-colors">Buscar</button>
                     <button type="button" onClick={() => setIsFiltrosOpen(true)} className="p-2 border border-outline-variant rounded-lg text-secondary hover:bg-surface-container transition-colors flex items-center justify-center gap-2 bg-surface sm:w-auto" title="Filtros Avanzados">
@@ -202,7 +210,7 @@ export const Inventario = () => {
             </div>
 
             {isModalOpen && (
-                <NuevoArticuloModal onClose={() => setIsModalOpen(false)} onGuardado={() => { setIsModalOpen(false); cargar(); }} />
+                <NuevoArticuloModal onClose={() => setIsModalOpen(false)} onGuardado={() => { setIsModalOpen(false); mostrarToast('Artículo creado correctamente', 'success'); cargar(); }} />
             )}
 
             {isFiltrosOpen && <FiltrosAvanzadosModal onClose={() => setIsFiltrosOpen(false)} />}
@@ -228,7 +236,7 @@ export const Inventario = () => {
                         ubicacionId: productoEditar.ubicacionId ?? '',
                     }}
                     onClose={() => setProductoEditar(null)}
-                    onGuardado={() => { setProductoEditar(null); cargar(); }}
+                    onGuardado={() => { setProductoEditar(null); mostrarToast('Artículo actualizado correctamente', 'success'); cargar(); }}
                 />
             )}
 

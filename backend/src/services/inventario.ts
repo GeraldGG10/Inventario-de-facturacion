@@ -97,6 +97,54 @@ export async function evaluarAlertaProducto(productoId: string) {
   await prisma.$transaction((tx) => reevaluarAlerta(tx, productoId, producto.stockActual, producto.stockMinimo));
 }
 
+/**
+ * Reconcilia la tabla AlertaInventario contra el estado real de los productos.
+ *
+ * Las alertas normalmente se mantienen al día vía reevaluarAlerta() en cada
+ * movimiento de stock, pero un producto puede quedar con stock bajo el
+ * mínimo sin pasar por ahí (p. ej. un seed/importación masiva con
+ * createMany, o una edición directa en la base). Sin esto, la página de
+ * Alertas podía mostrar menos productos de los que realmente estaban en
+ * "Stock Bajo"/"Agotado" en el listado de Inventario (que sí calcula el
+ * estado en vivo). Se llama antes de listar alertas para que ambas vistas
+ * queden siempre consistentes, sin importar cómo se haya originado el
+ * desajuste.
+ */
+export async function reconciliarAlertas(): Promise<void> {
+  const productosBajos = await prisma.producto.findMany({
+    where: { activo: true, stockActual: { lte: prisma.producto.fields.stockMinimo } },
+    select: { id: true, stockActual: true, stockMinimo: true },
+  });
+  const idsBajos = new Set(productosBajos.map((p) => p.id));
+
+  const pendientes = await prisma.alertaInventario.findMany({
+    where: { estado: 'pendiente' },
+    select: { id: true, productoId: true },
+  });
+  const idsConAlertaPendiente = new Set(pendientes.map((a) => a.productoId));
+
+  const faltantes = productosBajos.filter((p) => !idsConAlertaPendiente.has(p.id));
+  if (faltantes.length > 0) {
+    await prisma.alertaInventario.createMany({
+      data: faltantes.map((p) => ({
+        productoId: p.id,
+        stockActual: p.stockActual,
+        stockMinimo: p.stockMinimo,
+        cantidadSugerida: Math.max(p.stockMinimo * 2 - p.stockActual, p.stockMinimo),
+        estado: 'pendiente' as const,
+      })),
+    });
+  }
+
+  const idsARecuperar = pendientes.filter((a) => !idsBajos.has(a.productoId)).map((a) => a.id);
+  if (idsARecuperar.length > 0) {
+    await prisma.alertaInventario.updateMany({
+      where: { id: { in: idsARecuperar } },
+      data: { estado: 'atendida', fechaAtendida: new Date() },
+    });
+  }
+}
+
 export function estadoProducto(producto: { activo: boolean; stockActual: number; stockMinimo: number }): string {
   if (!producto.activo) return 'inactivo';
   if (producto.stockActual <= 0) return 'agotado';

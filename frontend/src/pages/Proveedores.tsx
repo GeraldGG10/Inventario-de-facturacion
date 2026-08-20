@@ -3,10 +3,12 @@ import { NuevoProveedorModal, ProveedorForm } from '../components/modals/NuevoPr
 import { FiltrosAvanzadosModal } from '../components/modals/FiltrosAvanzadosModal';
 import { EliminarConfirmModal } from '../components/modals/EliminarConfirmModal';
 import { api, ApiError } from '../lib/api';
+import { useToast } from '../context/ToastContext';
 
 interface Proveedor {
-    id: string; nombre: string; rnc: string | null; contactoNombre: string | null; telefono: string | null;
-    categoria: string | null; activo: boolean; productosSuministrados: number;
+    id: string; nombre: string; rnc: string | null; tipo: 'empresa' | 'persona'; contactoNombre: string | null; telefono: string | null;
+    correo: string | null; direccion: string | null; ciudad: string | null; categoria: string | null;
+    condicionesPago: string; observaciones: string | null; activo: boolean; productosSuministrados: number;
 }
 
 export const Proveedores = () => {
@@ -17,6 +19,7 @@ export const Proveedores = () => {
     const [proveedorEditar, setProveedorEditar] = useState<Proveedor | null>(null);
     const [proveedorDesactivar, setProveedorDesactivar] = useState<Proveedor | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const { mostrarToast } = useToast();
 
     function cargar() {
         api.get<Proveedor[]>('/proveedores', { busqueda }).then(setProveedores).catch((err) => setError(err instanceof ApiError ? err.message : 'No se pudieron cargar los proveedores'));
@@ -28,9 +31,11 @@ export const Proveedores = () => {
         if (!proveedorDesactivar) return;
         try {
             await api.patch(`/proveedores/${proveedorDesactivar.id}`, { activo: false });
+            mostrarToast('Proveedor desactivado correctamente', 'success');
             setProveedorDesactivar(null);
             cargar();
         } catch (err) {
+            mostrarToast(err instanceof ApiError ? err.message : 'No se pudo desactivar el proveedor', 'error');
             setError(err instanceof ApiError ? err.message : 'No se pudo desactivar el proveedor');
         }
     }
@@ -143,19 +148,19 @@ export const Proveedores = () => {
                         id: proveedorEditar.id,
                         nombre: proveedorEditar.nombre,
                         rnc: proveedorEditar.rnc ?? '',
-                        tipo: 'empresa',
+                        tipo: proveedorEditar.tipo,
                         contactoNombre: proveedorEditar.contactoNombre ?? '',
                         telefono: proveedorEditar.telefono ?? '',
-                        correo: '',
-                        direccion: '',
-                        ciudad: '',
+                        correo: proveedorEditar.correo ?? '',
+                        direccion: proveedorEditar.direccion ?? '',
+                        ciudad: proveedorEditar.ciudad ?? '',
                         categoria: proveedorEditar.categoria ?? '',
-                        condicionesPago: 'contado',
+                        condicionesPago: proveedorEditar.condicionesPago,
                         activo: proveedorEditar.activo,
-                        observaciones: '',
+                        observaciones: proveedorEditar.observaciones ?? '',
                     } : null}
                     onClose={() => setIsModalOpen(false)}
-                    onGuardado={() => { setIsModalOpen(false); cargar(); }}
+                    onGuardado={() => { setIsModalOpen(false); mostrarToast(proveedorEditar ? 'Proveedor actualizado correctamente' : 'Proveedor creado correctamente', 'success'); cargar(); }}
                 />
             )}
             {isFiltrosOpen && <FiltrosAvanzadosModal onClose={() => setIsFiltrosOpen(false)} />}

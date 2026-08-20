@@ -3,14 +3,21 @@ import { z } from 'zod';
 import { prisma } from '../config/prisma';
 import { requireAuth } from '../middleware/requireAuth';
 import { requirePermission } from '../middleware/requirePermission';
+import { reconciliarAlertas } from '../services/inventario';
 
 export const dashboardRouter = Router();
 
 dashboardRouter.use(requireAuth, requirePermission('dashboard.ver'));
 
-const PERIODOS_A_DIAS: Record<string, number> = { diario: 1, semanal: 7, mensual: 30, anual: 365 };
+const PERIODOS_A_DIAS: Record<string, number> = { semanal: 7, mensual: 30, anual: 365 };
 
 function desdePeriodo(periodo: string): Date {
+  if (periodo === 'diario') {
+    // "Hoy" es desde la medianoche local, no "últimas 24 horas".
+    const desde = new Date();
+    desde.setHours(0, 0, 0, 0);
+    return desde;
+  }
   const desde = new Date();
   desde.setDate(desde.getDate() - PERIODOS_A_DIAS[periodo]);
   return desde;
@@ -164,6 +171,8 @@ dashboardRouter.get('/clientes/top', async (_req, res) => {
 });
 
 dashboardRouter.get('/reposicion', async (_req, res) => {
+  await reconciliarAlertas();
+
   const alertas = await prisma.alertaInventario.findMany({
     where: { estado: 'pendiente' },
     include: { producto: { select: { id: true, nombre: true } } },

@@ -7,6 +7,7 @@ export interface ProductoFacturable {
     nombre: string;
     stockActual: number;
     precioVenta: number;
+    estado?: string;
 }
 
 interface Props {
@@ -21,7 +22,13 @@ export const AgregarProductoFacturaModal = ({ onClose, onAgregar }: Props) => {
     const [productos, setProductos] = useState<ProductoFacturable[]>([]);
 
     useEffect(() => {
-        api.get('/productos', { busqueda, estado: 'disponible', pageSize: 20 }).then((data) => setProductos(data.productos)).catch(() => setProductos([]));
+        // No filtramos por estado 'disponible' en el backend: eso también
+        // excluía "stock_bajo", impidiendo vender las últimas unidades de un
+        // producto. Solo ocultamos agotados (sin stock) e inactivos.
+        api
+            .get('/productos', { busqueda, pageSize: 50 })
+            .then((data) => setProductos(data.productos.filter((p: ProductoFacturable) => p.estado !== 'agotado' && p.estado !== 'inactivo')))
+            .catch(() => setProductos([]));
     }, [busqueda]);
 
     return (

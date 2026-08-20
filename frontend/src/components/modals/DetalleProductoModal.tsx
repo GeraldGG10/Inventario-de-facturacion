@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { api, ApiError } from '../../lib/api';
+import { useToast } from '../../context/ToastContext';
 
 export interface ProductoDetalle {
     id: string;
@@ -34,6 +35,7 @@ export const DetalleProductoModal = ({ onClose, producto, onAjustado }: Props) =
     const [cantidad, setCantidad] = useState('1');
     const [error, setError] = useState<string | null>(null);
     const [enviando, setEnviando] = useState(false);
+    const { mostrarToast } = useToast();
 
     async function registrarEntrada() {
         setError(null);
@@ -45,9 +47,11 @@ export const DetalleProductoModal = ({ onClose, producto, onAjustado }: Props) =
         setEnviando(true);
         try {
             await api.post(`/productos/${producto.id}/ajustar`, { cantidad: cant, motivo: 'Entrada rápida desde detalle de producto' });
+            mostrarToast(`Entrada registrada: +${cant} ${producto.nombre}`, 'success');
             onAjustado();
             onClose();
         } catch (err) {
+            mostrarToast(err instanceof ApiError ? err.message : 'No se pudo registrar la entrada', 'error');
             setError(err instanceof ApiError ? err.message : 'No se pudo registrar la entrada');
         } finally {
             setEnviando(false);

@@ -42,9 +42,10 @@ export const MovimientosInventario = () => {
             .catch((err) => setError(err instanceof ApiError ? err.message : 'No se pudieron cargar los movimientos'));
     }
 
-    useEffect(() => { cargar(); }, [page, tipoFiltro, fechaFiltro]);
+    useEffect(() => { setPage(1); }, [busqueda, tipoFiltro, fechaFiltro]);
+    useEffect(() => { cargar(); }, [page, tipoFiltro, fechaFiltro, busqueda]);
 
-    function buscar(e: React.FormEvent) { e.preventDefault(); setPage(1); cargar(); }
+    function buscar(e: React.FormEvent) { e.preventDefault(); }
 
     const totalPaginas = Math.max(1, Math.ceil(total / PAGE_SIZE));
 

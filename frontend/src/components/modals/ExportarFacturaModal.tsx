@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { abrirArchivoConAuth } from '../../lib/api';
+import { useToast } from '../../context/ToastContext';
 
 interface Props {
     onClose: () => void;
@@ -9,12 +10,15 @@ interface Props {
 
 export const ExportarFacturaModal = ({ onClose, facturaId, numero }: Props) => {
     const [error, setError] = useState<string | null>(null);
+    const { mostrarToast } = useToast();
 
     async function handlePdf() {
         try {
             await abrirArchivoConAuth(`/facturas/${facturaId}/pdf`);
+            mostrarToast(`PDF de la factura ${numero} generado correctamente`, 'success');
             onClose();
         } catch {
+            mostrarToast('No se pudo generar el PDF', 'error');
             setError('No se pudo generar el PDF');
         }
     }

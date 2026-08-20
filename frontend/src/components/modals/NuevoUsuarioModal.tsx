@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { api, ApiError } from '../../lib/api';
+import { useToast } from '../../context/ToastContext';
 
 interface Props {
     onClose: () => void;
@@ -16,6 +17,7 @@ export const NuevoUsuarioModal = ({ onClose, onCreado }: Props) => {
     const [error, setError] = useState<string | null>(null);
     const [guardando, setGuardando] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const { mostrarToast } = useToast();
 
     useEffect(() => { api.get('/roles').then(setRoles).catch(() => { }); }, []);
 
@@ -28,8 +30,10 @@ export const NuevoUsuarioModal = ({ onClose, onCreado }: Props) => {
         setGuardando(true);
         try {
             await api.post('/usuarios', { nombre, nombreUsuario, email, rolId, password });
+            mostrarToast('Usuario creado correctamente', 'success');
             onCreado();
         } catch (err) {
+            mostrarToast(err instanceof ApiError ? err.message : 'No se pudo crear el usuario', 'error');
             setError(err instanceof ApiError ? err.message : 'No se pudo crear el usuario');
         } finally {
             setGuardando(false);

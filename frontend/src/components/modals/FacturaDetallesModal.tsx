@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { formatearMoneda } from '../../lib/formatters';
+import { DevolucionModal } from './DevolucionModal';
 
 interface FacturaDetalle {
     id: number;
@@ -14,19 +15,35 @@ interface FacturaDetalle {
     cliente: { nombre: string; documento: string | null; telefono: string | null; correo: string | null };
     usuario: { nombre: string } | null;
     detalles: Array<{
+        productoId: string;
         cantidad: number;
         precioUnitario: number;
         subtotal: number;
         producto: { codigo: string; nombre: string };
+    }>;
+    devoluciones?: Array<{
+        detalles: Array<{ productoId: string; cantidadDevuelta: number }>;
     }>;
 }
 
 interface Props {
     factura: FacturaDetalle;
     onClose: () => void;
+    onActualizada?: () => void;
 }
 
-export const FacturaDetallesModal = ({ factura, onClose }: Props) => {
+export const FacturaDetallesModal = ({ factura, onClose, onActualizada }: Props) => {
+    const [isDevolucionOpen, setIsDevolucionOpen] = useState(false);
+
+    const yaDevueltoPorProducto = new Map<string, number>();
+    for (const devolucion of factura.devoluciones ?? []) {
+        for (const det of devolucion.detalles) {
+            yaDevueltoPorProducto.set(det.productoId, (yaDevueltoPorProducto.get(det.productoId) ?? 0) + det.cantidadDevuelta);
+        }
+    }
+    const hayAlgoPorDevolver = factura.detalles.some((d) => d.cantidad - (yaDevueltoPorProducto.get(d.productoId) ?? 0) > 0);
+    const puedeDevolver = factura.estado !== 'anulada' && hayAlgoPorDevolver;
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/50 backdrop-blur-sm p-4">
             <div className="bg-surface-container-lowest w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col border border-outline-variant max-h-[90vh]">
@@ -92,15 +109,21 @@ export const FacturaDetallesModal = ({ factura, onClose }: Props) => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {factura.detalles.map((det, i) => (
-                                        <tr key={i} className="border-b border-outline-variant/50 last:border-0 hover:bg-surface-container-lowest transition-colors">
-                                            <td className="py-2 px-4 text-on-surface-variant">{det.producto.codigo}</td>
-                                            <td className="py-2 px-4 font-medium text-on-surface">{det.producto.nombre}</td>
-                                            <td className="py-2 px-4 text-right text-on-surface">{det.cantidad}</td>
-                                            <td className="py-2 px-4 text-right text-on-surface">{formatearMoneda(det.precioUnitario)}</td>
-                                            <td className="py-2 px-4 text-right font-medium text-on-surface">{formatearMoneda(det.subtotal)}</td>
-                                        </tr>
-                                    ))}
+                                    {factura.detalles.map((det, i) => {
+                                        const devuelto = yaDevueltoPorProducto.get(det.productoId) ?? 0;
+                                        return (
+                                            <tr key={i} className="border-b border-outline-variant/50 last:border-0 hover:bg-surface-container-lowest transition-colors">
+                                                <td className="py-2 px-4 text-on-surface-variant">{det.producto.codigo}</td>
+                                                <td className="py-2 px-4 font-medium text-on-surface">
+                                                    {det.producto.nombre}
+                                                    {devuelto > 0 && <span className="block text-xs text-tertiary-container font-normal">{devuelto} devuelta(s)</span>}
+                                                </td>
+                                                <td className="py-2 px-4 text-right text-on-surface">{det.cantidad}</td>
+                                                <td className="py-2 px-4 text-right text-on-surface">{formatearMoneda(det.precioUnitario)}</td>
+                                                <td className="py-2 px-4 text-right font-medium text-on-surface">{formatearMoneda(det.subtotal)}</td>
+                                            </tr>
+                                        );
+                                    })}
                                 </tbody>
                             </table>
                         </div>
@@ -131,12 +154,26 @@ export const FacturaDetallesModal = ({ factura, onClose }: Props) => {
                     </div>
                 </div>
 
-                <div className="p-6 border-t border-outline-variant/50 flex justify-end bg-surface-container/30 rounded-b-2xl">
+                <div className="p-6 border-t border-outline-variant/50 flex justify-end gap-3 bg-surface-container/30 rounded-b-2xl">
+                    {puedeDevolver && (
+                        <button onClick={() => setIsDevolucionOpen(true)} className="px-5 py-2 rounded-lg text-body-sm font-medium border border-outline-variant text-on-surface hover:bg-surface-variant transition-colors flex items-center gap-2">
+                            <span className="material-symbols-outlined text-[18px]">assignment_return</span>
+                            Registrar Devolución
+                        </button>
+                    )}
                     <button onClick={onClose} className="px-6 py-2 rounded-lg text-body-sm font-medium bg-primary text-on-primary shadow-sm hover:bg-primary/90 transition-colors">
                         Cerrar
                     </button>
                 </div>
             </div>
+
+            {isDevolucionOpen && (
+                <DevolucionModal
+                    factura={factura}
+                    onClose={() => setIsDevolucionOpen(false)}
+                    onDevuelto={() => { setIsDevolucionOpen(false); onActualizada?.(); }}
+                />
+            )}
         </div>
     );
 };

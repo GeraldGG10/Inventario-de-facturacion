@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { api, ApiError } from '../../lib/api';
+import { useToast } from '../../context/ToastContext';
 
 interface Props {
     onClose: () => void;
@@ -17,6 +18,7 @@ export const NuevoMovimientoModal = ({ onClose, onRegistrado }: Props) => {
     const [motivo, setMotivo] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [enviando, setEnviando] = useState(false);
+    const { mostrarToast } = useToast();
 
     async function buscarProductos(texto: string) {
         setBusquedaProducto(texto);
@@ -45,8 +47,10 @@ export const NuevoMovimientoModal = ({ onClose, onRegistrado }: Props) => {
                 cantidad: tipo === 'ajuste' ? cant : Math.abs(cant),
                 motivo: motivo || null,
             });
+            mostrarToast('Movimiento registrado correctamente', 'success');
             onRegistrado();
         } catch (err) {
+            mostrarToast(err instanceof ApiError ? err.message : 'No se pudo registrar el movimiento', 'error');
             setError(err instanceof ApiError ? err.message : 'No se pudo registrar el movimiento');
         } finally {
             setEnviando(false);

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { abrirArchivoConAuth } from '../../lib/api';
+import { useToast } from '../../context/ToastContext';
 
 interface Props {
     onClose: () => void;
@@ -10,6 +11,7 @@ export const ExportarReporteModal = ({ onClose, periodo }: Props) => {
     const [selectedFormat, setSelectedFormat] = useState<'xlsx' | 'pdf' | null>(null);
     const [descargando, setDescargando] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const { mostrarToast } = useToast();
 
     async function descargar() {
         if (!selectedFormat) return;
@@ -17,8 +19,10 @@ export const ExportarReporteModal = ({ onClose, periodo }: Props) => {
         setError(null);
         try {
             await abrirArchivoConAuth('/reportes/exportar', { formato: selectedFormat, periodo });
+            mostrarToast(`Reporte ${selectedFormat === 'pdf' ? 'PDF' : 'Excel'} generado correctamente`, 'success');
             onClose();
         } catch {
+            mostrarToast('No se pudo generar el archivo', 'error');
             setError('No se pudo generar el archivo');
         } finally {
             setDescargando(false);

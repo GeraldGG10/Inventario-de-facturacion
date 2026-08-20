@@ -1,4 +1,6 @@
 import React from 'react';
+import { abrirArchivoConAuth } from '../../lib/api';
+import { useToast } from '../../context/ToastContext';
 
 interface AlertaReposicion {
     id: string;
@@ -14,6 +16,19 @@ interface Props {
 }
 
 export const ReabastecimientoModal = ({ onClose, alertas = [] }: Props) => {
+    const { mostrarToast } = useToast();
+
+    async function generarOrdenCompra() {
+        try {
+            await abrirArchivoConAuth('/reportes/orden-compra');
+            mostrarToast('Orden de compra generada correctamente', 'success');
+            onClose();
+        } catch (error) {
+            console.error('Error al generar orden', error);
+            mostrarToast('No se pudo generar la orden de compra', 'error');
+        }
+    }
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/50 backdrop-blur-sm p-4">
             <div className="bg-surface-container-lowest w-full max-w-2xl rounded-2xl shadow-2xl flex flex-col border border-outline-variant max-h-[90vh]">
@@ -66,24 +81,7 @@ export const ReabastecimientoModal = ({ onClose, alertas = [] }: Props) => {
                 {/* Footer */}
                 <div className="p-6 border-t border-outline-variant/50 flex justify-end gap-3 bg-surface-container/30 rounded-b-2xl">
                     <button onClick={onClose} className="px-5 py-2 rounded-lg text-body-sm font-medium text-secondary hover:bg-surface-variant transition-colors">Cerrar</button>
-                    <button onClick={async () => {
-                        try {
-                            const { api } = await import('../../lib/api');
-                            const res = await api.get('/reportes/orden-compra', { responseType: 'blob' });
-                            const url = window.URL.createObjectURL(res.data);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            const dateStr = new Date().toISOString().split('T')[0];
-                            a.download = `Orden_Compra_Stockly_${dateStr}.pdf`;
-                            document.body.appendChild(a);
-                            a.click();
-                            window.URL.revokeObjectURL(url);
-                            onClose();
-                        } catch (error) {
-                            console.error('Error al generar orden', error);
-                            alert('Hubo un error al generar la orden de compra.');
-                        }
-                    }} className="px-5 py-2 rounded-lg text-body-sm font-medium bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm">Generar Orden Compra</button>
+                    <button onClick={generarOrdenCompra} className="px-5 py-2 rounded-lg text-body-sm font-medium bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm">Generar Orden Compra</button>
                 </div>
             </div>
         </div>

@@ -15,11 +15,17 @@ const rangoSchema = z.object({
   hasta: z.string().datetime().optional(),
 });
 
-const PERIODOS_A_DIAS: Record<string, number> = { hoy: 1, semana: 7, mes: 30, anio: 365 };
+const PERIODOS_A_DIAS: Record<string, number> = { semana: 7, mes: 30, anio: 365 };
 
 function resolverRango(data: z.infer<typeof rangoSchema>): { desde: Date; hasta: Date } {
   if (data.periodo === 'personalizado' && data.desde && data.hasta) {
     return { desde: new Date(data.desde), hasta: new Date(data.hasta) };
+  }
+  if (data.periodo === 'hoy') {
+    // "Hoy" es desde la medianoche local, no "últimas 24 horas".
+    const desde = new Date();
+    desde.setHours(0, 0, 0, 0);
+    return { desde, hasta: new Date() };
   }
   const dias = PERIODOS_A_DIAS[data.periodo] ?? 30;
   return { desde: new Date(Date.now() - dias * 86_400_000), hasta: new Date() };

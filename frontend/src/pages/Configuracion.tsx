@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { AuditoriaModal } from '../components/modals/AuditoriaModal';
 import { NuevoUsuarioModal } from '../components/modals/NuevoUsuarioModal';
 import { api, ApiError } from '../lib/api';
+import { useToast } from '../context/ToastContext';
 
 type Tab = 'empresa' | 'usuarios' | 'facturacion' | 'auditoria';
 
@@ -17,6 +18,7 @@ export const Configuracion = () => {
     const [isNuevoUsuarioOpen, setIsNuevoUsuarioOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [guardado, setGuardado] = useState<string | null>(null);
+    const { mostrarToast } = useToast();
 
     const [empresa, setEmpresa] = useState({ nombre: '', rnc: '', telefono: '', direccion: '' });
     const [facturacion, setFacturacion] = useState({ impuestoPorcentaje: 18, moneda: 'DOP', descuentoMaximoSinAprobar: 10, serieFactura: 'FAC-', permiteCredito: false, mostrarDesgloseImpuesto: true });
@@ -56,7 +58,9 @@ export const Configuracion = () => {
         try {
             await api.patch('/configuracion/empresa', empresa);
             setGuardado('Datos de la empresa guardados.');
+            mostrarToast('Datos de la empresa guardados', 'success');
         } catch (err) {
+            mostrarToast(err instanceof ApiError ? err.message : 'No se pudo guardar', 'error');
             setError(err instanceof ApiError ? err.message : 'No se pudo guardar');
         }
     }
@@ -66,7 +70,9 @@ export const Configuracion = () => {
         try {
             await api.patch('/configuracion/facturacion', facturacion);
             setGuardado('Configuración de facturación guardada.');
+            mostrarToast('Configuración de facturación guardada', 'success');
         } catch (err) {
+            mostrarToast(err instanceof ApiError ? err.message : 'No se pudo guardar', 'error');
             setError(err instanceof ApiError ? err.message : 'No se pudo guardar');
         }
     }
@@ -74,8 +80,10 @@ export const Configuracion = () => {
     async function toggleActivoUsuario(u: Usuario) {
         try {
             await api.patch(`/usuarios/${u.id}`, { activo: !u.activo });
+            mostrarToast(u.activo ? 'Usuario desactivado' : 'Usuario activado', 'success');
             cargarUsuarios();
         } catch (err) {
+            mostrarToast(err instanceof ApiError ? err.message : 'No se pudo actualizar el usuario', 'error');
             setError(err instanceof ApiError ? err.message : 'No se pudo actualizar el usuario');
         }
     }
@@ -112,8 +120,7 @@ export const Configuracion = () => {
                                     type="button"
                                     onClick={() => {
                                         navigator.clipboard.writeText(`http://${networkHostname || networkIp}:4000`);
-                                        setGuardado('✅ Enlace copiado');
-                                        setTimeout(() => setGuardado(null), 3000);
+                                        mostrarToast('Enlace copiado al portapapeles', 'success');
                                     }}
                                     className="absolute right-1 top-1/2 -translate-y-1/2 p-1.5 text-primary hover:bg-primary/10 rounded-md transition-colors flex items-center justify-center"
                                     title="Copiar enlace"

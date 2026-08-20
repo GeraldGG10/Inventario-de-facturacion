@@ -15,6 +15,7 @@ export async function obtenerFacturaCompleta(id: number) {
       cliente: true,
       usuario: { select: { id: true, nombre: true } },
       detalles: { include: { producto: { select: { id: true, nombre: true, codigo: true } } } },
+      devoluciones: { include: { detalles: true }, orderBy: { fecha: 'desc' } },
     },
   });
 }

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { InventarioNav } from '../components/layout/InventarioNav';
 import { CategoriaModal } from '../components/modals/CategoriaModal';
 import { api, ApiError } from '../lib/api';
+import { useToast } from '../context/ToastContext';
 
 interface Categoria {
     id: string;
@@ -19,6 +20,7 @@ export const CategoriasInventario = () => {
     const [isCategoriaModalOpen, setIsCategoriaModalOpen] = useState(false);
     const [categoriaEditando, setCategoriaEditando] = useState<Categoria | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const { mostrarToast } = useToast();
 
     function cargar() {
         api.get<Categoria[]>('/categorias').then(setCategorias).catch((err) => setError(err instanceof ApiError ? err.message : 'No se pudieron cargar las categorías'));
@@ -34,13 +36,19 @@ export const CategoriasInventario = () => {
 
     const handleEditar = (cat: Categoria) => { setCategoriaEditando(cat); setIsCategoriaModalOpen(true); };
     const handleNueva = () => { setCategoriaEditando(null); setIsCategoriaModalOpen(true); };
-    const handleGuardado = () => { setIsCategoriaModalOpen(false); cargar(); };
+    const handleGuardado = () => {
+        setIsCategoriaModalOpen(false);
+        mostrarToast(categoriaEditando ? 'Categoría actualizada correctamente' : 'Categoría creada correctamente', 'success');
+        cargar();
+    };
 
     async function toggleActiva(cat: Categoria) {
         try {
             await api.patch(`/categorias/${cat.id}`, { activa: !cat.activa });
+            mostrarToast(cat.activa ? 'Categoría desactivada' : 'Categoría activada', 'success');
             cargar();
         } catch (err) {
+            mostrarToast(err instanceof ApiError ? err.message : 'No se pudo actualizar la categoría', 'error');
             setError(err instanceof ApiError ? err.message : 'No se pudo actualizar la categoría');
         }
     }
@@ -96,15 +104,18 @@ export const CategoriasInventario = () => {
                 </div>
                 <div className="w-full sm:w-auto flex items-center gap-3">
                     <label className="text-body-sm font-body-sm text-on-surface-variant">Estado:</label>
-                    <select
-                        value={filtroEstado}
-                        onChange={(e) => setFiltroEstado(e.target.value)}
-                        className="border border-outline-variant rounded bg-surface px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-body-sm font-body-sm text-on-surface cursor-pointer"
-                    >
-                        <option value="todos">Todos los estados</option>
-                        <option value="activa">Activa</option>
-                        <option value="inactiva">Inactiva</option>
-                    </select>
+                    <div className="relative">
+                        <select
+                            value={filtroEstado}
+                            onChange={(e) => setFiltroEstado(e.target.value)}
+                            className="appearance-none border border-outline-variant rounded bg-surface pl-4 pr-9 py-2 focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none text-body-sm font-body-sm text-on-surface cursor-pointer"
+                        >
+                            <option value="todos">Todos los estados</option>
+                            <option value="activa">Activa</option>
+                            <option value="inactiva">Inactiva</option>
+                        </select>
+                        <span className="material-symbols-outlined pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-outline text-[20px]">expand_more</span>
+                    </div>
                 </div>
             </div>
 

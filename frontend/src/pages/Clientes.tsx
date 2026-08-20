@@ -3,7 +3,9 @@ import { NuevoClienteModal } from '../components/modals/NuevoClienteModal';
 import { NuevoProveedorModal } from '../components/modals/NuevoProveedorModal';
 import { ClienteModal } from '../components/modals/ClienteModal';
 import { EditarClienteModal } from '../components/modals/EditarClienteModal';
+import { EliminarConfirmModal } from '../components/modals/EliminarConfirmModal';
 import { api, ApiError } from '../lib/api';
+import { useToast } from '../context/ToastContext';
 
 interface Cliente {
     id: string; nombre: string; documento: string | null; telefono: string | null;
@@ -20,7 +22,9 @@ export const Clientes = () => {
     const [isNuevoProveedorOpen, setIsNuevoProveedorOpen] = useState(false);
     const [clienteSeleccionadoId, setClienteSeleccionadoId] = useState<string | null>(null);
     const [clienteAEditar, setClienteAEditar] = useState<Cliente | null>(null);
+    const [clienteADesactivar, setClienteADesactivar] = useState<Cliente | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const { mostrarToast } = useToast();
 
     function cargar() {
         api.get<Cliente[]>('/clientes', { busqueda }).then(setClientes).catch((err) => setError(err instanceof ApiError ? err.message : 'No se pudieron cargar los clientes'));
@@ -29,6 +33,18 @@ export const Clientes = () => {
     useEffect(() => { cargar(); }, [busqueda]);
 
     const clientePerfil = clientes.find((c) => c.id === clienteSeleccionadoId) ?? clientes[0] ?? null;
+
+    async function desactivarCliente() {
+        if (!clienteADesactivar) return;
+        try {
+            await api.patch(`/clientes/${clienteADesactivar.id}`, { activo: !clienteADesactivar.activo });
+            mostrarToast(clienteADesactivar.activo ? 'Cliente desactivado' : 'Cliente reactivado', 'success');
+            setClienteADesactivar(null);
+            cargar();
+        } catch (err) {
+            mostrarToast(err instanceof ApiError ? err.message : 'No se pudo actualizar el cliente', 'error');
+        }
+    }
 
     return (
         <div className="max-w-[1440px] mx-auto space-y-6 pb-20">
@@ -75,7 +91,7 @@ export const Clientes = () => {
                                 </thead>
                                 <tbody className="font-body-sm text-body-sm text-on-surface">
                                     {clientes.length === 0 && (
-                                        <tr><td colSpan={5} className="px-6 py-8 text-center text-on-surface-variant">Sin clientes registrados.</td></tr>
+                                        <tr><td colSpan={6} className="px-6 py-8 text-center text-on-surface-variant">Sin clientes registrados.</td></tr>
                                     )}
                                     {clientes.map((c) => (
                                         <tr key={c.id} className="hover:bg-surface-container-low transition-colors cursor-pointer border-b border-outline-variant/50" onClick={() => setClienteSeleccionadoId(c.id)}>
@@ -87,9 +103,14 @@ export const Clientes = () => {
                                                 <span className={`inline-flex items-center px-2 py-1 rounded-full font-label-caps text-[10px] ${c.activo ? 'bg-secondary-container/50 text-on-secondary-container' : 'bg-error-container/50 text-on-error-container'}`}>{c.activo ? 'Activo' : 'Inactivo'}</span>
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                <button onClick={(e) => { e.stopPropagation(); setClienteAEditar(c); }} className="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-variant/30" title="Editar Cliente">
-                                                    <span className="material-symbols-outlined text-[20px]">edit</span>
-                                                </button>
+                                                <div className="flex items-center justify-center gap-1">
+                                                    <button onClick={(e) => { e.stopPropagation(); setClienteAEditar(c); }} className="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-variant/30" title="Editar Cliente">
+                                                        <span className="material-symbols-outlined text-[20px]">edit</span>
+                                                    </button>
+                                                    <button onClick={(e) => { e.stopPropagation(); setClienteADesactivar(c); }} className="text-on-surface-variant hover:text-error transition-colors p-2 rounded-full hover:bg-surface-variant/30" title={c.activo ? 'Desactivar Cliente' : 'Reactivar Cliente'}>
+                                                        <span className="material-symbols-outlined text-[20px]">{c.activo ? 'block' : 'check_circle'}</span>
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
@@ -131,11 +152,20 @@ export const Clientes = () => {
             </div>
 
             {isNuevoClienteModalOpen && (
-                <NuevoClienteModal onClose={() => setIsNuevoClienteModalOpen(false)} onCreado={() => { setIsNuevoClienteModalOpen(false); cargar(); }} />
+                <NuevoClienteModal onClose={() => setIsNuevoClienteModalOpen(false)} onCreado={() => { setIsNuevoClienteModalOpen(false); mostrarToast('Cliente creado correctamente', 'success'); cargar(); }} />
             )}
-            {isNuevoProveedorOpen && <NuevoProveedorModal onClose={() => setIsNuevoProveedorOpen(false)} onGuardado={() => setIsNuevoProveedorOpen(false)} />}
+            {isNuevoProveedorOpen && <NuevoProveedorModal onClose={() => setIsNuevoProveedorOpen(false)} onGuardado={() => { setIsNuevoProveedorOpen(false); mostrarToast('Proveedor creado correctamente', 'success'); }} />}
             {clienteSeleccionadoId && <ClienteModal clienteId={clienteSeleccionadoId} onClose={() => setClienteSeleccionadoId(null)} />}
-            {clienteAEditar && <EditarClienteModal cliente={clienteAEditar} onClose={() => setClienteAEditar(null)} onEditado={() => { setClienteAEditar(null); cargar(); }} />}
+            {clienteAEditar && <EditarClienteModal cliente={clienteAEditar} onClose={() => setClienteAEditar(null)} onEditado={() => { setClienteAEditar(null); mostrarToast('Cliente actualizado correctamente', 'success'); cargar(); }} />}
+            {clienteADesactivar && (
+                <EliminarConfirmModal
+                    titulo={clienteADesactivar.activo ? '¿Desactivar cliente?' : '¿Reactivar cliente?'}
+                    mensaje={clienteADesactivar.activo ? `"${clienteADesactivar.nombre}" dejará de estar disponible para nuevas facturas, pero se conserva su historial.` : `"${clienteADesactivar.nombre}" volverá a estar disponible para nuevas facturas.`}
+                    labelConfirmar={clienteADesactivar.activo ? 'Sí, desactivar' : 'Sí, reactivar'}
+                    onClose={() => setClienteADesactivar(null)}
+                    onConfirmar={desactivarCliente}
+                />
+            )}
         </div>
     );
 };

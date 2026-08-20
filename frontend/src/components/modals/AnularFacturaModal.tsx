@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { api, ApiError } from '../../lib/api';
+import { useToast } from '../../context/ToastContext';
 
 export interface FacturaParaAnular {
     id: number;
@@ -35,6 +36,7 @@ export const AnularFacturaModal = ({ onClose, factura, onAnulada }: Props) => {
     const [especificacion, setEspecificacion] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [enviando, setEnviando] = useState(false);
+    const { mostrarToast } = useToast();
 
     async function confirmar() {
         const motivoTexto = motivo === 'otro' ? especificacion : MOTIVOS.find((m) => m.value === motivo)?.label;
@@ -46,8 +48,10 @@ export const AnularFacturaModal = ({ onClose, factura, onAnulada }: Props) => {
         setEnviando(true);
         try {
             await api.post(`/facturas/${factura.id}/anular`, { motivo: motivoTexto });
+            mostrarToast(`Factura ${factura.numero} anulada`, 'success');
             onAnulada();
         } catch (err) {
+            mostrarToast(err instanceof ApiError ? err.message : 'No se pudo anular la factura', 'error');
             setError(err instanceof ApiError ? err.message : 'No se pudo anular la factura');
         } finally {
             setEnviando(false);
