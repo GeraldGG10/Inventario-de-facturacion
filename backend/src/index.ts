@@ -29,6 +29,21 @@ import {
   getPgPort,
 } from './services/postgres-portable';
 
+// Red de seguridad global: sin esto, un error de base de datos sin capturar
+// en CUALQUIER ruta (ej. una caída momentánea de Postgres, o una tabla que
+// todavía no existe) se propaga como una promesa rechazada sin manejar.
+// Express 4 no la atrapa por su cuenta, y el comportamiento por defecto de
+// Node es tratarla como fatal y terminar el proceso — tumbando el servidor
+// completo para TODOS los usuarios conectados en la red, no solo a quien
+// disparó el error. Registrar el error y seguir corriendo es mucho mejor
+// que dejar caído a todo el negocio por un solo request fallido.
+process.on('unhandledRejection', (reason) => {
+  console.error('⚠️  Promesa rechazada sin manejar (el servidor sigue corriendo):', reason);
+});
+process.on('uncaughtException', (error) => {
+  console.error('⚠️  Excepción no capturada (el servidor sigue corriendo):', error);
+});
+
 const app = express();
 
 app.use(cors());
@@ -66,6 +81,16 @@ app.use(express.static(frontendPath));
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(frontendPath, 'index.html'));
+});
+
+// Manejador de errores de Express: atrapa lo que llegue via next(err) desde
+// cualquier ruta y responde con un JSON claro en vez de dejar la conexión
+// colgada o (peor) que se propague sin control.
+app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error('⚠️  Error no manejado en una ruta:', err);
+  if (!res.headersSent) {
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
 });
 
 import { exec, execSync } from 'child_process';

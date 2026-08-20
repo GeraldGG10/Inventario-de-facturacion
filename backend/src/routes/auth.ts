@@ -33,10 +33,21 @@ authRouter.post("/login", async (req, res) => {
   }
   const { email, password } = parsed.data;
 
-  const usuario = await prisma.usuario.findUnique({
-    where: { email },
-    include: { rol: { include: { permisos: { include: { permiso: true } } } } },
-  });
+  // Sin try/catch acá, un error de base de datos (ej. tablas aún no creadas,
+  // o una caída momentánea de Postgres) se propaga como una promesa rechazada
+  // sin manejar. Express 4 no la atrapa sola, y Node la trata como fatal:
+  // se cae el proceso ENTERO, afectando a todos los usuarios conectados en
+  // la red, no solo a quien intentó iniciar sesión.
+  let usuario;
+  try {
+    usuario = await prisma.usuario.findUnique({
+      where: { email },
+      include: { rol: { include: { permisos: { include: { permiso: true } } } } },
+    });
+  } catch (error) {
+    console.error("Error al consultar la base de datos en /auth/login:", error);
+    return res.status(503).json({ error: "El sistema no está disponible en este momento. Intenta de nuevo en unos segundos." });
+  }
 
   if (!usuario || !usuario.activo) {
     return res.status(401).json({ error: "Credenciales inválidas" });

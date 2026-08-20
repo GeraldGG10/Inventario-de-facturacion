@@ -45,9 +45,7 @@
   "bin": "dist/index.js",
   "pkg": {
     "scripts": [
-      "dist/**/*.js",
-      "node_modules/es-get-iterator/**/*.js",
-      "node_modules/es-get-iterator/package.json"
+      "dist/**/*.js"
     ],
     "assets": [
       "prisma/schema.prisma",

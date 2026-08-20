@@ -18,9 +18,25 @@
       - npm disponible en PATH
       - Conexion a Internet (para descargar PostgreSQL Portable la primera vez)
       - Ejecutar desde la raiz del proyecto
+
+    IMPORTANTE: backend/prisma/schema_seed.sql es un dump estatico (schema +
+    datos semilla) que se copia tal cual dentro del .exe para el primer
+    arranque. NO se regenera solo. Si cambia backend/prisma/schema.prisma,
+    hay que regenerarlo a mano contra una base ya migrada y sembrada:
+      npx prisma db push && npx prisma db seed
+      pg_dump -h localhost -p 5432 -U postgres -d tecnolaser --no-owner --no-privileges -f backend/prisma/schema_seed.sql
+    Si este archivo queda desactualizado (o vacio), el primer arranque del
+    .exe no crea las tablas y la app no funciona aunque "parezca" arrancar bien.
 #>
 
-$ErrorActionPreference = "Stop"
+# "Stop" convertía CUALQUIER escritura a stderr de un comando nativo (npm,
+# vite, tsc, pkg) en un error fatal que abortaba el script entero, incluso
+# cuando el comando en si habia terminado con exito (ej. el aviso normal de
+# vite sobre el tamano de un chunk). Los pasos criticos ya verifican
+# $LASTEXITCODE explicitamente mas abajo, asi que "Continue" es seguro aqui;
+# los cmdlets que si deben frenar el script en caso de error (descargas,
+# copias) usan -ErrorAction Stop de forma explicita.
+$ErrorActionPreference = "Continue"
 $RootDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 function Write-Step($n, $msg) {
@@ -60,7 +76,7 @@ if (-Not (Test-Path "$PgsqlDir\bin\pg_ctl.exe")) {
     
     # Descargar con progreso
     $ProgressPreference = 'SilentlyContinue'
-    Invoke-WebRequest -Uri $PgsqlUrl -OutFile $PgsqlZip -UseBasicParsing
+    Invoke-WebRequest -Uri $PgsqlUrl -OutFile $PgsqlZip -UseBasicParsing -ErrorAction Stop
     $ProgressPreference = 'Continue'
     
     Write-Host "  Extrayendo binarios (puede tomar 2-5 minutos)..." -ForegroundColor Yellow
@@ -82,15 +98,53 @@ else {
 }
 
 # ──────────────────────────────────────────────────────────────
-Write-Step 4 "Instalando pkg globalmente..."
-npm install -g pkg --silent
+# El 'pkg' original (vercel/pkg) esta discontinuado desde 2021 y no maneja
+# bien el campo "exports" de package.json modernos (crashea con un
+# AssertionError interno en su Walker). @yao-pkg/pkg es un fork mantenido
+# que corrige esto — mismo CLI, drop-in replacement. Tambien: node16 ya no
+# tiene binario precompilado en el fork (fuerza compilar desde codigo
+# fuente, lo cual falla en Windows por falta de la utilidad 'patch'), asi
+# que usamos node22, que si esta precompilado.
+Write-Step 4 "Instalando @yao-pkg/pkg (fork mantenido) globalmente..."
+npm uninstall -g pkg --silent 2>$null
+npm install -g "@yao-pkg/pkg" --silent
+
+# Resolver la ruta real del binario de pkg en lugar de depender de que la
+# carpeta global de npm este en el PATH de quien ejecute este script (no
+# siempre lo esta, aunque "npm install -g" haya funcionado bien).
+$NpmPrefix = npm config get prefix
+$PkgCmd = Join-Path $NpmPrefix "pkg.cmd"
+if (-Not (Test-Path $PkgCmd)) {
+    throw "No se encontro pkg.cmd en '$NpmPrefix'. Revisa que 'npm install -g @yao-pkg/pkg' haya terminado sin errores."
+}
+
+# Parchear es-get-iterator: su package.json trae un campo "exports" que
+# pkg no resuelve bien sin importar el target ni las versiones (crashea
+# el Walker interno). Como esta paqueteado como "asset" (no "script") en
+# el pkg config de backend/package.json, alcanza con quitarle el campo
+# "exports" para que la resolucion caiga de nuevo a "main". Esto se repite
+# en cada build porque "npm install" restaura el package.json original
+# cada vez.
+Write-Host "  Parcheando es-get-iterator para compatibilidad con pkg..." -ForegroundColor Gray
+$EsGetIteratorPkg = "$RootDir\backend\node_modules\es-get-iterator\package.json"
+if (Test-Path $EsGetIteratorPkg) {
+    $json = Get-Content $EsGetIteratorPkg -Raw | ConvertFrom-Json
+    if ($json.PSObject.Properties.Name -contains 'exports') {
+        $json.PSObject.Properties.Remove('exports')
+        # OJO: Set-Content -Encoding UTF8 en PowerShell 5.1 escribe BOM, y un
+        # BOM al inicio de este JSON tambien hace crashear al Walker de pkg.
+        # Hay que escribir el archivo sin BOM explicitamente.
+        $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+        [System.IO.File]::WriteAllText($EsGetIteratorPkg, ($json | ConvertTo-Json -Depth 10), $utf8NoBom)
+    }
+}
 
 # ──────────────────────────────────────────────────────────────
 Write-Step 5 "Generando Tecno-laser.exe..."
 Set-Location "$RootDir\backend"
 
-pkg dist/index.js `
-    --target node16-win-x64 `
+& $PkgCmd dist/index.js `
+    --target node22-win-x64 `
     --output "$RootDir\Tecno-laser.exe" `
     --public
 if ($LASTEXITCODE -ne 0) { throw "Error al generar el ejecutable con pkg" }
@@ -100,19 +154,19 @@ Write-Step 6 "Armando carpeta de distribucion..."
 Set-Location $RootDir
 
 $DistDir = "$RootDir\Tecno-laser_Distribuir"
-if (Test-Path $DistDir) { Remove-Item $DistDir -Recurse -Force }
-New-Item -ItemType Directory -Path $DistDir | Out-Null
+if (Test-Path $DistDir) { Remove-Item $DistDir -Recurse -Force -ErrorAction Stop }
+New-Item -ItemType Directory -Path $DistDir -ErrorAction Stop | Out-Null
 
 # Copiar .exe principal
-Copy-Item "$RootDir\Tecno-laser.exe" -Destination $DistDir -Force
+Copy-Item "$RootDir\Tecno-laser.exe" -Destination $DistDir -Force -ErrorAction Stop
 
 # Copiar carpeta pgsql (PostgreSQL Portable)
 Write-Host "  Copiando PostgreSQL Portable (~300 MB, puede tardar)..." -ForegroundColor Yellow
-Copy-Item $PgsqlDir -Destination $DistDir -Recurse -Force
+Copy-Item $PgsqlDir -Destination $DistDir -Recurse -Force -ErrorAction Stop
 Write-Host "  Copiado: pgsql/" -ForegroundColor Gray
 
 # Copiar frontend compilado como frontend_dist (accesible en modo exe)
-Copy-Item "$RootDir\frontend\dist" -Destination "$DistDir\frontend_dist" -Recurse -Force
+Copy-Item "$RootDir\frontend\dist" -Destination "$DistDir\frontend_dist" -Recurse -Force -ErrorAction Stop
 Write-Host "  Copiado: frontend_dist/" -ForegroundColor Gray
 
 # Copiar motor de Prisma (.node)
