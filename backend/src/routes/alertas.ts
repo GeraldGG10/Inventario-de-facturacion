@@ -21,7 +21,14 @@ alertasRouter.get('/', async (req, res) => {
     where: {
       estado: parsed.data.estado,
       ...(parsed.data.busqueda
-        ? { producto: { OR: [{ nombre: { contains: parsed.data.busqueda } }, { codigo: { contains: parsed.data.busqueda } }] } }
+        ? {
+            producto: {
+              OR: [
+                { nombre: { contains: parsed.data.busqueda, mode: 'insensitive' } },
+                { codigo: { contains: parsed.data.busqueda, mode: 'insensitive' } },
+              ],
+            },
+          }
         : {}),
     },
     include: { producto: { include: { categoria: true } } },

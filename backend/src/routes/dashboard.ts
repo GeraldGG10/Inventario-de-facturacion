@@ -53,16 +53,23 @@ dashboardRouter.get('/tendencia', async (req, res) => {
     orderBy: { fecha: 'asc' },
   });
 
-  const porDia = new Map<string, { ventas: number; costos: number }>();
+  const porPeriodo = new Map<string, { ventas: number; costos: number }>();
   for (const factura of facturas) {
-    const clave = factura.fecha.toISOString().slice(0, 10);
-    const acumulado = porDia.get(clave) ?? { ventas: 0, costos: 0 };
+    const d = new Date(factura.fecha);
+    if (parsed.data.periodo === 'diario') {
+      d.setMinutes(0, 0, 0);
+    } else {
+      d.setHours(0, 0, 0, 0);
+    }
+    const clave = d.toISOString();
+    
+    const acumulado = porPeriodo.get(clave) ?? { ventas: 0, costos: 0 };
     acumulado.ventas += factura.total;
     acumulado.costos += factura.detalles.reduce((acc, d) => acc + d.costoUnitario * d.cantidad, 0);
-    porDia.set(clave, acumulado);
+    porPeriodo.set(clave, acumulado);
   }
 
-  const puntos = Array.from(porDia.entries())
+  const puntos = Array.from(porPeriodo.entries())
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([fecha, valores]) => ({
       fecha,

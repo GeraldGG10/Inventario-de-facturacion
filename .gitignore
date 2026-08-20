@@ -14,3 +14,12 @@ backend/prisma/*.db-shm
 backend/prisma/*.db-wal
 backend/backups/
 release/
+
+# PostgreSQL Portable y datos generados en tiempo de ejecución
+pgsql/
+db_data/
+stockly-db.log
+
+# Carpeta de distribución final y ejecutable compilado
+Stockly_Distribuir/
+Stockly.exe

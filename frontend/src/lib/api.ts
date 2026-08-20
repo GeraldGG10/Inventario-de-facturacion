@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
+const BASE_URL = import.meta.env.VITE_API_URL ?? '/api';
 
 const ACCESS_TOKEN_KEY = 'inventario.accessToken';
 const REFRESH_TOKEN_KEY = 'inventario.refreshToken';
@@ -38,7 +38,10 @@ async function intentarRefrescar(): Promise<boolean> {
   if (!refreshToken) return false;
 
   if (!refrescando) {
-    refrescando = fetch(`${BASE_URL}/auth/refresh`, {
+    const origin = window.location.origin;
+    const baseRefresh = BASE_URL.startsWith('http') ? BASE_URL : `${origin}${BASE_URL}`;
+    
+    refrescando = fetch(`${baseRefresh}/auth/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refreshToken }),
@@ -65,7 +68,10 @@ interface RequestOptions {
 }
 
 function construirUrl(path: string, query?: RequestOptions['query']) {
-  const url = new URL(`${BASE_URL}${path}`);
+  const origin = window.location.origin;
+  const base = BASE_URL.startsWith('http') ? BASE_URL : `${origin}${BASE_URL}`;
+  
+  const url = new URL(`${base}${path}`);
   if (query) {
     for (const [key, value] of Object.entries(query)) {
       if (value !== undefined && value !== null && value !== '') {
@@ -103,7 +109,24 @@ export async function apiFetch<T = any>(path: string, options: RequestOptions = 
   const data = contentType.includes('application/json') ? await res.json() : await res.text();
 
   if (!res.ok) {
-    const mensaje = typeof data === 'object' && data?.error ? (typeof data.error === 'string' ? data.error : 'Solicitud inválida') : 'Error de red';
+    let mensaje = 'Error de red';
+    if (typeof data === 'object' && data?.error) {
+      if (typeof data.error === 'string') {
+        mensaje = data.error;
+      } else if (typeof data.error === 'object') {
+        // Formatear errores de validación de Zod (ej. fieldErrors)
+        const errores: string[] = [];
+        if (data.error.fieldErrors) {
+          for (const [campo, mensajes] of Object.entries(data.error.fieldErrors)) {
+            errores.push(`${campo}: ${Array.isArray(mensajes) ? mensajes.join(', ') : mensajes}`);
+          }
+        }
+        if (data.error.formErrors && Array.isArray(data.error.formErrors)) {
+          errores.push(...data.error.formErrors);
+        }
+        mensaje = errores.length > 0 ? errores.join(' | ') : 'Solicitud inválida';
+      }
+    }
     throw new ApiError(res.status, mensaje, data);
   }
 

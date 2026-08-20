@@ -88,7 +88,7 @@ export const NuevoProveedorModal = ({ onClose, onGuardado, proveedor }: Props) =
                                 </div>
                                 <div>
                                     <label className="block font-body-sm text-body-sm text-on-surface mb-1.5">RNC</label>
-                                    <input value={form.rnc} onChange={(e) => set('rnc', e.target.value)} className="w-full bg-surface-container-lowest border border-outline-variant/60 rounded focus:border-primary focus:ring-2 focus:ring-primary/20 text-on-surface font-body-md text-body-md px-3 py-2" placeholder="000000000" />
+                                    <input value={form.rnc} onChange={(e) => set('rnc', e.target.value.replace(/[^0-9]/g, ''))} maxLength={11} className="w-full bg-surface-container-lowest border border-outline-variant/60 rounded focus:border-primary focus:ring-2 focus:ring-primary/20 text-on-surface font-body-md text-body-md px-3 py-2" placeholder="Ej. 13012345619" />
                                 </div>
                                 <div className="md:col-span-2">
                                     <label className="block font-body-sm text-body-sm text-on-surface mb-2">Tipo</label>
@@ -113,7 +113,7 @@ export const NuevoProveedorModal = ({ onClose, onGuardado, proveedor }: Props) =
                                 </div>
                                 <div>
                                     <label className="block font-body-sm text-body-sm text-on-surface mb-1.5">Teléfono <span className="text-error">*</span></label>
-                                    <input value={form.telefono} onChange={(e) => set('telefono', e.target.value)} className="w-full bg-surface-container-lowest border border-outline-variant/60 rounded focus:border-primary focus:ring-2 focus:ring-primary/20 text-on-surface font-body-md text-body-md px-3 py-2" placeholder="(000) 000-0000" />
+                                    <input value={form.telefono} onChange={(e) => set('telefono', e.target.value.replace(/[^0-9]/g, ''))} maxLength={10} className="w-full bg-surface-container-lowest border border-outline-variant/60 rounded focus:border-primary focus:ring-2 focus:ring-primary/20 text-on-surface font-body-md text-body-md px-3 py-2" placeholder="Ej. 8095550123" />
                                 </div>
                                 <div>
                                     <label className="block font-body-sm text-body-sm text-on-surface mb-1.5">Correo electrónico</label>

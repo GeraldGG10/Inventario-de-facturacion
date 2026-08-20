@@ -37,7 +37,13 @@ productosRouter.get('/', requirePermission('inventario.ver'), async (req, res) =
       ? { precioVenta: { ...(precioMin !== undefined ? { gte: precioMin } : {}), ...(precioMax !== undefined ? { lte: precioMax } : {}) } }
       : {}),
     ...(busqueda
-      ? { OR: [{ nombre: { contains: busqueda } }, { codigo: { contains: busqueda } }, { codigoBarras: { contains: busqueda } }] }
+      ? {
+          OR: [
+            { nombre: { contains: busqueda, mode: 'insensitive' } },
+            { codigo: { contains: busqueda, mode: 'insensitive' } },
+            { codigoBarras: { contains: busqueda, mode: 'insensitive' } },
+          ],
+        }
       : {}),
     ...(estado === 'inactivo' ? { activo: false } : estado ? { activo: true } : {}),
   };

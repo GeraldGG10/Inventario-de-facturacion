@@ -3,11 +3,13 @@ import { AnularFacturaModal, FacturaParaAnular } from '../components/modals/Anul
 import { NuevoClienteModal } from '../components/modals/NuevoClienteModal';
 import { AgregarProductoFacturaModal, ProductoFacturable } from '../components/modals/AgregarProductoFacturaModal';
 import { ExportarFacturaModal } from '../components/modals/ExportarFacturaModal';
-import { api, ApiError } from '../lib/api';
+import { PagoDetallesModal } from '../components/modals/PagoDetallesModal';
+import { FacturaDetallesModal } from '../components/modals/FacturaDetallesModal';
+import { api, ApiError, abrirArchivoConAuth } from '../lib/api';
 
 interface Cliente { id: string; nombre: string; documento: string | null; telefono: string | null; limiteCredito: number | null }
 interface LineaFactura { producto: ProductoFacturable; cantidad: number }
-interface FacturaReciente { id: number; numero: string; cliente: { nombre: string }; usuario: { nombre: string } | null; fecha: string; total: number; estado: string; metodoPago: string }
+interface FacturaReciente { id: number; numero: string; cliente: { nombre: string }; usuario: { nombre: string } | null; fecha: string; total: number; estado: string; metodoPago: string; referenciaTransferencia?: string; montoEfectivo?: number; montoTransferencia?: number; }
 
 const formatoMoneda = new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' });
 const METODOS_PAGO = [
@@ -35,9 +37,20 @@ export const Facturacion = () => {
     const [facturasRecientes, setFacturasRecientes] = useState<FacturaReciente[]>([]);
     const [facturaAnular, setFacturaAnular] = useState<FacturaReciente | null>(null);
     const [facturaExportar, setFacturaExportar] = useState<FacturaReciente | null>(null);
+    const [facturaDetalles, setFacturaDetalles] = useState<any | null>(null);
+    const [isPagoDetallesOpen, setIsPagoDetallesOpen] = useState(false);
 
     function cargarFacturasRecientes() {
         api.get('/facturas', { pageSize: 5 }).then((data) => setFacturasRecientes(data.facturas)).catch(() => {});
+    }
+
+    async function abrirDetallesFactura(id: number) {
+        try {
+            const detalles = await api.get(`/facturas/${id}`);
+            setFacturaDetalles(detalles);
+        } catch (err) {
+            console.error('Error al cargar detalles de la factura');
+        }
     }
 
     useEffect(() => {
@@ -73,17 +86,28 @@ export const Facturacion = () => {
     const impuestoMonto = subtotal * (impuestoPorcentaje / 100);
     const total = subtotal + impuestoMonto;
 
-    async function confirmarVenta() {
-        setError(null);
-        setExito(null);
+    function intentarConfirmarVenta() {
         if (!clienteSeleccionado) { setError('Selecciona un cliente'); return; }
         if (lineas.length === 0) { setError('Agrega al menos un producto'); return; }
+        if (metodoPago === 'transferencia' || metodoPago === 'mixto') {
+            setIsPagoDetallesOpen(true);
+        } else {
+            ejecutarVenta();
+        }
+    }
 
+    async function ejecutarVenta(detalles?: { referenciaTransferencia?: string; montoEfectivo?: number; montoTransferencia?: number }) {
+        setError(null);
+        setExito(null);
         setEnviando(true);
+        setIsPagoDetallesOpen(false);
         try {
             const factura = await api.post('/facturas', {
-                clienteId: clienteSeleccionado.id,
+                clienteId: clienteSeleccionado!.id,
                 metodoPago,
+                referenciaTransferencia: detalles?.referenciaTransferencia,
+                montoEfectivo: detalles?.montoEfectivo,
+                montoTransferencia: detalles?.montoTransferencia,
                 lineas: lineas.map((l) => ({ productoId: l.producto.id, cantidad: l.cantidad })),
             });
             setExito(`Venta registrada: factura ${factura.numero}`);
@@ -255,7 +279,7 @@ export const Facturacion = () => {
                         </div>
 
                         <div className="mt-auto">
-                            <button onClick={confirmarVenta} disabled={enviando} className="w-full py-4 bg-primary text-on-primary rounded-xl font-title-sm text-title-sm font-bold hover:bg-surface-tint shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] transition-all active:scale-[0.98] flex justify-center items-center gap-2 disabled:opacity-60">
+                            <button onClick={intentarConfirmarVenta} disabled={enviando} className="w-full py-4 bg-primary text-on-primary rounded-xl font-title-sm text-title-sm font-bold hover:bg-surface-tint shadow-[0_4px_14px_0_rgba(37,99,235,0.39)] transition-all active:scale-[0.98] flex justify-center items-center gap-2 disabled:opacity-60">
                                 <span className="material-symbols-outlined">check_circle</span>
                                 {enviando ? 'Registrando…' : 'Confirmar Venta'}
                             </button>
@@ -275,27 +299,40 @@ export const Facturacion = () => {
                             <tr>
                                 <th className="p-3 font-label-caps text-label-caps text-on-surface-variant pl-6">NO. FACTURA</th>
                                 <th className="p-3 font-label-caps text-label-caps text-on-surface-variant">CLIENTE</th>
+                                <th className="p-3 font-label-caps text-label-caps text-on-surface-variant">PAGO</th>
                                 <th className="p-3 font-label-caps text-label-caps text-on-surface-variant">FECHA</th>
                                 <th className="p-3 font-label-caps text-label-caps text-on-surface-variant text-right">TOTAL</th>
-                                <th className="p-3 font-label-caps text-label-caps text-on-surface-variant text-center pr-6">ESTADO</th>
+                                <th className="p-3 font-label-caps text-label-caps text-on-surface-variant text-center">ESTADO</th>
+                                <th className="p-3 font-label-caps text-label-caps text-on-surface-variant text-center pr-6">PDF</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-outline-variant font-data-mono text-data-mono">
                             {facturasRecientes.length === 0 && (
-                                <tr><td colSpan={5} className="p-6 text-center text-on-surface-variant font-body-sm">Sin facturas todavía.</td></tr>
+                                <tr><td colSpan={7} className="p-6 text-center text-on-surface-variant font-body-sm">Sin facturas todavía.</td></tr>
                             )}
                             {facturasRecientes.map((f) => (
                                 <tr key={f.id} className="hover:bg-surface transition-colors">
-                                    <td className="p-3 pl-6 text-primary font-medium cursor-pointer hover:underline" onClick={() => setFacturaExportar(f)}>{f.numero}</td>
+                                    <td className="p-3 pl-6 text-primary font-medium cursor-pointer hover:underline" onClick={() => abrirDetallesFactura(f.id)}>{f.numero}</td>
                                     <td className="p-3 text-on-surface font-body-sm text-body-sm">{f.cliente.nombre}</td>
+                                    <td className="p-3 text-on-surface-variant font-body-sm text-body-sm capitalize">
+                                        {f.metodoPago} 
+                                        {(f.metodoPago === 'transferencia' || f.metodoPago === 'mixto') && f.referenciaTransferencia && (
+                                            <div className="text-xs text-secondary mt-0.5 font-data-mono">Ref: {f.referenciaTransferencia}</div>
+                                        )}
+                                    </td>
                                     <td className="p-3 text-secondary font-body-sm text-body-sm">{new Date(f.fecha).toLocaleString('es-DO')}</td>
                                     <td className="p-3 text-right">{formatoMoneda.format(f.total)}</td>
-                                    <td className="p-3 text-center pr-6">
+                                    <td className="p-3 text-center">
                                         {f.estado === 'anulada' ? (
                                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-error-container/20 text-error-container">Anulada</span>
                                         ) : (
                                             <button onClick={() => setFacturaAnular(f)} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-[#dcfce7] text-[#166534] hover:bg-error-container/30 hover:text-error transition-colors" title="Anular factura">Emitida</button>
                                         )}
+                                    </td>
+                                    <td className="p-3 text-center pr-6">
+                                        <button onClick={() => abrirArchivoConAuth(`/facturas/${f.id}/pdf`)} className="inline-flex items-center justify-center p-1.5 text-secondary hover:text-error transition-colors hover:bg-error-container/10 rounded-full" title="Descargar PDF">
+                                            <span className="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+                                        </button>
                                     </td>
                                 </tr>
                             ))}
@@ -319,6 +356,12 @@ export const Facturacion = () => {
             )}
             {facturaExportar && (
                 <ExportarFacturaModal facturaId={facturaExportar.id} numero={facturaExportar.numero} onClose={() => setFacturaExportar(null)} />
+            )}
+            {isPagoDetallesOpen && (
+                <PagoDetallesModal metodoPago={metodoPago} totalFactura={total} onClose={() => setIsPagoDetallesOpen(false)} onConfirm={ejecutarVenta} />
+            )}
+            {facturaDetalles && (
+                <FacturaDetallesModal factura={facturaDetalles} onClose={() => setFacturaDetalles(null)} />
             )}
         </div>
     );

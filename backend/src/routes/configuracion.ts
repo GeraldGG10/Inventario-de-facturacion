@@ -5,10 +5,30 @@ import { requireAuth } from '../middleware/requireAuth';
 import { requirePermission } from '../middleware/requirePermission';
 import { registrarAuditoria } from '../services/auditoria';
 import { reprogramarBackups } from '../services/backup';
+import os from 'os';
 
 export const configuracionRouter = Router();
 
 configuracionRouter.use(requireAuth);
+
+configuracionRouter.get('/network', (req, res) => {
+  const interfaces = os.networkInterfaces();
+  let serverIp = 'localhost';
+
+  for (const name of Object.keys(interfaces)) {
+    for (const net of interfaces[name]!) {
+      // Buscar una IPv4 que no sea interna (no 127.0.0.1)
+      if (net.family === 'IPv4' && !net.internal) {
+        serverIp = net.address;
+        break;
+      }
+    }
+    if (serverIp !== 'localhost') break;
+  }
+
+  const hostname = os.hostname();
+  res.json({ ip: serverIp, hostname });
+});
 
 configuracionRouter.get('/', async (_req, res) => {
   const [empresa, facturacion, inventario, sistema] = await Promise.all([

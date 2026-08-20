@@ -47,8 +47,6 @@ export const ConfigurarAlertasModal = ({ onClose }: Props) => {
                         <div className="flex flex-col gap-3">
                             {[
                                 { icon: 'notifications', label: 'Notificaciones en la app', checked: true },
-                                { icon: 'mail', label: 'Alertas por correo electrónico', checked: false },
-                                { icon: 'phone_iphone', label: 'Notificaciones móvil (SMS)', checked: false },
                             ].map((canal) => (
                                 <label key={canal.label} className="flex items-center gap-3 cursor-pointer p-3 border border-outline-variant rounded-lg hover:bg-surface-container transition-colors">
                                     <input type="checkbox" defaultChecked={canal.checked} className="w-4 h-4 text-primary rounded border-outline focus:ring-primary" />

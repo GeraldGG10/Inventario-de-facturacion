@@ -30,7 +30,7 @@ movimientosRouter.get('/', async (req, res) => {
     ...(tipo ? { tipo } : {}),
     ...(usuarioId ? { usuarioId } : {}),
     ...(periodo ? { fecha: { gte: new Date(Date.now() - PERIODOS_A_DIAS[periodo] * 86_400_000) } } : {}),
-    ...(busqueda ? { producto: { nombre: { contains: busqueda } } } : {}),
+    ...(busqueda ? { producto: { nombre: { contains: busqueda, mode: 'insensitive' } } } : {}),
   };
 
   const [total, movimientos, resumen] = await Promise.all([
@@ -58,13 +58,21 @@ movimientosRouter.get('/', async (req, res) => {
   });
 });
 
-const crearMovimientoSchema = z.object({
-  productoId: z.string().min(1),
-  tipo: z.enum(['entrada', 'salida', 'ajuste']),
-  cantidad: z.number().int().refine((v) => v !== 0, 'La cantidad no puede ser 0'),
-  motivo: z.string().optional().nullable(),
-  referencia: z.string().optional().nullable(),
-});
+const crearMovimientoSchema = z
+  .object({
+    productoId: z.string().min(1),
+    tipo: z.enum(['entrada', 'salida', 'ajuste']),
+    cantidad: z.number().int().refine((v) => v !== 0, 'La cantidad no puede ser 0'),
+    motivo: z.string().optional().nullable(),
+    referencia: z.string().optional().nullable(),
+  })
+  // "entrada"/"salida" son siempre positivas por convención (el signo lo decide
+  // `tipo`, no el usuario); solo "ajuste" admite cantidades negativas para
+  // corregir el stock hacia abajo.
+  .refine((data) => data.tipo === 'ajuste' || data.cantidad > 0, {
+    message: 'La cantidad debe ser positiva para movimientos de entrada o salida',
+    path: ['cantidad'],
+  });
 
 movimientosRouter.post('/', requirePermission('inventario.editar'), async (req, res) => {
   const parsed = crearMovimientoSchema.safeParse(req.body);

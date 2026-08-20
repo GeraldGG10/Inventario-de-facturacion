@@ -58,12 +58,12 @@ export const NuevoClienteModal = ({ onClose, onCreado }: Props) => {
                     </div>
                     <div>
                         <label className="block text-body-sm font-semibold text-on-surface mb-2">RNC / Cédula</label>
-                        <input value={documento} onChange={(e) => setDocumento(e.target.value)} type="text" placeholder="Ej. 130-123456-1" className="w-full px-4 py-2 bg-surface border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none" />
+                        <input value={documento} onChange={(e) => setDocumento(e.target.value.replace(/[^0-9]/g, ''))} maxLength={11} type="text" placeholder="Ej. 1301234561" className="w-full px-4 py-2 bg-surface border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <label className="block text-body-sm font-semibold text-on-surface mb-2">Teléfono</label>
-                            <input value={telefono} onChange={(e) => setTelefono(e.target.value)} type="tel" placeholder="(809) 555-0123" className="w-full px-4 py-2 bg-surface border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none" />
+                            <input value={telefono} onChange={(e) => setTelefono(e.target.value.replace(/[^0-9]/g, ''))} maxLength={10} type="tel" placeholder="Ej. 8095550123" className="w-full px-4 py-2 bg-surface border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none" />
                         </div>
                         <div>
                             <label className="block text-body-sm font-semibold text-on-surface mb-2">Email</label>
@@ -72,7 +72,7 @@ export const NuevoClienteModal = ({ onClose, onCreado }: Props) => {
                     </div>
                     <div>
                         <label className="block text-body-sm font-semibold text-on-surface mb-2">Límite de Crédito</label>
-                        <input value={limiteCredito} onChange={(e) => setLimiteCredito(e.target.value)} type="number" placeholder="0.00" className="w-full px-4 py-2 bg-surface border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none font-data-mono" />
+                        <input value={limiteCredito} onChange={(e) => setLimiteCredito(e.target.value.replace(/[^0-9.]/g, ''))} type="text" placeholder="0.00" className="w-full px-4 py-2 bg-surface border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none font-data-mono" />
                     </div>
                 </div>
 

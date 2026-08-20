@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -317,6 +317,9 @@ model Factura {
   impuestoMonto       Float     @map("impuesto_monto")
   total               Float
   metodoPago          String    @map("metodo_pago")
+  referenciaTransferencia String? @map("referencia_transferencia")
+  montoEfectivo           Float?  @map("monto_efectivo")
+  montoTransferencia      Float?  @map("monto_transferencia")
   estado              String    @default("emitida")
   motivoAnulacion     String?   @map("motivo_anulacion")
   anuladaEn           DateTime? @map("anulada_en")

@@ -4,7 +4,7 @@ import { prisma } from '../config/prisma';
 import { requireAuth } from '../middleware/requireAuth';
 import { requirePermission } from '../middleware/requirePermission';
 import { registrarAuditoria } from '../services/auditoria';
-import { registrarMovimiento } from '../services/inventario';
+import { registrarMovimientoTx } from '../services/inventario';
 
 export const entradasRouter = Router();
 
@@ -42,44 +42,54 @@ entradasRouter.post('/', async (req, res) => {
   if (!parsed.success) return res.status(400).json({ error: parsed.error.flatten() });
   const { proveedorId, observaciones, detalles } = parsed.data;
 
-  const entrada = await prisma.entradaMercancia.create({
-    data: {
-      proveedorId,
-      usuarioId: req.auth!.sub,
-      observaciones,
-      detalles: {
-        create: detalles.map((d) => ({
-          productoId: d.productoId,
-          cantidad: d.cantidad,
-          costoUnitario: d.costoUnitario,
-          subtotal: d.cantidad * d.costoUnitario,
-        })),
-      },
-    },
-    include: { detalles: true },
-  });
+  try {
+    const entrada = await prisma.$transaction(async (tx) => {
+      const nuevaEntrada = await tx.entradaMercancia.create({
+        data: {
+          proveedorId,
+          usuarioId: req.auth!.sub,
+          observaciones,
+          detalles: {
+            create: detalles.map((d) => ({
+              productoId: d.productoId,
+              cantidad: d.cantidad,
+              costoUnitario: d.costoUnitario,
+              subtotal: d.cantidad * d.costoUnitario,
+            })),
+          },
+        },
+        include: { detalles: true },
+      });
 
-  // El stock aumenta vía el mismo servicio que usan movimientos y facturas,
-  // así la alerta de reposición del producto también se re-evalúa aquí.
-  for (const detalle of detalles) {
-    await registrarMovimiento({
-      productoId: detalle.productoId,
-      tipo: 'entrada',
-      cantidad: detalle.cantidad,
-      motivo: 'Entrada de mercancía',
-      referencia: entrada.id,
-      usuarioId: req.auth!.sub,
+      // El stock aumenta vía el mismo servicio que usan movimientos y facturas,
+      // así la alerta de reposición del producto también se re-evalúa aquí.
+      // Todo corre en la misma transacción: si un producto no existe o falla
+      // a mitad de camino, la entrada completa se revierte (no queda a medias).
+      for (const detalle of detalles) {
+        await registrarMovimientoTx(tx, {
+          productoId: detalle.productoId,
+          tipo: 'entrada',
+          cantidad: detalle.cantidad,
+          motivo: 'Entrada de mercancía',
+          referencia: nuevaEntrada.id,
+          usuarioId: req.auth!.sub,
+        });
+        await tx.producto.update({ where: { id: detalle.productoId }, data: { precioCosto: detalle.costoUnitario } });
+      }
+
+      return nuevaEntrada;
     });
-    await prisma.producto.update({ where: { id: detalle.productoId }, data: { precioCosto: detalle.costoUnitario } });
+
+    await registrarAuditoria({
+      usuarioId: req.auth!.sub,
+      accion: 'registrar_entrada_mercancia',
+      entidad: 'EntradaMercancia',
+      entidadId: entrada.id,
+      datosDespues: entrada,
+    });
+
+    res.status(201).json(entrada);
+  } catch (error) {
+    res.status(400).json({ error: (error as Error).message });
   }
-
-  await registrarAuditoria({
-    usuarioId: req.auth!.sub,
-    accion: 'registrar_entrada_mercancia',
-    entidad: 'EntradaMercancia',
-    entidadId: entrada.id,
-    datosDespues: entrada,
-  });
-
-  res.status(201).json(entrada);
 });

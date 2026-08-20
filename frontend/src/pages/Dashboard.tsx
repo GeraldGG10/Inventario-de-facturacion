@@ -71,7 +71,13 @@ export const Dashboard = () => {
 
         const primaryColor = '#004ac6';
         const secondaryColor = '#b7c8e1';
-        const labels = tendencia.map((p) => new Date(p.fecha).toLocaleDateString('es-DO', { day: '2-digit', month: '2-digit' }));
+        const labels = tendencia.map((p) => {
+            const date = new Date(p.fecha);
+            if (timeRange === 'Hoy') {
+                return date.toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' });
+            }
+            return date.toLocaleDateString('es-DO', { day: '2-digit', month: '2-digit' });
+        });
 
         chartInstance.current = new Chart(ctx, {
             type: 'line',

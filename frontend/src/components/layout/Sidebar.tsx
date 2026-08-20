@@ -1,13 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { api } from '../../lib/api';
+import { tiempoRelativo } from '../../lib/formatters';
+
+interface Notificacion {
+    id: string;
+    tipo: 'stock_bajo' | 'agotado' | 'venta';
+    titulo: string;
+    descripcion: string;
+    fecha: string;
+    ruta: string;
+}
 
 export const Sidebar = ({ children }: { children: React.ReactNode }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const [notificaciones, setNotificaciones] = useState<Notificacion[]>([]);
+    const [marcandoLeidas, setMarcandoLeidas] = useState(false);
     const { usuario, logout } = useAuth();
     const navigate = useNavigate();
+
+    const cargarNotificaciones = useCallback(async () => {
+        try {
+            const [alertasData, facturasData] = await Promise.all([
+                api.get('/alertas', { estado: 'pendiente' }).catch(() => []),
+                api.get('/facturas', { pageSize: 3 }).catch(() => ({ facturas: [] })),
+            ]);
+
+            const notifs: Notificacion[] = [];
+
+            // Alertas de inventario
+            for (const a of (alertasData as any[]).slice(0, 5)) {
+                notifs.push({
+                    id: a.id,
+                    tipo: a.estadoAlerta === 'agotado' ? 'agotado' : 'stock_bajo',
+                    titulo: a.estadoAlerta === 'agotado' ? 'Stock Agotado' : 'Stock Bajo',
+                    descripcion: `${a.nombre} — Stock actual: ${a.stockActual} (mín: ${a.stockMinimo})`,
+                    fecha: a.fechaGenerada,
+                    ruta: '/alertas',
+                });
+            }
+
+            // Ventas recientes
+            for (const f of ((facturasData as any).facturas ?? []).slice(0, 3)) {
+                notifs.push({
+                    id: `factura-${f.id}`,
+                    tipo: 'venta',
+                    titulo: 'Nueva Venta Registrada',
+                    descripcion: `Factura ${f.numero} — ${f.cliente.nombre}`,
+                    fecha: f.fecha,
+                    ruta: '/facturacion',
+                });
+            }
+
+            // Ordenar por fecha más reciente
+            notifs.sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
+            setNotificaciones(notifs);
+        } catch {
+            // Silenciar errores
+        }
+    }, []);
+
+    useEffect(() => {
+        cargarNotificaciones();
+        const interval = setInterval(cargarNotificaciones, 60000); // Actualizar cada 60s
+        return () => clearInterval(interval);
+    }, [cargarNotificaciones]);
+
+    async function marcarTodasLeidas() {
+        setMarcandoLeidas(true);
+        try {
+            const alertas = notificaciones.filter(n => n.tipo !== 'venta');
+            await Promise.all(alertas.map(a => api.post(`/alertas/${a.id}/atender`).catch(() => {})));
+            await cargarNotificaciones();
+            setIsNotificationsOpen(false);
+        } finally {
+            setMarcandoLeidas(false);
+        }
+    }
 
     const iniciales = usuario?.nombre
         ? usuario.nombre.split(' ').slice(0, 2).map((p) => p[0]?.toUpperCase()).join('')
@@ -54,6 +126,7 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
                 </div>
                 
                 <nav className="flex flex-col gap-2 py-6 px-4 flex-1 overflow-y-auto">
+                    {/* Dashboard: Visible para todos (admin, cajero, almacenista, reportes) */}
                     <NavLink to="/" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
                         {(props) => (
                             <>
@@ -63,42 +136,55 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
                         )}
                     </NavLink>
                     
-                    <NavLink to="/inventario" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
-                        {(props) => (
-                            <>
-                                <span className={getIconClass(props)} style={props.isActive ? {fontVariationSettings: "'FILL' 1"} : {}}>inventory_2</span>
-                                <span>Inventario</span>
-                            </>
-                        )}
-                    </NavLink>
+                    {/* Inventario: Visible para admin, cajero, almacenista */}
+                    {['administrador', 'cajero', 'almacenista'].includes(usuario?.rol || '') && (
+                        <NavLink to="/inventario" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
+                            {(props) => (
+                                <>
+                                    <span className={getIconClass(props)} style={props.isActive ? {fontVariationSettings: "'FILL' 1"} : {}}>inventory_2</span>
+                                    <span>Inventario</span>
+                                </>
+                            )}
+                        </NavLink>
+                    )}
                     
-                    <NavLink to="/facturacion" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
-                        {(props) => (
-                            <>
-                                <span className={getIconClass(props)} style={props.isActive ? {fontVariationSettings: "'FILL' 1"} : {}}>receipt_long</span>
-                                <span>Facturación</span>
-                            </>
-                        )}
-                    </NavLink>
+                    {/* Facturación: Visible para admin, cajero */}
+                    {['administrador', 'cajero'].includes(usuario?.rol || '') && (
+                        <NavLink to="/facturacion" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
+                            {(props) => (
+                                <>
+                                    <span className={getIconClass(props)} style={props.isActive ? {fontVariationSettings: "'FILL' 1"} : {}}>receipt_long</span>
+                                    <span>Facturación</span>
+                                </>
+                            )}
+                        </NavLink>
+                    )}
                     
-                    <NavLink to="/clientes" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
-                        {(props) => (
-                            <>
-                                <span className={getIconClass(props)} style={props.isActive ? {fontVariationSettings: "'FILL' 1"} : {}}>group</span>
-                                <span>Clientes</span>
-                            </>
-                        )}
-                    </NavLink>
+                    {/* Clientes: Visible para admin, cajero */}
+                    {['administrador', 'cajero'].includes(usuario?.rol || '') && (
+                        <NavLink to="/clientes" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
+                            {(props) => (
+                                <>
+                                    <span className={getIconClass(props)} style={props.isActive ? {fontVariationSettings: "'FILL' 1"} : {}}>group</span>
+                                    <span>Clientes</span>
+                                </>
+                            )}
+                        </NavLink>
+                    )}
                     
-                    <NavLink to="/proveedores" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
-                        {(props) => (
-                            <>
-                                <span className={getIconClass(props)} style={props.isActive ? {fontVariationSettings: "'FILL' 1"} : {}}>local_shipping</span>
-                                <span>Proveedores</span>
-                            </>
-                        )}
-                    </NavLink>
+                    {/* Proveedores: Visible para admin, almacenista */}
+                    {['administrador', 'almacenista'].includes(usuario?.rol || '') && (
+                        <NavLink to="/proveedores" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
+                            {(props) => (
+                                <>
+                                    <span className={getIconClass(props)} style={props.isActive ? {fontVariationSettings: "'FILL' 1"} : {}}>local_shipping</span>
+                                    <span>Proveedores</span>
+                                </>
+                            )}
+                        </NavLink>
+                    )}
                     
+                    {/* Reportes: Visible para todos (admin, cajero, almacenista, reportes) */}
                     <NavLink to="/reportes" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
                         {(props) => (
                             <>
@@ -108,14 +194,17 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
                         )}
                     </NavLink>
                     
-                    <NavLink to="/configuracion" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
-                        {(props) => (
-                            <>
-                                <span className={getIconClass(props)} style={props.isActive ? {fontVariationSettings: "'FILL' 1"} : {}}>settings</span>
-                                <span>Configuración</span>
-                            </>
-                        )}
-                    </NavLink>
+                    {/* Configuración: Solo para admin */}
+                    {['administrador'].includes(usuario?.rol || '') && (
+                        <NavLink to="/configuracion" className={getNavLinkClass} onClick={() => window.innerWidth < 1280 && setIsOpen(false)}>
+                            {(props) => (
+                                <>
+                                    <span className={getIconClass(props)} style={props.isActive ? {fontVariationSettings: "'FILL' 1"} : {}}>settings</span>
+                                    <span>Configuración</span>
+                                </>
+                            )}
+                        </NavLink>
+                    )}
                 </nav>
             </aside>
 
@@ -148,7 +237,9 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
                                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
                             >
                                 <span className={`material-symbols-outlined p-2 rounded-full transition-colors ${isNotificationsOpen ? 'bg-surface-container text-primary' : 'text-secondary hover:bg-surface-container dark:hover:bg-surface-container-highest'}`}>notifications</span>
-                                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-error rounded-full border-2 border-surface dark:border-background"></span>
+                                {notificaciones.length > 0 && (
+                                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-error rounded-full border-2 border-surface dark:border-background"></span>
+                                )}
                             </div>
 
                             {/* Dropdown de Notificaciones */}
@@ -158,46 +249,51 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
                                     <div className="absolute right-0 mt-2 w-80 bg-surface-container-lowest dark:bg-inverse-surface border border-outline-variant dark:border-outline/30 rounded-xl shadow-lg z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                                         <div className="p-4 border-b border-outline-variant/50 flex justify-between items-center">
                                             <h3 className="font-title-sm text-[16px] font-semibold text-on-surface dark:text-inverse-on-surface">Notificaciones</h3>
-                                            <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full">3 Nuevas</span>
+                                            {notificaciones.length > 0 && (
+                                                <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full">{notificaciones.length} {notificaciones.length === 1 ? 'Nueva' : 'Nuevas'}</span>
+                                            )}
                                         </div>
                                         <div className="max-h-[320px] overflow-y-auto custom-scrollbar flex flex-col">
-                                            {/* Notificación 1 */}
-                                            <div className="p-4 border-b border-outline-variant/30 hover:bg-surface-container-lowest transition-colors cursor-pointer flex gap-3">
-                                                <div className="mt-0.5 w-10 h-10 flex items-center justify-center bg-error/10 text-error rounded-full shrink-0">
-                                                    <span className="material-symbols-outlined text-[20px]">warning</span>
+                                            {notificaciones.length === 0 && (
+                                                <div className="p-8 text-center text-on-surface-variant">
+                                                    <span className="material-symbols-outlined text-[40px] opacity-40 block mb-2">notifications_off</span>
+                                                    <p className="text-body-sm">Sin notificaciones nuevas</p>
                                                 </div>
-                                                <div>
-                                                    <p className="text-body-sm font-medium text-on-surface">Stock Agotado</p>
-                                                    <p className="text-xs text-on-surface-variant mt-0.5">Laptop Pro X15 se ha quedado sin stock.</p>
-                                                    <p className="text-[10px] text-secondary mt-1">Hace 10 min</p>
+                                            )}
+                                            {notificaciones.map((n, idx) => (
+                                                <div
+                                                    key={n.id}
+                                                    onClick={() => { setIsNotificationsOpen(false); navigate(n.ruta); }}
+                                                    className={`p-4 hover:bg-surface-container transition-colors cursor-pointer flex gap-3 ${idx < notificaciones.length - 1 ? 'border-b border-outline-variant/30' : ''}`}
+                                                >
+                                                    <div className={`mt-0.5 w-10 h-10 flex items-center justify-center rounded-full shrink-0 ${
+                                                        n.tipo === 'agotado' ? 'bg-error/10 text-error' :
+                                                        n.tipo === 'stock_bajo' ? 'bg-orange-500/10 text-orange-500' :
+                                                        'bg-primary/10 text-primary'
+                                                    }`}>
+                                                        <span className="material-symbols-outlined text-[20px]">
+                                                            {n.tipo === 'agotado' ? 'warning' : n.tipo === 'stock_bajo' ? 'inventory_2' : 'receipt_long'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="min-w-0">
+                                                        <p className="text-body-sm font-medium text-on-surface">{n.titulo}</p>
+                                                        <p className="text-xs text-on-surface-variant mt-0.5 truncate">{n.descripcion}</p>
+                                                        <p className="text-[10px] text-secondary mt-1">{tiempoRelativo(n.fecha)}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            {/* Notificación 2 */}
-                                            <div className="p-4 border-b border-outline-variant/30 hover:bg-surface-container-lowest transition-colors cursor-pointer flex gap-3">
-                                                <div className="mt-0.5 w-10 h-10 flex items-center justify-center bg-primary/10 text-primary rounded-full shrink-0">
-                                                    <span className="material-symbols-outlined text-[20px]">receipt_long</span>
-                                                </div>
-                                                <div>
-                                                    <p className="text-body-sm font-medium text-on-surface">Nueva Venta Registrada</p>
-                                                    <p className="text-xs text-on-surface-variant mt-0.5">Factura #FAC-2023-0891 por $1,250.00</p>
-                                                    <p className="text-[10px] text-secondary mt-1">Hace 2 horas</p>
-                                                </div>
-                                            </div>
-                                            {/* Notificación 3 */}
-                                            <div className="p-4 hover:bg-surface-container-lowest transition-colors cursor-pointer flex gap-3">
-                                                <div className="mt-0.5 w-10 h-10 flex items-center justify-center bg-tertiary-container/10 text-tertiary-container rounded-full shrink-0">
-                                                    <span className="material-symbols-outlined text-[20px]">inventory_2</span>
-                                                </div>
-                                                <div>
-                                                    <p className="text-body-sm font-medium text-on-surface">Reabastecimiento Pendiente</p>
-                                                    <p className="text-xs text-on-surface-variant mt-0.5">4 productos por debajo del mínimo requerido.</p>
-                                                    <p className="text-[10px] text-secondary mt-1">Hace 5 horas</p>
-                                                </div>
-                                            </div>
+                                            ))}
                                         </div>
-                                        <div className="p-3 bg-surface-container/30 border-t border-outline-variant/50 text-center">
-                                            <button className="text-sm font-medium text-primary hover:text-primary-container transition-colors">Marcar todas como leídas</button>
-                                        </div>
+                                        {notificaciones.some(n => n.tipo !== 'venta') && (
+                                            <div className="p-3 bg-surface-container/30 border-t border-outline-variant/50 text-center">
+                                                <button
+                                                    onClick={marcarTodasLeidas}
+                                                    disabled={marcandoLeidas}
+                                                    className="text-sm font-medium text-primary hover:text-primary/70 transition-colors disabled:opacity-50"
+                                                >
+                                                    {marcandoLeidas ? 'Marcando...' : 'Marcar alertas como atendidas'}
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 </>
                             )}

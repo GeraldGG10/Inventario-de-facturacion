@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { NuevoClienteModal } from '../components/modals/NuevoClienteModal';
 import { NuevoProveedorModal } from '../components/modals/NuevoProveedorModal';
 import { ClienteModal } from '../components/modals/ClienteModal';
+import { EditarClienteModal } from '../components/modals/EditarClienteModal';
 import { api, ApiError } from '../lib/api';
 
 interface Cliente {
     id: string; nombre: string; documento: string | null; telefono: string | null;
+    correo?: string | null; direccion?: string | null; limiteCredito?: number | null;
     totalComprado: number; activo: boolean; cantidadCompras: number;
 }
 
@@ -17,6 +19,7 @@ export const Clientes = () => {
     const [isNuevoClienteModalOpen, setIsNuevoClienteModalOpen] = useState(false);
     const [isNuevoProveedorOpen, setIsNuevoProveedorOpen] = useState(false);
     const [clienteSeleccionadoId, setClienteSeleccionadoId] = useState<string | null>(null);
+    const [clienteAEditar, setClienteAEditar] = useState<Cliente | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     function cargar() {
@@ -67,6 +70,7 @@ export const Clientes = () => {
                                         <th className="px-6 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider">Teléfono</th>
                                         <th className="px-6 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider text-right">Compras Totales</th>
                                         <th className="px-6 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider text-center">Estado</th>
+                                        <th className="px-6 py-3 font-label-caps text-label-caps text-on-surface-variant uppercase tracking-wider text-center">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody className="font-body-sm text-body-sm text-on-surface">
@@ -81,6 +85,11 @@ export const Clientes = () => {
                                             <td className="px-6 py-4 font-data-mono text-right">{formatoMoneda.format(c.totalComprado)}</td>
                                             <td className="px-6 py-4 text-center">
                                                 <span className={`inline-flex items-center px-2 py-1 rounded-full font-label-caps text-[10px] ${c.activo ? 'bg-secondary-container/50 text-on-secondary-container' : 'bg-error-container/50 text-on-error-container'}`}>{c.activo ? 'Activo' : 'Inactivo'}</span>
+                                            </td>
+                                            <td className="px-6 py-4 text-center">
+                                                <button onClick={(e) => { e.stopPropagation(); setClienteAEditar(c); }} className="text-on-surface-variant hover:text-primary transition-colors p-2 rounded-full hover:bg-surface-variant/30" title="Editar Cliente">
+                                                    <span className="material-symbols-outlined text-[20px]">edit</span>
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}
@@ -126,6 +135,7 @@ export const Clientes = () => {
             )}
             {isNuevoProveedorOpen && <NuevoProveedorModal onClose={() => setIsNuevoProveedorOpen(false)} onGuardado={() => setIsNuevoProveedorOpen(false)} />}
             {clienteSeleccionadoId && <ClienteModal clienteId={clienteSeleccionadoId} onClose={() => setClienteSeleccionadoId(null)} />}
+            {clienteAEditar && <EditarClienteModal cliente={clienteAEditar} onClose={() => setClienteAEditar(null)} onEditado={() => { setClienteAEditar(null); cargar(); }} />}
         </div>
     );
 };

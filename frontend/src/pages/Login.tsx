@@ -47,7 +47,7 @@ export const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="mt-1 w-full rounded-lg border border-outline-variant px-3 py-2 text-body-md bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary"
-              placeholder="admin@facturacion.local"
+              placeholder="Email"
               autoFocus
             />
           </div>

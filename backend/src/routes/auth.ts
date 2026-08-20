@@ -1,11 +1,15 @@
-import { Router } from 'express';
-import bcrypt from 'bcrypt';
-import { z } from 'zod';
-import { prisma } from '../config/prisma';
-import { signAccessToken, signRefreshToken, verifyRefreshToken } from '../utils/jwt';
-import { env } from '../config/env';
-import { registrarAuditoria } from '../services/auditoria';
-import { requireAuth } from '../middleware/requireAuth';
+import { Router } from "express";
+import bcrypt from "bcryptjs";
+import { z } from "zod";
+import { prisma } from "../config/prisma";
+import {
+  signAccessToken,
+  signRefreshToken,
+  verifyRefreshToken,
+} from "../utils/jwt";
+import { env } from "../config/env";
+import { registrarAuditoria } from "../services/auditoria";
+import { requireAuth } from "../middleware/requireAuth";
 
 export const authRouter = Router();
 
@@ -22,10 +26,10 @@ function expiresInMsToDate(expiresIn: string): Date {
   return new Date(Date.now() + value * unitMs);
 }
 
-authRouter.post('/login', async (req, res) => {
+authRouter.post("/login", async (req, res) => {
   const parsed = loginSchema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({ error: 'Email y contraseña son requeridos' });
+    return res.status(400).json({ error: "Email y contraseña son requeridos" });
   }
   const { email, password } = parsed.data;
 
@@ -35,16 +39,20 @@ authRouter.post('/login', async (req, res) => {
   });
 
   if (!usuario || !usuario.activo) {
-    return res.status(401).json({ error: 'Credenciales inválidas' });
+    return res.status(401).json({ error: "Credenciales inválidas" });
   }
 
   const passwordValida = await bcrypt.compare(password, usuario.passwordHash);
   if (!passwordValida) {
-    return res.status(401).json({ error: 'Credenciales inválidas' });
+    return res.status(401).json({ error: "Credenciales inválidas" });
   }
 
   const permisos = usuario.rol.permisos.map((rp) => rp.permiso.nombre);
-  const accessToken = signAccessToken({ sub: usuario.id, rol: usuario.rol.nombre, permisos });
+  const accessToken = signAccessToken({
+    sub: usuario.id,
+    rol: usuario.rol.nombre,
+    permisos,
+  });
   const refreshToken = signRefreshToken(usuario.id);
 
   await prisma.refreshToken.create({
@@ -55,12 +63,15 @@ authRouter.post('/login', async (req, res) => {
     },
   });
 
-  await prisma.usuario.update({ where: { id: usuario.id }, data: { ultimoAcceso: new Date() } });
+  await prisma.usuario.update({
+    where: { id: usuario.id },
+    data: { ultimoAcceso: new Date() },
+  });
 
   await registrarAuditoria({
     usuarioId: usuario.id,
-    accion: 'login',
-    entidad: 'Usuario',
+    accion: "login",
+    entidad: "Usuario",
     entidadId: usuario.id,
   });
 
@@ -78,38 +89,51 @@ authRouter.post('/login', async (req, res) => {
   });
 });
 
-authRouter.get('/me', requireAuth, async (req, res) => {
+authRouter.get("/me", requireAuth, async (req, res) => {
   const usuario = await prisma.usuario.findUnique({
     where: { id: req.auth!.sub },
-    select: { id: true, nombre: true, nombreUsuario: true, email: true, activo: true, rol: { select: { nombre: true } } },
+    select: {
+      id: true,
+      nombre: true,
+      nombreUsuario: true,
+      email: true,
+      activo: true,
+      rol: { select: { nombre: true } },
+    },
   });
   if (!usuario || !usuario.activo) {
-    return res.status(401).json({ error: 'Usuario inválido' });
+    return res.status(401).json({ error: "Usuario inválido" });
   }
-  res.json({ ...usuario, rol: usuario.rol.nombre, permisos: req.auth!.permisos });
+  res.json({
+    ...usuario,
+    rol: usuario.rol.nombre,
+    permisos: req.auth!.permisos,
+  });
 });
 
 const refreshSchema = z.object({
   refreshToken: z.string().min(1),
 });
 
-authRouter.post('/refresh', async (req, res) => {
+authRouter.post("/refresh", async (req, res) => {
   const parsed = refreshSchema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({ error: 'refreshToken es requerido' });
+    return res.status(400).json({ error: "refreshToken es requerido" });
   }
   const { refreshToken } = parsed.data;
 
-  const stored = await prisma.refreshToken.findUnique({ where: { token: refreshToken } });
+  const stored = await prisma.refreshToken.findUnique({
+    where: { token: refreshToken },
+  });
   if (!stored || stored.revocado || stored.expiresAt < new Date()) {
-    return res.status(401).json({ error: 'Refresh token inválido o expirado' });
+    return res.status(401).json({ error: "Refresh token inválido o expirado" });
   }
 
   let payload: { sub: string };
   try {
     payload = verifyRefreshToken(refreshToken);
   } catch {
-    return res.status(401).json({ error: 'Refresh token inválido o expirado' });
+    return res.status(401).json({ error: "Refresh token inválido o expirado" });
   }
 
   const usuario = await prisma.usuario.findUnique({
@@ -118,13 +142,20 @@ authRouter.post('/refresh', async (req, res) => {
   });
 
   if (!usuario || !usuario.activo) {
-    return res.status(401).json({ error: 'Usuario inválido' });
+    return res.status(401).json({ error: "Usuario inválido" });
   }
 
-  await prisma.refreshToken.update({ where: { token: refreshToken }, data: { revocado: true } });
+  await prisma.refreshToken.update({
+    where: { token: refreshToken },
+    data: { revocado: true },
+  });
 
   const permisos = usuario.rol.permisos.map((rp) => rp.permiso.nombre);
-  const newAccessToken = signAccessToken({ sub: usuario.id, rol: usuario.rol.nombre, permisos });
+  const newAccessToken = signAccessToken({
+    sub: usuario.id,
+    rol: usuario.rol.nombre,
+    permisos,
+  });
   const newRefreshToken = signRefreshToken(usuario.id);
 
   await prisma.refreshToken.create({
@@ -138,7 +169,7 @@ authRouter.post('/refresh', async (req, res) => {
   res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
 });
 
-authRouter.post('/logout', async (req, res) => {
+authRouter.post("/logout", async (req, res) => {
   const parsed = refreshSchema.safeParse(req.body);
   if (parsed.success) {
     await prisma.refreshToken.updateMany({

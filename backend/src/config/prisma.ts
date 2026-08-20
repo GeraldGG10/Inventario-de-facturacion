@@ -1,9 +1,12 @@
+import path from 'path';
 import { PrismaClient } from '@prisma/client';
 
-export const prisma = new PrismaClient();
+// Cuando corre dentro de un .exe generado por pkg, apuntar al motor de Prisma
+// que está en la carpeta del ejecutable (junto al .exe distribuido).
+if ((process as any).pkg) {
+  const exeDir = path.dirname(process.execPath);
+  const enginePath = path.join(exeDir, 'query_engine-windows.dll.node');
+  process.env['PRISMA_QUERY_ENGINE_LIBRARY'] = enginePath;
+}
 
-// SQLite: WAL permite lecturas concurrentes mientras hay una escritura en curso
-// (varios cajeros facturando a la vez) y busy_timeout evita "database is locked"
-// inmediato cuando dos escrituras coinciden, dejando que Prisma reintente.
-prisma.$executeRawUnsafe('PRAGMA journal_mode = WAL;').catch(() => {});
-prisma.$executeRawUnsafe('PRAGMA busy_timeout = 5000;').catch(() => {});
+export const prisma = new PrismaClient();

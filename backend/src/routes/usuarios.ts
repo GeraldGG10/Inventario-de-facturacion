@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { prisma } from '../config/prisma';
 import { requireAuth } from '../middleware/requireAuth';
@@ -40,12 +40,14 @@ const crearUsuarioSchema = z.object({
 usuariosRouter.post('/', async (req, res) => {
   const parsed = crearUsuarioSchema.safeParse(req.body);
   if (!parsed.success) {
+    console.error('Error de validacion al crear usuario:', parsed.error.flatten());
     return res.status(400).json({ error: parsed.error.flatten() });
   }
   const { nombre, nombreUsuario, email, password, rolId } = parsed.data;
 
   const existente = await prisma.usuario.findFirst({ where: { OR: [{ email }, { nombreUsuario }] } });
   if (existente) {
+    console.error('Ya existe un usuario con ese email o nombre de usuario:', { email, nombreUsuario });
     return res.status(409).json({ error: 'Ya existe un usuario con ese email o nombre de usuario' });
   }
 

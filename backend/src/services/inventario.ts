@@ -21,18 +21,32 @@ type Tx = Prisma.TransactionClient;
  */
 export async function registrarMovimientoTx(tx: Tx, params: RegistrarMovimientoParams) {
   const { productoId, tipo, motivo, referencia, usuarioId } = params;
-
-  const producto = await tx.producto.findUniqueOrThrow({ where: { id: productoId } });
-  const stockAnterior = producto.stockActual;
-
   const delta = tipo === 'salida' ? -Math.abs(params.cantidad) : params.cantidad;
-  const stockNuevo = stockAnterior + delta;
 
-  if (stockNuevo < 0) {
-    throw new Error(`Stock insuficiente para ${producto.nombre}: disponible ${stockAnterior}, se solicitaron ${Math.abs(delta)}`);
+  // Update atómico condicionado por WHERE en vez de leer-calcular-escribir:
+  // bajo cajeros concurrentes, dos transacciones que lean el mismo stock
+  // antes de que ninguna escriba pueden pisarse el resultado la una a la
+  // otra ("lost update"). Con `increment` + condición en el WHERE, Postgres
+  // serializa las escrituras fila por fila y cada una parte del valor real
+  // más reciente, sin importar el orden de llegada.
+  const resultado = await tx.producto.updateMany({
+    where: {
+      id: productoId,
+      ...(delta < 0 ? { stockActual: { gte: -delta } } : {}),
+    },
+    data: { stockActual: { increment: delta } },
+  });
+
+  if (resultado.count === 0) {
+    // count === 0 es "no existe" o "stock insuficiente"; reconsultamos solo
+    // para dar un mensaje de error claro, no para decidir la escritura.
+    const producto = await tx.producto.findUniqueOrThrow({ where: { id: productoId } });
+    throw new Error(`Stock insuficiente para ${producto.nombre}: disponible ${producto.stockActual}, se solicitaron ${Math.abs(delta)}`);
   }
 
-  await tx.producto.update({ where: { id: productoId }, data: { stockActual: stockNuevo } });
+  const producto = await tx.producto.findUniqueOrThrow({ where: { id: productoId } });
+  const stockNuevo = producto.stockActual;
+  const stockAnterior = stockNuevo - delta;
 
   const movimiento = await tx.movimientoInventario.create({
     data: { productoId, tipo, cantidad: delta, stockAnterior, stockNuevo, motivo, referencia, usuarioId },

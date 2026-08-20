@@ -1,0 +1,47 @@
+# 🏛️ Arquitectura de Red Local (LAN) y Empaquetado (.exe)
+
+Este documento detalla paso a paso cómo funcionará el sistema cuando se distribuya como un programa y se deba acceder desde múltiples computadoras simultáneamente en la misma red local (ej. la red WiFi o red cableada del supermercado).
+
+## 1. El Concepto Funcional: 1 Servidor Central + N Clientes
+
+Para evitar crear un caos donde cada cajero crea datos en su propia computadora perdiendo la sincronización, aplicaremos una arquitectura llamada **Cliente-Servidor Local**.
+
+1. **La Computadora Principal (Servidor del Admin):** En esta computadora (probablemente la tuya o una fija designada) se instalará la Base de Datos unificada y ejecutará nuestro archivo `.exe`. Esta es la **única** PC que guarda la información.
+2. **Las Computadoras Cliente (Cajeros, Almacén):** Estos equipos **no instalarán nada**, ni base de datos ni `.exe`. Simplemente formarán parte de la misma red física (conectar al mismo router WiFi).
+
+## 2. Paso a Paso de la Implementación Técnica
+
+### Paso 1: Configurar el Backend para la Intranet (`0.0.0.0`)
+Actualmente, por razones de desarrollo seguro en tu máquina, nuestro backend rechaza peticiones que vengan de fuera (solo escucha a la propia computadora, `localhost`). 
+Modificaremos la configuración de inicio para que escuche en `0.0.0.0`. Esto significa que **aceptará conexiones desde cualquier dispositivo dentro de la red del supermercado**.
+
+### Paso 2: Unificar Frontend y Backend
+Para que no tengas que levantar dos consolas diferentes, prepararemos un pequeño cambio: el archivo compilado final de las vistas del Frontend será inyectado dentro del servidor del Backend. De este modo, en cuanto un cajero logre establecer conexión con tu computadora, el Backend en sí mismo le descargará momentáneamente las pantallas gráficas (Angular/React), exactamente como si visitarás cualquier web en Internet, pero usando la red de área local (LAN).
+
+### Paso 3: Empaquetar a `.exe`
+Enlazaremos todo el ecosistema (Servidor, Interfaz y manejador de Base de Datos) y lo convertiremos en un software autocontenido estilo `Stocly.exe`.
+Al hacer doble clic en tu computadora principal, no verás consolas ni te pediremos comandos NPM, arrancará el servidor maestro invisiblemente y expondrá un puerto.
+> *"Servidor Iniciado. Tus cajeros pueden utilizar este sistema acudiendo a http://[TU_IP_LOCAL]:4000 en el navegador."*
+
+## 3. ¿Cómo acceden los otros usuarios en la práctica?
+
+Supongamos que tu PC Principal el router le asignó la IP `192.168.1.15`.
+
+1. Enciendes el `Stocly.exe` en tu PC Principal.
+2. Una cajera (que tiene rol `cajero`) enciende la PC de Caja 1, que también está en el mismo WiFi u conectada al mismo Switch por cable.
+3. La cajera abre un navegador moderno (como Google Chrome o Edge).
+4. Escribe en la barra superior: `http://192.168.1.15:4000`.
+5. Verá la pantalla de Login idéntica a la actual. El servidor en tu computadora determinó quién es, vio que fue "Cajera", validó su clave (todo localmente mediante el WiFi) y le dio acceso, pero limitando los menús que ella puede observar y bloqueándola exclusivamente al módulo de facturación.
+
+## 4. ¿Qué tan seguro es esto? (Niveles de Seguridad)
+
+> [!TIP]
+> **Es un sistema muy seguro, del tipo "fortaleza aislada (Intranet)"**
+
+* **Seguridad desde Internet**: Nadie en el mundo externo de internet tiene forma física de ingresar a tu servidor. La red LAN es tu caparazón. Un hacker en Rusia no puede acceder ni hackear el supermercado, puesto que Stocly nunca cruzará el límite exterior del establecimiento y tu proveedor de red a menos que uses VPNs específicas. Toda tu información es 100% tuya y está en tu caja metálica fuerte.
+* **Seguridad de Empleados**: Dentro del supermercado, si algún empleado con su celular intenta adivinar entrando vía WiFi a tu red (`192.168.1.15:4000`), topará primero con el Muro del Portal de Inicio de Sesión donde sus credenciales son rechazadas. Si es un supervisor que entra pero quiere hacer trampas financieras revisando reportes escondidos, tu esquema basado en **Roles** (que hemos probado anteriormente) será su bloqueador. El supervisor será bloqueado por los controladores de Backend que escribimos.
+* **Defensa Principal**: La protección primaria que tiene este ecosistema para que no penetren personas aleatorias frente a tu puerta, recae esencialmente en **La Contraseña Inviolada del WiFi Privado de los Trabajadores**.
+
+> [!IMPORTANT]
+> **Nota de Estabilidad Operativa Sobre la Base de Datos:**
+> Puesto a que un supermercado tiene movimientos concurrentes —dos cajeros podrían finalizar sus cobros o escanear productos y restar existencias *literalmente en el mismo milisegundo o segundo*— la Base de Datos actualmente usa SQLite (una DB de guardado a 1 documento que se bloquea durante pequeñas fracciones mientras guarda transacciones), podríamos enfrentamos con colisiones. Para sistemas profesionales que admiten cajeros simultáneos en una intranet es menesteroso emigrar en el backend de SQLite a un manejador más avanzado (**PostgreSQL** local instalado silenciosamente en esa misma PC principal, por ejemplo). ¡Ambos trabajan localmente, pero su fuerza ante concurrencia es monumentalmente más alta!

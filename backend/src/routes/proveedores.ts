@@ -14,7 +14,7 @@ proveedoresRouter.get('/', requirePermission('inventario.ver'), async (req, res)
   const proveedores = await prisma.proveedor.findMany({
     where:
       typeof busqueda === 'string' && busqueda
-        ? { OR: [{ nombre: { contains: busqueda } }, { rnc: { contains: busqueda } }] }
+        ? { OR: [{ nombre: { contains: busqueda, mode: 'insensitive' } }, { rnc: { contains: busqueda, mode: 'insensitive' } }] }
         : undefined,
     include: { _count: { select: { productos: true } } },
     orderBy: { nombre: 'asc' },

@@ -7,7 +7,7 @@ interface Props {
 }
 
 export const ExportarReporteModal = ({ onClose, periodo }: Props) => {
-    const [selectedFormat, setSelectedFormat] = useState<'csv' | 'pdf' | null>(null);
+    const [selectedFormat, setSelectedFormat] = useState<'xlsx' | 'pdf' | null>(null);
     const [descargando, setDescargando] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -44,13 +44,15 @@ export const ExportarReporteModal = ({ onClose, periodo }: Props) => {
                     <div className="p-6 space-y-4">
                         {error && <p className="text-body-sm text-error">{error}</p>}
                         <div className="grid grid-cols-2 gap-4">
-                            <button onClick={() => setSelectedFormat('csv')} className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-colors ${selectedFormat === 'csv' ? 'border-primary bg-primary-container/10' : 'border-outline-variant hover:border-primary/50'}`}>
+                            <button onClick={() => setSelectedFormat('xlsx')} className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-colors ${selectedFormat === 'xlsx' ? 'border-primary bg-primary-container/10' : 'border-outline-variant hover:border-primary/50'}`}>
                                 <span className="material-symbols-outlined text-[32px] text-green-600">description</span>
-                                <span className="font-title-sm text-title-sm text-on-surface">CSV</span>
+                                <span className="font-title-sm text-title-sm text-on-surface">Excel (.xlsx)</span>
+                                <span className="font-body-sm text-body-sm text-on-surface-variant text-center text-xs">Con estilos y formato</span>
                             </button>
                             <button onClick={() => setSelectedFormat('pdf')} className={`flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-colors ${selectedFormat === 'pdf' ? 'border-primary bg-primary-container/10' : 'border-outline-variant hover:border-primary/50'}`}>
                                 <span className="material-symbols-outlined text-[32px] text-red-600">picture_as_pdf</span>
                                 <span className="font-title-sm text-title-sm text-on-surface">PDF</span>
+                                <span className="font-body-sm text-body-sm text-on-surface-variant text-center text-xs">Listo para imprimir</span>
                             </button>
                         </div>
                     </div>

@@ -13,7 +13,7 @@ clientesRouter.get('/', requirePermission('clientes.administrar'), async (req, r
   const { busqueda } = req.query;
   const clientes = await prisma.cliente.findMany({
     where: typeof busqueda === 'string' && busqueda
-      ? { OR: [{ nombre: { contains: busqueda } }, { documento: { contains: busqueda } }] }
+      ? { OR: [{ nombre: { contains: busqueda, mode: 'insensitive' } }, { documento: { contains: busqueda, mode: 'insensitive' } }] }
       : undefined,
     include: { facturas: { where: { estado: { not: 'anulada' } }, select: { total: true, fecha: true } } },
     orderBy: { nombre: 'asc' },

@@ -23,6 +23,9 @@ const crearFacturaSchema = z.object({
   metodoPago: z.enum(['efectivo', 'tarjeta', 'transferencia', 'mixto']),
   descuentoPorcentaje: z.number().min(0).max(100).optional(),
   lineas: z.array(lineaSchema).min(1),
+  referenciaTransferencia: z.string().optional(),
+  montoEfectivo: z.number().nonnegative().optional(),
+  montoTransferencia: z.number().nonnegative().optional(),
 });
 
 async function serializarFactura(id: number) {
@@ -71,6 +74,9 @@ facturasRouter.post('/', requirePermission('factura.crear'), async (req, res) =>
           clienteId,
           usuarioId: req.auth!.sub,
           metodoPago,
+          referenciaTransferencia: parsed.data.referenciaTransferencia,
+          montoEfectivo: parsed.data.montoEfectivo,
+          montoTransferencia: parsed.data.montoTransferencia,
           subtotal,
           descuentoPorcentaje: descuentoGeneral,
           descuentoMonto,
@@ -249,13 +255,28 @@ facturasRouter.post('/:id/devoluciones', requirePermission('factura.anular'), as
 
   try {
     const devolucion = await prisma.$transaction(async (tx) => {
-      const factura = await tx.factura.findUnique({ where: { id: facturaId }, include: { detalles: true } });
+      const factura = await tx.factura.findUnique({
+        where: { id: facturaId },
+        include: { detalles: true, devoluciones: { include: { detalles: true } } },
+      });
       if (!factura) throw new Error('Factura no encontrada');
+      if (factura.estado === 'anulada') throw new Error('No se puede registrar una devolución sobre una factura anulada');
+
+      const yaDevueltoPorProducto = new Map<string, number>();
+      for (const devolucionPrevia of factura.devoluciones) {
+        for (const detalleDevolucion of devolucionPrevia.detalles) {
+          yaDevueltoPorProducto.set(
+            detalleDevolucion.productoId,
+            (yaDevueltoPorProducto.get(detalleDevolucion.productoId) ?? 0) + detalleDevolucion.cantidadDevuelta,
+          );
+        }
+      }
 
       for (const item of parsed.data.items) {
         const detalle = factura.detalles.find((d) => d.productoId === item.productoId);
-        if (!detalle || item.cantidad > detalle.cantidad) {
-          throw new Error('La cantidad a devolver excede lo comprado en esa factura');
+        const yaDevuelto = yaDevueltoPorProducto.get(item.productoId) ?? 0;
+        if (!detalle || item.cantidad + yaDevuelto > detalle.cantidad) {
+          throw new Error('La cantidad a devolver excede lo comprado (o lo que queda por devolver) en esa factura');
         }
       }
 

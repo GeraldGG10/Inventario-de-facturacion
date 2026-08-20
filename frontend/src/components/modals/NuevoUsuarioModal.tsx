@@ -15,8 +15,9 @@ export const NuevoUsuarioModal = ({ onClose, onCreado }: Props) => {
     const [roles, setRoles] = useState<{ id: string; nombre: string }[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [guardando, setGuardando] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
-    useEffect(() => { api.get('/roles').then(setRoles).catch(() => {}); }, []);
+    useEffect(() => { api.get('/roles').then(setRoles).catch(() => { }); }, []);
 
     async function handleCrear() {
         if (!nombre || !nombreUsuario || !email || !rolId || password.length < 8) {
@@ -73,7 +74,12 @@ export const NuevoUsuarioModal = ({ onClose, onCreado }: Props) => {
                     </div>
                     <div>
                         <label className="block text-body-sm font-semibold text-on-surface mb-2">Contraseña temporal <span className="text-error">*</span></label>
-                        <input value={password} onChange={(e) => setPassword(e.target.value)} type="password" placeholder="Mínimo 8 caracteres" className="w-full px-4 py-2.5 bg-surface border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none" />
+                        <div className="relative">
+                            <input value={password} onChange={(e) => setPassword(e.target.value)} type={showPassword ? 'text' : 'password'} placeholder="Mínimo 8 caracteres" className="w-full px-4 py-2.5 pr-11 bg-surface border border-outline-variant rounded-lg text-body-sm focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all outline-none" />
+                            <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-primary transition-colors" tabIndex={-1}>
+                                <span className="material-symbols-outlined text-[20px]">{showPassword ? 'visibility_off' : 'visibility'}</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 

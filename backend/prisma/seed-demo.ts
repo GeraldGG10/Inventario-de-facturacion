@@ -94,11 +94,32 @@ async function main() {
     proveedores.set(p.nombre, prov.id);
   }
 
+  // Generar hasta llegar a 30 PROVEEDORES
+  let pIndex = 1;
+  while (proveedores.size < 30) {
+    const nombre = `Proveedor Prueba ${pIndex}`;
+    const existente = await prisma.proveedor.findFirst({ where: { nombre } });
+    const prov = existente ?? (await prisma.proveedor.create({
+      data: { nombre, rnc: `1-00-${10000 + pIndex}-1`, contactoNombre: `Contacto ${pIndex}`, telefono: `809-555-${1000 + pIndex}`, correo: `prov${pIndex}@example.com`, categoria: 'General' }
+    }));
+    proveedores.set(nombre, prov.id);
+    pIndex++;
+  }
+
   const clientes: string[] = [];
   for (const c of CLIENTES) {
     const existente = await prisma.cliente.findFirst({ where: { nombre: c.nombre } });
     const cli = existente ?? (await prisma.cliente.create({ data: c }));
     clientes.push(cli.id);
+  }
+  // Generar hasta llegar a 30 CLIENTES
+  let cIndex = 1;
+  while (clientes.length < 30) {
+    const nombre = `Cliente Prueba ${cIndex}`;
+    const existente = await prisma.cliente.findFirst({ where: { nombre } });
+    const cli = existente ?? (await prisma.cliente.create({ data: { nombre, documento: `402-${1000000 + cIndex}-1`, telefono: `829-555-${1000 + cIndex}`, correo: `cliente${cIndex}@example.com`, limiteCredito: 50000 } }));
+    clientes.push(cli.id);
+    cIndex++;
   }
 
   const productos: { id: string; precioVenta: number; precioCosto: number; stockMinimo: number }[] = [];
@@ -110,52 +131,58 @@ async function main() {
         data: {
           codigo: p.codigo,
           nombre: p.nombre,
-          categoriaId: categorias.get(p.categoria),
-          proveedorId: proveedores.get(p.proveedor),
+          categoriaId: categorias.get(p.categoria) || Array.from(categorias.values())[0],
+          proveedorId: proveedores.get(p.proveedor) || Array.from(proveedores.values())[0],
           ubicacionId: ubicaciones[i % ubicaciones.length],
           unidadMedida: p.unidadMedida ?? 'unidad',
           precioCosto: p.precioCosto,
           precioVenta: p.precioVenta,
-          stockActual: p.stockActual,
+          stockActual: p.stockActual + 20, // Darles stock a los primeros para que haya qué vender
           stockMinimo: p.stockMinimo,
         },
       }));
     productos.push({ id: producto.id, precioVenta: producto.precioVenta, precioCosto: producto.precioCosto, stockMinimo: producto.stockMinimo });
+  }
 
-    // Genera una alerta si el producto ya nace por debajo del mínimo (igual que
-    // haría el sistema real al registrar un movimiento).
-    await prisma.$transaction(async (tx) => {
-      const actual = await tx.producto.findUniqueOrThrow({ where: { id: producto.id } });
-      if (actual.stockActual <= actual.stockMinimo) {
-        const yaExiste = await tx.alertaInventario.findFirst({ where: { productoId: producto.id, estado: 'pendiente' } });
-        if (!yaExiste) {
-          await tx.alertaInventario.create({
-            data: {
-              productoId: producto.id,
-              stockActual: actual.stockActual,
-              stockMinimo: actual.stockMinimo,
-              cantidadSugerida: Math.max(actual.stockMinimo * 2 - actual.stockActual, actual.stockMinimo),
-              estado: 'pendiente',
-            },
-          });
-        }
+  // Generar hasta llegar a 30 PRODUCTOS
+  let prIndex = 1;
+  const provArr = Array.from(proveedores.values());
+  const catArr = Array.from(categorias.values());
+  while (productos.length < 30) {
+    const pcodigo = `PRD-GEN-${prIndex}`;
+    const existente = await prisma.producto.findUnique({ where: { codigo: pcodigo } });
+    const producto = existente ?? (await prisma.producto.create({
+      data: {
+        codigo: pcodigo,
+        nombre: `Producto Generado ${prIndex}`,
+        categoriaId: catArr[prIndex % catArr.length],
+        proveedorId: provArr[prIndex % provArr.length],
+        ubicacionId: ubicaciones[prIndex % ubicaciones.length],
+        unidadMedida: 'unidad',
+        precioCosto: 100,
+        precioVenta: 150,
+        stockActual: 50,
+        stockMinimo: 10,
       }
-    });
+    }));
+    productos.push({ id: producto.id, precioVenta: producto.precioVenta, precioCosto: producto.precioCosto, stockMinimo: producto.stockMinimo });
+    prIndex++;
   }
 
   const facturasExistentes = await prisma.factura.count();
-  if (facturasExistentes === 0) {
+  if (facturasExistentes < 100) {
     const admin = await prisma.usuario.findFirst({ where: { email: 'admin@facturacion.local' } });
 
-    for (let i = 0; i < 18; i++) {
-      const cantidadLineas = 1 + Math.floor(Math.random() * 3);
+    // Crear 80 facturas distribuidas en los últimos 45 días
+    for (let i = 0; i < 80; i++) {
+      const cantidadLineas = 1 + Math.floor(Math.random() * 4);
       const clienteId = clientes[Math.floor(Math.random() * clientes.length)];
       const lineas: { productoId: string; cantidad: number; precioUnitario: number; costoUnitario: number; subtotal: number }[] = [];
       let subtotal = 0;
 
       for (let l = 0; l < cantidadLineas; l++) {
         const producto = productos[Math.floor(Math.random() * productos.length)];
-        const cantidad = 1 + Math.floor(Math.random() * 5);
+        const cantidad = 1 + Math.floor(Math.random() * 3);
         const lineaSubtotal = producto.precioVenta * cantidad;
         lineas.push({ productoId: producto.id, cantidad, precioUnitario: producto.precioVenta, costoUnitario: producto.precioCosto, subtotal: lineaSubtotal });
         subtotal += lineaSubtotal;
@@ -164,13 +191,15 @@ async function main() {
       const impuestoPorcentaje = 18;
       const impuestoMonto = subtotal * (impuestoPorcentaje / 100);
       const total = subtotal + impuestoMonto;
-      const esAnulada = i % 9 === 8; // un par de facturas ancladas como anuladas
+      const esAnulada = i % 15 === 14; 
+      
+      const diasAtras = Math.floor(Math.random() * 45); // Hace de 0 a 45 días
 
       const factura = await prisma.factura.create({
         data: {
           clienteId,
           usuarioId: admin?.id,
-          fecha: hace(17 - i),
+          fecha: hace(diasAtras),
           subtotal,
           impuestoPorcentaje,
           impuestoMonto,
@@ -178,13 +207,12 @@ async function main() {
           metodoPago: METODOS_PAGO[Math.floor(Math.random() * METODOS_PAGO.length)],
           estado: esAnulada ? 'anulada' : 'emitida',
           motivoAnulacion: esAnulada ? 'Solicitud del cliente' : null,
-          anuladaEn: esAnulada ? hace(16 - i) : null,
+          anuladaEn: esAnulada ? hace(Math.max(0, diasAtras - 1)) : null,
           anuladaPorId: esAnulada ? admin?.id : null,
           detalles: { create: lineas },
         },
       });
 
-      // Solo las facturas emitidas (no anuladas) descuentan inventario real.
       if (!esAnulada) {
         for (const linea of lineas) {
           try {
@@ -197,18 +225,17 @@ async function main() {
               usuarioId: admin?.id,
             }));
           } catch {
-            // Si ya no hay stock suficiente (producto agotado a propósito para
-            // pruebas de alertas), se ignora esa línea sin romper el resto del seed.
+            // ignorar
           }
         }
       }
     }
-    console.log('18 facturas de prueba creadas.');
+    console.log('80 facturas de prueba creadas.');
   } else {
     console.log('Ya existen facturas; no se generaron nuevas para no duplicar.');
   }
 
-  console.log('Datos de prueba cargados: categorías, ubicaciones, proveedores, clientes, productos y facturas.');
+  console.log('Datos de prueba cargados exitosamente (30+ clientes, proveedores, productos y 80 facturas).');
 }
 
 main()
