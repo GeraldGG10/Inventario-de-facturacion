@@ -104,7 +104,7 @@ async function verificarBaseDeDatos(intentos = 8, esperaMs = 3000): Promise<void
 async function iniciar() {
   console.log('');
   console.log('  ╔═══════════════════════════════╗');
-  console.log('  ║        STOCKLY  v1.0          ║');
+  console.log('  ║       TECNO-LASER  v1.0       ║');
   console.log('  ╚═══════════════════════════════╝');
   console.log('');
 
@@ -117,7 +117,7 @@ async function iniciar() {
     // Encender (e inicializar si es la primera vez)
     await encenderPostgresPortable();
 
-    // Crear la base de datos "stockly" si no existe
+    // Crear la base de datos "tecnolaser" si no existe
     await crearBaseDeDatos();
 
     // Si es primera vez: ejecutar migraciones de Prisma para crear tablas
@@ -130,10 +130,10 @@ async function iniciar() {
         const fs = require('fs');
 
         if (fs.existsSync(schemaPath) && fs.existsSync(psqlPath)) {
-          const pushCmd = `"${psqlPath}" -U postgres -p ${getPgPort()} -d stockly -f "${schemaPath}"`;
+          const pushCmd = `"${psqlPath}" -U postgres -p ${getPgPort()} -d tecnolaser -f "${schemaPath}"`;
           execSync(pushCmd, {
             stdio: 'pipe',
-            env: { ...process.env, PGPASSWORD: 'stockly2026' },
+            env: { ...process.env, PGPASSWORD: 'tecnolaser2026' },
           });
           console.log('✅ Tablas configuradas correctamente.');
         } else {
@@ -159,7 +159,7 @@ async function iniciar() {
 
   app.listen(env.port, '0.0.0.0', () => {
     console.log('');
-    console.log(`🚀 ¡Stockly iniciado correctamente!`);
+    console.log(`🚀 ¡Tecno-laser iniciado correctamente!`);
     console.log(`   ➜ Local:   http://localhost:${env.port}`);
     console.log(`   ➜ Red LAN: Ve a Configuración > Empresa para ver tu dirección de red`);
     console.log('');

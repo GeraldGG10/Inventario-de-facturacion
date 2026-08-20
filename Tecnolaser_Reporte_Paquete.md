@@ -1,4 +1,4 @@
-# Reporte Técnico: Empaquetado de Stockly a `.exe`
+# Reporte Técnico: Empaquetado de Tecno-laser a `.exe`
 
 Este documento sirve como referencia sobre los bloqueos técnicos experimentados al transformar el proyecto Stack MERN (con PostgreSQL y Prisma) en un único binario ejecutable mediante `pkg`, y cómo fueron resueltos para asegurar un entorno de ejecución Zero-Config.
 
@@ -45,15 +45,15 @@ Para evitar que el cliente dependa de tener NodeJS en su equipo o usar el CLI de
 1. Modificamos los scripts para que atrapen sutilmente las llamadas a tablas faltantes (`backup.ts` wrap en try-catch).
 2. Agregamos el archivo pre-calculado `schema_seed.sql` al repositorio. Este contiene **el esquema final + Data Semilla** (permisos, usuario administrador base `admin@facturacion.local`, data por defecto).
 3. `build_exe.ps1` empaqueta este archivo SQL junto con la aplicación.
-4. `Stockly.exe`, al detectar la creación de la DB limpia portátil, invoca de manera oculta a `psql.exe` con este script en texto plano (`schema.sql`). La inserción de las tablas ocurre instantánea, sin depender de JS, generando un backend 100% autónomo.
+4. `Tecno-laser.exe`, al detectar la creación de la DB limpia portátil, invoca de manera oculta a `psql.exe` con este script en texto plano (`schema.sql`). La inserción de las tablas ocurre instantánea, sin depender de JS, generando un backend 100% autónomo.
 
 ## Resumen del Entorno de Distribución
 
 El producto completo para distribución se empaqueta sin dependencia de Node.js en el sistema final, generando la estructura:
 
 ```
-Stockly_Distribuir/
- ├── Stockly.exe (Backend + Control portátil)
+Tecno-laser_Distribuir/
+ ├── Tecno-laser.exe (Backend + Control portátil)
  ├── pgsql/ (Motor Base de Datos autónomo)
  ├── frontend_dist/ (Interfaz HTML)
  ├── schema.sql (Modelo final + Data seed)

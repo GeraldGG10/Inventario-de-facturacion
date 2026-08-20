@@ -157,7 +157,7 @@ reportesRouter.get('/exportar', async (req, res) => {
     }),
   ]);
 
-  const nombreEmpresa = empresa?.nombre && empresa.nombre !== 'Mi Empresa' ? empresa.nombre : 'Stockly';
+  const nombreEmpresa = empresa?.nombre && empresa.nombre !== 'Mi Empresa' ? empresa.nombre : 'Tecno-laser';
   const moneda = config?.moneda ?? 'DOP';
   const serie = config?.serieFactura ?? 'FAC-';
   const money = (n: number) => `${moneda} ${n.toLocaleString('es-DO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -391,7 +391,7 @@ reportesRouter.get('/orden-compra', async (_req, res) => {
     }),
   ]);
 
-  const nombreEmpresa = empresa?.nombre && empresa.nombre !== 'Mi Empresa' ? empresa.nombre : 'Stockly';
+  const nombreEmpresa = empresa?.nombre && empresa.nombre !== 'Mi Empresa' ? empresa.nombre : 'Tecno-laser';
 
   res.setHeader('Content-Type', 'application/pdf');
   res.setHeader('Content-Disposition', 'attachment; filename=OrdenCompra.pdf');

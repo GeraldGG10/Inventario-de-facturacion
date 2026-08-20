@@ -1,14 +1,14 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-    Script de construccion de Stockly.exe (con PostgreSQL Portable)
+    Script de construccion de Tecno-laser.exe (con PostgreSQL Portable)
 .DESCRIPTION
     1. Compila el frontend (React) y el backend (Express+Prisma).
     2. Descarga PostgreSQL Portable para Windows (binarios sin instalacion).
-    3. Empaqueta todo en un unico ejecutable Stockly.exe con 'pkg'.
+    3. Empaqueta todo en un unico ejecutable Tecno-laser.exe con 'pkg'.
     
-    RESULTADO FINAL (carpeta Stockly_Distribuir/):
-      Stockly.exe              <- el ejecutable principal
+    RESULTADO FINAL (carpeta Tecno-laser_Distribuir/):
+      Tecno-laser.exe              <- el ejecutable principal
       pgsql/                   <- motor de PostgreSQL portable
       .env                     <- variables de entorno
       *.node                   <- motor de Prisma
@@ -86,12 +86,12 @@ Write-Step 4 "Instalando pkg globalmente..."
 npm install -g pkg --silent
 
 # ──────────────────────────────────────────────────────────────
-Write-Step 5 "Generando Stockly.exe..."
+Write-Step 5 "Generando Tecno-laser.exe..."
 Set-Location "$RootDir\backend"
 
 pkg dist/index.js `
     --target node16-win-x64 `
-    --output "$RootDir\Stockly.exe" `
+    --output "$RootDir\Tecno-laser.exe" `
     --public
 if ($LASTEXITCODE -ne 0) { throw "Error al generar el ejecutable con pkg" }
 
@@ -99,12 +99,12 @@ if ($LASTEXITCODE -ne 0) { throw "Error al generar el ejecutable con pkg" }
 Write-Step 6 "Armando carpeta de distribucion..."
 Set-Location $RootDir
 
-$DistDir = "$RootDir\Stockly_Distribuir"
+$DistDir = "$RootDir\Tecno-laser_Distribuir"
 if (Test-Path $DistDir) { Remove-Item $DistDir -Recurse -Force }
 New-Item -ItemType Directory -Path $DistDir | Out-Null
 
 # Copiar .exe principal
-Copy-Item "$RootDir\Stockly.exe" -Destination $DistDir -Force
+Copy-Item "$RootDir\Tecno-laser.exe" -Destination $DistDir -Force
 
 # Copiar carpeta pgsql (PostgreSQL Portable)
 Write-Host "  Copiando PostgreSQL Portable (~300 MB, puede tardar)..." -ForegroundColor Yellow
@@ -137,19 +137,19 @@ if (Test-Path "backend\.env") {
 # ──────────────────────────────────────────────────────────────
 Write-Host ""
 Write-Host "============================================================" -ForegroundColor Green
-Write-Host "  OK  Stockly.exe generado exitosamente!"                    -ForegroundColor Green
+Write-Host "  OK  Tecno-laser.exe generado exitosamente!"                    -ForegroundColor Green
 Write-Host "============================================================" -ForegroundColor Green
 Write-Host ""
 Write-Host "PARA DISTRIBUIR, entrega la carpeta completa:" -ForegroundColor Yellow
 Write-Host "  $DistDir" -ForegroundColor White
 Write-Host ""
 Write-Host "Contenido de la carpeta de distribución:" -ForegroundColor Yellow
-Write-Host "  Stockly.exe     <- doble clic para ejecutar" -ForegroundColor White
+Write-Host "  Tecno-laser.exe     <- doble clic para ejecutar" -ForegroundColor White
 Write-Host "  pgsql/          <- motor de DB (NO eliminar)" -ForegroundColor White
 Write-Host "  .env            <- configuracion del sistema" -ForegroundColor White
 Write-Host "  *.node          <- motor de Prisma" -ForegroundColor White
 Write-Host ""
-Write-Host "Al hacer doble clic en Stockly.exe (ZERO CONFIG):" -ForegroundColor Yellow
+Write-Host "Al hacer doble clic en Tecno-laser.exe (ZERO CONFIG):" -ForegroundColor Yellow
 Write-Host "  1a vez: Inicializa PostgreSQL + crea tablas automaticamente" -ForegroundColor White
 Write-Host "  Siempre: Enciende la DB, verifica conexion y abre el navegador" -ForegroundColor White
 Write-Host "  Al cerrar: Apaga la DB de forma segura (sin corrupcion de datos)" -ForegroundColor White

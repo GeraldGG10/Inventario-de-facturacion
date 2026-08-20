@@ -39,7 +39,7 @@ export async function ejecutarBackup(): Promise<string> {
   fs.mkdirSync(destinoDir, { recursive: true });
 
   const marca = new Date().toISOString().replace(/[:.]/g, '-');
-  const destino = path.join(destinoDir, `stockly-${marca}.sql`);
+  const destino = path.join(destinoDir, `tecnolaser-${marca}.sql`);
 
   execFileSync(
     rutaPgDump(),
@@ -49,7 +49,7 @@ export async function ejecutarBackup(): Promise<string> {
 
   const archivos = fs
     .readdirSync(destinoDir)
-    .filter((f) => f.startsWith('stockly-') && f.endsWith('.sql'))
+    .filter((f) => f.startsWith('tecnolaser-') && f.endsWith('.sql'))
     .sort();
   const exceso = archivos.length - config.backupMaxArchivos;
   for (let i = 0; i < exceso; i++) {

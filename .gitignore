@@ -18,8 +18,8 @@ release/
 # PostgreSQL Portable y datos generados en tiempo de ejecución
 pgsql/
 db_data/
-stockly-db.log
+tecnolaser-db.log
 
 # Carpeta de distribución final y ejecutable compilado
-Stockly_Distribuir/
-Stockly.exe
+Tecno-laser_Distribuir/
+Tecno-laser.exe

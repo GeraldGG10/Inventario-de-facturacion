@@ -21,8 +21,8 @@ const backendEnv = {
   ...process.env,
   DATABASE_URL: `file:${dbPath}`,
   PORT: String(PORT),
-  JWT_ACCESS_SECRET: 'stockly-local-access-secret',
-  JWT_REFRESH_SECRET: 'stockly-local-refresh-secret',
+  JWT_ACCESS_SECRET: 'tecnolaser-local-access-secret',
+  JWT_REFRESH_SECRET: 'tecnolaser-local-refresh-secret',
 };
 
 let mainWindow;
@@ -88,7 +88,7 @@ function crearVentana() {
       nodeIntegration: false,
       contextIsolation: true,
     },
-    title: 'Stockly — Inventario y Facturación',
+    title: 'Tecno-laser — Inventario y Facturación',
     icon: path.join(__dirname, 'assets', process.platform === 'win32' ? 'icon.ico' : 'icon.png'),
     show: false,
   });

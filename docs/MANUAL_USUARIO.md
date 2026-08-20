@@ -1,4 +1,4 @@
-# Manual de Usuario — Stockly
+# Manual de Usuario — Tecno-laser
 
 Sistema de Inventario y Facturación. Este manual cubre el uso de la interfaz y cómo funciona el acceso en red (LAN) para múltiples equipos.
 
@@ -6,7 +6,7 @@ Sistema de Inventario y Facturación. Este manual cubre el uso de la interfaz y 
 
 ## 1. Primer acceso
 
-1. En la PC principal (donde corre `Stockly.exe`), hacer doble clic en el ejecutable.
+1. En la PC principal (donde corre `Tecno-laser.exe`), hacer doble clic en el ejecutable.
 2. El sistema arranca su propio motor de base de datos, verifica la conexión y abre el navegador automáticamente en `http://localhost:4000`.
 3. Iniciar sesión con el usuario administrador inicial:
    - **Correo:** `admin@facturacion.local`
@@ -115,10 +115,10 @@ Tarjeta con el enlace `http://<nombre-de-tu-pc>:4000` y un botón para copiarlo 
 
 ## 10. Cómo funciona el acceso desde varias computadoras
 
-**La idea en una frase:** `Stockly.exe` corre en **una sola PC** (la "principal"), y todos los demás equipos simplemente abren un navegador y entran a esa PC por la red — no instalan nada.
+**La idea en una frase:** `Tecno-laser.exe` corre en **una sola PC** (la "principal"), y todos los demás equipos simplemente abren un navegador y entran a esa PC por la red — no instalan nada.
 
 ### ¿Dónde vive la base de datos?
-Dentro de `Stockly.exe` corre un motor de PostgreSQL portátil — un gestor de base de datos real, no un archivo simple. Los datos quedan guardados en una carpeta `db_data/` al lado del ejecutable, en la PC principal. **Todos los usuarios, sin importar desde qué computadora entren, leen y escriben sobre esa misma base de datos.** No hay copias ni sincronización: es una sola fuente de verdad.
+Dentro de `Tecno-laser.exe` corre un motor de PostgreSQL portátil — un gestor de base de datos real, no un archivo simple. Los datos quedan guardados en una carpeta `db_data/` al lado del ejecutable, en la PC principal. **Todos los usuarios, sin importar desde qué computadora entren, leen y escriben sobre esa misma base de datos.** No hay copias ni sincronización: es una sola fuente de verdad.
 
 ### ¿Por qué no cada PC tiene su propia base?
 Porque perderías la razón de ser del sistema: si cada caja tuviera su propio inventario, una venta en la Caja 1 no descontaría el stock que ve la Caja 2, y terminarías vendiendo lo mismo dos veces. Con una base central, en el instante que alguien vende algo, todas las pantallas ven el stock actualizado.
@@ -133,7 +133,7 @@ No hace falta configurar una IP fija: el enlace usa el **nombre de la computador
 
 ### Requisitos para que esto funcione
 - Todas las computadoras (la principal y las que se conectan) deben estar **en la misma red** — mismo WiFi o mismo switch/cable. Esto no funciona a través de internet ni desde otra red distinta.
-- La PC principal debe quedar **encendida** con `Stockly.exe` abierto mientras otros la usan — si la apagás, nadie más puede facturar hasta que la prendas de nuevo.
+- La PC principal debe quedar **encendida** con `Tecno-laser.exe` abierto mientras otros la usan — si la apagás, nadie más puede facturar hasta que la prendas de nuevo.
 - El firewall de Windows puede preguntar la primera vez si permitir la conexión: hay que aceptar ("permitir en redes privadas").
 
 ### ¿Qué tan seguro es?
@@ -149,9 +149,9 @@ La PC principal puede generar respaldos automáticos (frecuencia configurable en
 ## 11. Preguntas frecuentes
 
 **¿Qué pasa si apago la PC principal por error mientras alguien está facturando?**
-Esa persona pierde la conexión y no puede seguir hasta que se vuelva a prender la PC principal y abrir `Stockly.exe`. Ninguna venta a medias se guarda parcialmente — o se completó antes del corte, o no quedó registrada.
+Esa persona pierde la conexión y no puede seguir hasta que se vuelva a prender la PC principal y abrir `Tecno-laser.exe`. Ninguna venta a medias se guarda parcialmente — o se completó antes del corte, o no quedó registrada.
 
-**¿Puedo usar Stockly desde mi celular?**
+**¿Puedo usar Tecno-laser desde mi celular?**
 Sí, siempre que el celular esté conectado a la misma red WiFi del negocio — es solo abrir el navegador y entrar al mismo enlace.
 
 **¿Se puede acceder desde fuera del negocio (otra sucursal, desde casa)?**

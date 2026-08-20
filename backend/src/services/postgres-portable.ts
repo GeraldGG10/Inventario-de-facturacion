@@ -1,7 +1,7 @@
 /**
  * postgres-portable.ts
  * Gestiona el ciclo de vida de una instancia de PostgreSQL Portable
- * empaquetada junto al .exe de Stockly.
+ * empaquetada junto al .exe de Tecno-laser.
  *
  * Flujo:
  *  1. Detecta si los binarios de pgsql existen (distribuidos junto al .exe).
@@ -44,7 +44,7 @@ function getInitDb(): string {
 }
 
 function getLogPath(): string {
-  return path.join(getBasePath(), 'stockly-db.log');
+  return path.join(getBasePath(), 'tecnolaser-db.log');
 }
 
 // ─── Puerto configurado en DATABASE_URL ─────────────────────────────────────
@@ -73,10 +73,10 @@ async function inicializarDB(): Promise<void> {
 
   const dataPath = getDbDataPath();
   const initdb = getInitDb();
-  const pwdFile = path.join(os.tmpdir(), 'stockly_pgpwd.txt');
+  const pwdFile = path.join(os.tmpdir(), 'tecnolaser_pgpwd.txt');
 
   // Escribir contraseña en archivo temporal (requerido por initdb)
-  fs.writeFileSync(pwdFile, 'stockly2026', 'utf8');
+  fs.writeFileSync(pwdFile, 'tecnolaser2026', 'utf8');
 
   try {
     execSync(
@@ -150,13 +150,13 @@ export async function encenderPostgresPortable(): Promise<void> {
       // contra un Postgres distinto que resultara estar en el mismo puerto).
       throw new Error(
         `El motor de base de datos no respondió tras 15s en el puerto ${puerto}. ` +
-          `Revisa stockly-db.log — es posible que otro proceso (otro PostgreSQL instalado en esta máquina) ya esté usando ese puerto.`,
+          `Revisa tecnolaser-db.log — es posible que otro proceso (otro PostgreSQL instalado en esta máquina) ya esté usando ese puerto.`,
       );
     }
     console.log('✅ Motor de base de datos activo.');
   } catch (err) {
     console.error('❌ No se pudo iniciar el motor de base de datos.');
-    console.error('   Revisa el archivo stockly-db.log para más detalles.');
+    console.error('   Revisa el archivo tecnolaser-db.log para más detalles.');
     throw err;
   }
 }
@@ -176,7 +176,7 @@ async function esperarPostgres(maxSegundos: number): Promise<boolean> {
   return false;
 }
 
-// ─── Crear base de datos "stockly" si no existe ───────────────────────────────
+// ─── Crear base de datos "tecnolaser" si no existe ───────────────────────────────
 export async function crearBaseDeDatos(): Promise<void> {
   if (!postgresPortableDisponible()) return;
 
@@ -184,21 +184,21 @@ export async function crearBaseDeDatos(): Promise<void> {
   const createdb = path.join(getPgsqlPath(), 'bin', 'createdb.exe');
 
   try {
-    // Intentar crear la base de datos 'stockly'
+    // Intentar crear la base de datos 'tecnolaser'
     execSync(
-      `"${createdb}" -U postgres -p ${getPgPort()} stockly`,
+      `"${createdb}" -U postgres -p ${getPgPort()} tecnolaser`,
       {
         stdio: 'pipe',
-        env: { ...process.env, PGPASSWORD: 'stockly2026' }
+        env: { ...process.env, PGPASSWORD: 'tecnolaser2026' }
       }
     );
-    console.log('✅ Base de datos "stockly" creada.');
+    console.log('✅ Base de datos "tecnolaser" creada.');
   } catch (err: any) {
     const msg = err?.stderr?.toString() ?? '';
     if (msg.includes('already exists')) {
       // Ya existe — es OK
     } else {
-      console.warn('⚠️  No se pudo verificar/crear la base de datos "stockly":', msg);
+      console.warn('⚠️  No se pudo verificar/crear la base de datos "tecnolaser":', msg);
     }
   }
 }

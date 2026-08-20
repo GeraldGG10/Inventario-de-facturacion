@@ -34,7 +34,7 @@ export const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background dark:bg-inverse-surface px-4">
       <div className="w-full max-w-sm bg-surface dark:bg-background border border-outline-variant dark:border-outline/30 rounded-2xl shadow-lg p-8">
-        <h1 className="font-display-lg text-display-lg font-bold text-primary dark:text-primary-fixed text-center mb-1">Stockly</h1>
+        <h1 className="font-display-lg text-display-lg font-bold text-primary dark:text-primary-fixed text-center mb-1">Tecno-laser</h1>
         <p className="text-body-sm text-on-surface-variant text-center mb-6">Sistema de Inventario y Facturación</p>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">

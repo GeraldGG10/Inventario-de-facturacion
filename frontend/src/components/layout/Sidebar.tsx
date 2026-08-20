@@ -116,7 +116,7 @@ export const Sidebar = ({ children }: { children: React.ReactNode }) => {
                 id="sidebar"
             >
                 <div className="px-6 h-[64px] flex items-center shrink-0 border-b border-outline-variant dark:border-outline/30">
-                    <h1 className="font-display-lg text-display-lg font-bold text-primary dark:text-primary-fixed truncate">Stockly</h1>
+                    <h1 className="font-display-lg text-display-lg font-bold text-primary dark:text-primary-fixed truncate">Tecno-laser</h1>
                     <button 
                         className="xl:hidden ml-auto text-on-surface-variant p-2 rounded-lg hover:bg-surface-container-high transition-colors" 
                         onClick={toggleSidebar}

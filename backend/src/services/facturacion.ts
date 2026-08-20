@@ -29,7 +29,7 @@ export async function generarPdfFactura(factura: FacturaConDetalle, res: Respons
   const numero        = formatearNumeroFactura(config?.serieFactura ?? '', factura.id);
   const moneda        = config?.moneda ?? 'DOP';
   const money         = (n: number) => `${n.toLocaleString('es-DO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${moneda}`;
-  const nombreEmpresa = empresa?.nombre && empresa.nombre !== 'Mi Empresa' ? empresa.nombre : 'Stockly';
+  const nombreEmpresa = empresa?.nombre && empresa.nombre !== 'Mi Empresa' ? empresa.nombre : 'Tecno-laser';
 
   const fechaStr      = factura.fecha.toISOString().split('T')[0];
   const nombreCliente = factura.cliente?.nombre ? factura.cliente.nombre.replace(/[^a-zA-Z0-9]/g, '_') : 'ConsumidorFinal';
@@ -74,7 +74,7 @@ export async function generarPdfFactura(factura: FacturaConDetalle, res: Respons
   const LOGO_SIZE = 48;
   doc.roundedRect(ML, y, LOGO_SIZE, LOGO_SIZE, 6).fillColor(C_SLATE).fill();
   doc.font('Helvetica-Bold').fontSize(11).fillColor('#ffffff')
-     .text('Stockly', ML, y + 18, { width: LOGO_SIZE, align: 'center', lineBreak: false });
+     .text('TL', ML, y + 18, { width: LOGO_SIZE, align: 'center', lineBreak: false });
 
   const EMP_X = ML + LOGO_SIZE + 15;
   let empY = y + 4;
